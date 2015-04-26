@@ -2,6 +2,6 @@
 * Forschungsprojekt
 
 ** TODOs
-	[] Setup Git and Github and push yet written code as well as datasets
+	[x] Setup Git and Github and push yet written code as well as datasets
 	[] Make some plots of graphs using matplotlib
 	[] Find data sets regarding social networks and convert them to the pz format
