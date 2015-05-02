@@ -1,4 +1,4 @@
-import pz
+from conversion import pz
 import networkx as nx
 import os
 import scipy
@@ -6,14 +6,15 @@ import scipy.sparse.csr
 
 
 # import os.path
-    
-pz.save("Ich liebe Kristina!", "kristina")
+android_fcg_path = os.path.join("..", "data sets", ("ANDROID FCG (2 classes, "
+                                "26 undirected graphs, unlabeled edges)"))
 
-k = pz.load("kristina")
+fcg_clean_path = os.path.join(android_fcg_path, "clean")
+fcg_mal_path = os.path.join(android_fcg_path, "malware")
 
 os.listdir(".")
 
-clean_files = os.listdir("clean")
+clean_files = os.listdir()
 clean_files
 type(clean_files)
 
@@ -22,7 +23,7 @@ first_app_name
 type(first_app_name)
 first_app_name
 
-first_app = pz.load(os.path.join("clean", first_app_name))
+first_app = pz.load(os.path.join(fcg_clean_path, first_app_name))
 type(first_app)
 
 first_app
@@ -140,13 +141,27 @@ len(G.edges([tup7]))
 G.in_edges([tup7]) # []
 G.out_edges([tup7])
 
+# verify that the graph is directed
+second_node = nodes[1]
+second_node
+
+neighbors_of_second_node = G.neighbors(second_node)
+first_neighbor_of_second_node = neighbors_of_second_node[0]
+first_neighbor_of_second_node
+
+second_node
+G.neighbors(first_neighbor_of_second_node)
+
+(second_node, first_neighbor_of_second_node) in G.edges() # True
+(first_neighbor_of_second_node, second_node) in G.edges() # False
+
 
 # fetching all clean graphs
 # All of them are directed graphs
 graphs_ben = []
-files_ben = os.listdir("clean")
+files_ben = os.listdir(fcg_clean_path)
 for g_file in files_ben:
-    g_ben = pz.load(os.path.join("clean", g_file))
+    g_ben = pz.load(os.path.join(fcg_clean_path, g_file))
     g_ben = nx.DiGraph(g_ben) # unnecessary, just for better use with IDE
     graphs_ben.append(g_ben)
 
@@ -168,9 +183,9 @@ first_graph_ben.number_of_nodes()
 # fetching all malware graphs
 # All of them are directed graphs
 graphs_mal = []
-files_mal = os.listdir("malware")
+files_mal = os.listdir(fcg_mal_path)
 for g_file in files_mal:
-    g_mal = pz.load(os.path.join("malware", g_file))
+    g_mal = pz.load(os.path.join(fcg_mal_path, g_file))
     g_mal = nx.DiGraph(g_mal) # unnecessary, just for better use with IDE
     graphs_mal.append(g_mal)
     
@@ -192,6 +207,3 @@ print g_ben_max.number_of_edges()
 print g_mal_max.number_of_edges()
 
 
-    
-
-    
