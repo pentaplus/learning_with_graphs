@@ -1,0 +1,8 @@
+
+<http://data.bgs.ac.uk/ref/Geochronology/RankList> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Geochronology/RankList> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#OrderedCollection> .
+<http://data.bgs.ac.uk/ref/Geochronology/RankList> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/ref/Geochronology/RankList"@en .
+<http://data.bgs.ac.uk/ref/Geochronology/RankList> <http://purl.org/dc/terms/creator> <http://www.bgs.ac.uk/foaf.rdf> .
+<http://data.bgs.ac.uk/ref/Geochronology/RankList> <http://purl.org/dc/terms/publisher> <http://www.bgs.ac.uk/foaf.rdf> .
+<http://data.bgs.ac.uk/ref/Geochronology/RankList> <http://purl.org/dc/terms/title> "An Ordered List of BGS Geochronostratigraphy ranks"@en .
+<http://data.bgs.ac.uk/ref/Geochronology/RankList> <http://data.bgs.ac.uk/ref/Geochronology/rankList> "http://data.bgs.ac.uk/id/Geochronology/Rank/AGE http://data.bgs.ac.uk/id/Geochronology/Rank/EON http://data.bgs.ac.uk/id/Geochronology/Rank/EPOCH http://data.bgs.ac.uk/id/Geochronology/Rank/ERA http://data.bgs.ac.uk/id/Geochronology/Rank/MIS http://data.bgs.ac.uk/id/Geochronology/Rank/PERIOD http://data.bgs.ac.uk/id/Geochronology/Rank/SUB-AGE http://data.bgs.ac.uk/id/Geochronology/Rank/SUB-EPOCH http://data.bgs.ac.uk/id/Geochronology/Rank/SUB-ERA http://data.bgs.ac.uk/id/Geochronology/Rank/SUB-PERIOD"@en .

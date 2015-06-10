@@ -16,22 +16,16 @@ files = os.listdir('.')
 
 graph_numbers = []
 for f in files:
-    
-    
-    first_index_of_file_ex = f.find('.graph')
-    if first_index_of_file_ex == -1:
+    first_index_of_file_ext = f.find('.graph')
+    if first_index_of_file_ext == -1:
         continue
     
-    file_name = f[0:first_index_of_file_ex]
+    file_name = f[0:first_index_of_file_ext]
     if file_name.isdigit():
         graph_numbers.append(int(file_name))
         
 
 for n in graph_numbers:
-#for n in [1017]:
-#    print(n)
-#    print(' ')
-
     print('Converting graph no ' + str(n))
 
     fid = open(str(n) + '.graph', 'r')
@@ -111,7 +105,7 @@ for n in graph_numbers:
     # -------------------------------------------------------------------------
     
     # create an empty graph (according to the description of the
-    # data sets the graphs are undirected)        
+    # datasets the graphs are undirected)        
     G = nx.Graph()
     
     # add nodes to the graph

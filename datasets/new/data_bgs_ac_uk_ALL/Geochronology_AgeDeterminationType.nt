@@ -1,0 +1,55 @@
+
+<http://data.bgs.ac.uk/ref/Geochronology/AgeDeterminationType> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/ref/Geochronology/AgeDeterminationType> <http://purl.org/dc/terms/publisher> <http://www.bgs.ac.uk/foaf.rdf> .
+<http://data.bgs.ac.uk/ref/Geochronology/AgeDeterminationType> <http://purl.org/dc/terms/creator> <http://www.bgs.ac.uk/foaf.rdf> .
+<http://data.bgs.ac.uk/ref/Geochronology/AgeDeterminationType> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#ConceptScheme> .
+<http://data.bgs.ac.uk/ref/Geochronology/AgeDeterminationType> <http://purl.org/dc/terms/created> "2011-02-10"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://data.bgs.ac.uk/ref/Geochronology/AgeDeterminationType> <http://purl.org/dc/terms/title> "BGS Geological Time Boundary Age Determination Types"@en .
+<http://data.bgs.ac.uk/ref/Geochronology/AgeDeterminationType> <http://www.w3.org/2000/01/rdf-schema#label> "How a particular geological age was determined"@en .
+<http://data.bgs.ac.uk/ref/Geochronology/AgeDeterminationType> <http://purl.org/dc/terms/description> "Classifies dated geological events according to the authoritative reference for the dating, or by other methods used"@en .
+<http://data.bgs.ac.uk/ref/Geochronology/AgeDeterminationType> <http://purl.org/dc/terms/identifier> "http://data.bgs.ac.uk/ref/Geochronology/AgeDeterminationType"@en .
+
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/APPROX> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/APPROX> <http://www.w3.org/2004/02/skos/core#definition> "Approximate date on ICS International Stratigraphic Chart"@en .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/APPROX> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Geochronology/AgeDeterminationType> .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/APPROX> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Geochronology/AgeDeterminationType> .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/APPROX> <http://data.bgs.ac.uk/ref/hasCurrentStatus> <http://data.bgs.ac.uk/ref/CurrentStatus/CURRENT> .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/APPROX> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/APPROX> <http://www.w3.org/2000/01/rdf-schema#label> "Approximate"@en .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/APPROX> <http://www.w3.org/2004/02/skos/core#prefLabel> "Approximate"@en .
+
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/DEFINITE> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/DEFINITE> <http://www.w3.org/2004/02/skos/core#definition> "Dated boundary on ICS International Stratigraphic Chart"@en .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/DEFINITE> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Geochronology/AgeDeterminationType> .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/DEFINITE> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Geochronology/AgeDeterminationType> .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/DEFINITE> <http://data.bgs.ac.uk/ref/hasCurrentStatus> <http://data.bgs.ac.uk/ref/CurrentStatus/CURRENT> .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/DEFINITE> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/DEFINITE> <http://www.w3.org/2000/01/rdf-schema#label> "Definite"@en .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/DEFINITE> <http://www.w3.org/2004/02/skos/core#prefLabel> "Definite"@en .
+
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/INTERP> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/INTERP> <http://www.w3.org/2004/02/skos/core#definition> "Boundary not dated"@en .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/INTERP> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Geochronology/AgeDeterminationType> .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/INTERP> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Geochronology/AgeDeterminationType> .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/INTERP> <http://data.bgs.ac.uk/ref/hasCurrentStatus> <http://data.bgs.ac.uk/ref/CurrentStatus/CURRENT> .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/INTERP> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/INTERP> <http://www.w3.org/2000/01/rdf-schema#label> "Boundary not dated"@en .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/INTERP> <http://www.w3.org/2004/02/skos/core#prefLabel> "Boundary not dated"@en .
+
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/MIS> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/MIS> <http://www.w3.org/2004/02/skos/core#definition> "Marine Isotope Stage"@en .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/MIS> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Geochronology/AgeDeterminationType> .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/MIS> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Geochronology/AgeDeterminationType> .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/MIS> <http://data.bgs.ac.uk/ref/hasCurrentStatus> <http://data.bgs.ac.uk/ref/CurrentStatus/CURRENT> .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/MIS> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/MIS> <http://www.w3.org/2000/01/rdf-schema#label> "Marine Isotope Stage"@en .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/MIS> <http://www.w3.org/2004/02/skos/core#prefLabel> "Marine Isotope Stage"@en .
+
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/QUAT> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#Concept> .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/QUAT> <http://www.w3.org/2004/02/skos/core#definition> "Quaternary age based on McMillan et al (2005), Merritt et al (2003)"@en .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/QUAT> <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.bgs.ac.uk/ref/Geochronology/AgeDeterminationType> .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/QUAT> <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://data.bgs.ac.uk/ref/Geochronology/AgeDeterminationType> .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/QUAT> <http://data.bgs.ac.uk/ref/hasCurrentStatus> <http://data.bgs.ac.uk/ref/CurrentStatus/CURRENT> .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/QUAT> <http://purl.org/dc/terms/accessRights> "The dataset is made freely available for access, e.g. via the Internet. Either no third  party data / information is contained in the dataset or BGS has secured written permission from the owner(s) of any third party data / information contained in the dataset to make the dataset freely accessible."@en .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/QUAT> <http://www.w3.org/2000/01/rdf-schema#label> "Quaternary"@en .
+<http://data.bgs.ac.uk/id/Geochronology/AgeDeterminationType/QUAT> <http://www.w3.org/2004/02/skos/core#prefLabel> "Quaternary"@en .
