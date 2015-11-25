@@ -1,6 +1,7 @@
 import networkx as nx
-import pz
 import os
+import pz
+from os.path import splitext
 
 
 def read_line(fid):
@@ -16,11 +17,10 @@ files = os.listdir('.')
 
 graph_numbers = []
 for f in files:
-    first_index_of_file_ext = f.find('.graph')
-    if first_index_of_file_ext == -1:
+    if not f.endswith('.graph'):
         continue
     
-    file_name = f[0:first_index_of_file_ext]
+    file_name = splitext(f)[0]
     if file_name.isdigit():
         graph_numbers.append(int(file_name))
         

@@ -6,8 +6,8 @@ import scipy.sparse.csr
 
 
 # import os.path
-android_fcg_path = os.path.join("..", "data sets", ("ANDROID FCG (2 classes, "
-                                "26 undirected graphs, unlabeled edges)"))
+android_fcg_path = os.path.join("..", "datasets", ("ANDROID FCG (2 classes, "
+                                "26 directed graphs, unlabeled edges)"))
 
 fcg_clean_path = os.path.join(android_fcg_path, "clean")
 fcg_mal_path = os.path.join(android_fcg_path, "malware")

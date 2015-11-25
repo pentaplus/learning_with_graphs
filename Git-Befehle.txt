@@ -1,0 +1,62 @@
+A head is simply a reference to a commit object
+HEAD refers exclusively to the currently active head.
+
+git init
+
+git config user.name # shows user name
+
+git status
+
+# show list of existing remotes
+git remote
+
+git show
+
+git diff
+git diff origin
+
+git add -A # this is needed to add all files, git commit -a is no substitution
+git add -p # interactive mode
+
+git reset
+
+git commit -m "message"
+git commit -a -m "message"
+
+git remote show
+git remote show origin
+git remote add origin https://github.com/pentaplus/learning_with_graphs.git
+git remote add origin https://github.com/bplock/graph_based_learning.git
+git push origin master
+git push -u origin master
+
+
+git branch # list branches
+git branch -r # Option -r causes the remote-tracking branches to be listed
+git branch -d the_local_branch # delete branch
+git branch new_branch
+# The git checkout command lets one navigate between the branches created by git branch
+git checkout new_branch
+git checkout -b old-state 0d1d7fc32 # a new branch is made
+
+git clone https://github.com/pentaplus/learning_with_graphs.git
+
+# show remote changes without doing a plull
+git fetch https://github.com/pentaplus/learning_with_graphs.git # At this point the changes are in ones repository and one can examine them using:
+git diff # OR
+git log origin # OR
+git log HEAD..origin # which will only show the changes one doesn't have in one's branch
+git merge origin
+
+# edit last n commits
+git rebase -i HEAD~n
+git push --force
+
+# access files of old commits (piping is then possible)
+git show 55f1760cd691a6113fe1b6cc9fc02d9e33063b08:README.md
+
+# reset current HEAD to the specified state
+git reset --soft
+git reset --hard
+
+Source: https://www.youtube.com/watch?v=mYjZtU1-u9Y
