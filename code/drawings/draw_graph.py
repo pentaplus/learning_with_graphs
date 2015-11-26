@@ -7,9 +7,9 @@ import pz
 # pkg_resources.get_distribution("networkx").version
 
 # graph_name = "android_fcg_7ab" # This graph has 32635 nodes
-graph_name = "dd_class1_1" # This graph has 327 nodes and 899 edges
+# graph_name = "dd_class1_1" # This graph has 327 nodes and 899 edges
 # graph_name = "enzymes_class1_201" # This graph has 29 nodes and 53 edges
-# graph_name = "mutag_class1_1" # This graph has 23 nodes and 27 edges
+graph_name = "mutag_class1_1" # This graph has 23 nodes and 27 edges
 # graph_name = "nc1_class0_1" # This graph has 21 nodes and 21 edges
 # graph_name = "nci109_class0_1"# This graph has 21 nodes and 21 edges
 
@@ -41,11 +41,27 @@ ax.axes.get_yaxis().set_visible(False)
 
 
 # mutag_class1_1 (23 nodes and 27 edges) --------------------------------------
+red = '#EE1C25'
+orange = '#FF6600'
+blue = '#3399FF'
+dark_blue = '#3F3D99'
 
-#pos = nx.spring_layout(G,k=0.2,iterations=10000)
-#
-#nx.draw_networkx_nodes(G, pos, node_size = 40, node_color = 'r')
-#nx.draw_networkx_edges(G, pos, alpha = 0.4)
+labels={}
+for i in xrange(G.number_of_nodes()):
+    labels[i] = str(i) + ':' + G.nodes(data=True)[i][1]['label']
+
+pos = nx.spring_layout(G,k=0.2,iterations=10000)
+
+nx.draw_networkx_nodes(G, pos, node_size = 125,
+                       node_color = orange)
+nx.draw_networkx_edges(G, pos, alpha = 0.4)
+
+nx.draw_networkx_labels(G,pos,labels,font_size=9,font_color=dark_blue,
+                        font_weight='bold')
+                        
+#nx.draw_networkx_labels(G,pos,labels,font_size=9,font_color=dark_blue)
+
+plt.savefig(os.path.join("drawings", graph_name + "_NEW.svg"), dpi = 10000)
 
 # -----------------------------------------------------------------------------
 
@@ -66,12 +82,12 @@ ax.axes.get_yaxis().set_visible(False)
 # dd_class1_1 (327 nodes and 899 edges) ---------------------------------------
 
 
-pos = nx.spring_layout(G,k=0.015,iterations=500)
-
-nx.draw_networkx_nodes(G, pos, node_size = 5, node_color = 'r')
-nx.draw_networkx_edges(G, pos, alpha = 0.4)
+#pos = nx.spring_layout(G,k=0.015,iterations=500)
+#
+#nx.draw_networkx_nodes(G, pos, node_size = 5, node_color = 'r')
+#nx.draw_networkx_edges(G, pos, alpha = 0.4)
 
 # -----------------------------------------------------------------------------
 
 
-plt.savefig(os.path.join("drawings", graph_name + ".svg"), dpi = 10000)
+# plt.savefig(os.path.join("drawings", graph_name + ".svg"), dpi = 10000)

@@ -4,7 +4,6 @@
 ** Tasks
   [] Selection and crafting of datasets
         [] Malware FCG/CFG/IPCFG (Android, x86)
-        [] Botnet network topologies
         [] Source code PDGs
         [x] Chemistry
         [] Others
