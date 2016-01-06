@@ -1,110 +1,90 @@
-import networkx as nx
-import numpy as np
-import os
-import pz
-import shutil
+import inspect
 import sys
+import time
 
-# D&D dataset
-#number_of_graphs = 1178
-#
-#path_class_1 = os.path.join('DD_pz', 'class 1')
-#path_class_2 = os.path.join('DD_pz', 'class 2')
-#
-#graphs = []
-#for graph_no in xrange(1, number_of_graphs + 1):
-#    file_name = str(graph_no) + '.pz'
-#    
-#    if os.path.isfile(os.path.join(path_class_1, file_name)):
-#        print('graph ' + str(graph_no) + ' belongs to class 1.')
-#        G = pz.load(os.path.join(path_class_1, file_name))
-#    elif os.path.isfile(os.path.join(path_class_2, file_name)):
-#        print('graph ' + str(graph_no) + ' belongs to class 2.')
-#        G = pz.load(os.path.join(path_class_2, file_name))
-#    else:
-#        print('graph ' + str(graph_no) + ' does not exist.')
-#        sys.exit(1)
-#        
-#    graphs.append(G)
+from numpy import mean
+from os.path import abspath, dirname, join
+
+# determine script path
+filename = inspect.getframeinfo(inspect.currentframe()).filename
+script_path = dirname(abspath(filename))
+# modify the search path for modules in order to access modules in subfolders
+# of the script's parent directory
+sys.path.append(join(script_path, '..'))
+
+from misc import datasetloader
 
 
-# ENZYMES dataset
-#number_of_graphs = 600
-#
-#path_class_1 = os.path.join('ENZ_pz', 'class 1')
-#path_class_2 = os.path.join('ENZ_pz', 'class 2')
-#path_class_3 = os.path.join('ENZ_pz', 'class 3')
-#path_class_4 = os.path.join('ENZ_pz', 'class 4')
-#path_class_5 = os.path.join('ENZ_pz', 'class 5')
-#path_class_6 = os.path.join('ENZ_pz', 'class 6')
-#
-#graphs = []
-#for graph_no in xrange(1, number_of_graphs + 1):
-#    file_name = str(graph_no) + '.pz'
-#    
-#    if os.path.isfile(os.path.join(path_class_1, file_name)):
-#        print('graph ' + str(graph_no) + ' belongs to class 1.')
-#        G = pz.load(os.path.join(path_class_1, file_name))
-#    elif os.path.isfile(os.path.join(path_class_2, file_name)):
-#        print('graph ' + str(graph_no) + ' belongs to class 2.')
-#        G = pz.load(os.path.join(path_class_2, file_name))
-#    elif os.path.isfile(os.path.join(path_class_3, file_name)):
-#        print('graph ' + str(graph_no) + ' belongs to class 3.')
-#        G = pz.load(os.path.join(path_class_3, file_name))
-#    elif os.path.isfile(os.path.join(path_class_4, file_name)):
-#        print('graph ' + str(graph_no) + ' belongs to class 4.')
-#        G = pz.load(os.path.join(path_class_4, file_name))
-#    elif os.path.isfile(os.path.join(path_class_5, file_name)):
-#        print('graph ' + str(graph_no) + ' belongs to class 5.')
-#        G = pz.load(os.path.join(path_class_5, file_name))
-#    elif os.path.isfile(os.path.join(path_class_6, file_name)):
-#        print('graph ' + str(graph_no) + ' belongs to class 6.')
-#        G = pz.load(os.path.join(path_class_6, file_name))
-#    else:
-#        print('graph ' + str(graph_no) + ' does not exist.')
-#        sys.exit(1)
-#        
-#    graphs.append(G)
 
-# PTC(MR) dataset
-number_of_graphs = 344
+t0 = time.time()
 
-path_class_1 = os.path.join('PTC_pz', 'class 1')
-path_class_minus_1 = os.path.join('PTC_pz', 'class -1')
 
-graphs = []
-for graph_no in xrange(0, number_of_graphs):
-    file_name = str(graph_no) + '.pz'
+DATASETS_PATH = join(script_path, '..', '..', 'datasets')
+
+#DATASET = 'ANDROID FCG' # !! change file names from hashes to numbers
+#DATASET = 'CFG' # !! change file names from hashes to numbers
+#DATASET = 'DD'
+#DATASET = 'ENZYMES'
+#DATASET = 'MUTAG'
+#DATASET = 'NCI1'
+#DATASET = 'NCI109'
+DATASET = 'PTC(MR)'
+
+
+(graph_of_number, classes) = datasetloader.load_dataset(DATASETS_PATH, DATASET)
     
-    if os.path.isfile(os.path.join(path_class_1, file_name)):
-        print('graph ' + str(graph_no) + ' belongs to class 1.')
-        G = pz.load(os.path.join(path_class_1, file_name))
-    elif os.path.isfile(os.path.join(path_class_minus_1, file_name)):
-        print('graph ' + str(graph_no) + ' belongs to class 2.')
-        G = pz.load(os.path.join(path_class_minus_1, file_name))
-    else:
-        print('graph ' + str(graph_no) + ' does not exist.')
-        sys.exit(1)
+graphs_of_class = datasetloader.determine_graphs_of_class_dict(graph_of_number)
+
+
+# calculate statistics
+node_counts = []
+edge_counts = []
+degrees = []
+min_deg = float("inf")
+max_deg = 0
+number_of_isolated_nodes = 0
+for graph, class_number in graph_of_number.itervalues():
+    node_counts.append(graph.number_of_nodes())
+    edge_counts.append(graph.number_of_edges())
+    degrees.append(mean(graph.degree().values()))
+    
+    if min(graph.degree().values()) < min_deg:
+        min_deg = min(graph.degree().values())
         
-    graphs.append(G)
-    
-    
-# G1 = graphs[0]
+    if max(graph.degree().values()) > max_deg:
+        max_deg = max(graph.degree().values())
+        
+    for degree in graph.degree().values():
+        if degree == 0:
+           number_of_isolated_nodes += 1 
 
-node_sizes = [G.number_of_nodes() for G in graphs]
-edge_sizes = [G.number_of_edges() for G in graphs]
-degrees = [np.mean(G.degree().values()) for G in graphs]
+avg_v = mean(node_counts)
+avg_e = mean(edge_counts)
+max_v = max(node_counts)
+max_e = max(edge_counts)
+min_v = min(node_counts)
+avg_deg = mean(degrees)
 
-avg_v = np.mean(node_sizes)
-avg_e = np.mean(edge_sizes)
-max_v = max(node_sizes)
-max_e = max(edge_sizes)
-min_v = min(node_sizes)
-avg_deg = np.mean(degrees)
+print 'dataset:', DATASET
+print '# graphs:', len(graph_of_number)
+print '# classes:', len(classes)
 
-print 'avg_v: ', avg_v
-print 'avg_e: ', avg_e
-print 'max_v: ', max_v
-print 'max_e: ', max_e
-print 'min_v: ', min_v
-print 'avg_deg: ', avg_deg
+for class_number in graphs_of_class.iterkeys():
+    print 'class %d: %d' % (class_number, len(graphs_of_class[class_number]))
+
+print 'avg_v: %.2f' % avg_v
+print 'avg_e: %.2f' % avg_e
+print 'max_v:', max_v
+print 'max_e:', max_e
+print 'min_v:', min_v
+print 'avg_deg: %.3f' % avg_deg
+print 'max_deg:', max_deg
+print 'min_deg:', min_deg
+print 'isolated:', number_of_isolated_nodes, '\n'
+
+
+t1 = time.time()
+total = t1 - t0
+
+print "The execution took %.2f seconds." % total
+
