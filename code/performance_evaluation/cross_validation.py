@@ -20,28 +20,30 @@ from misc import utils
 
 
 def optimize_embedding_param(clf, graph_of_num, embedding, param_range,
-                             strat_kfold, num_it, num_folds, result_file):
+                             strat_kfold, num_iter, num_outer_folds,
+                             num_inner_folds, result_file):
     cross_val_start_time = time.time()                                              
                                               
     data_matrix, class_lbls = embedding.extract_features(graph_of_num,
                                                          min(param_range))
     # precompute KFold/StratifiedKFold objects
     cvs = {}
-    for it in xrange(num_it):
+    for it in xrange(num_iter):
         if strat_kfold:
-            outer_cv = cross_validation.StratifiedKFold(class_lbls, num_folds,
+            outer_cv = cross_validation.StratifiedKFold(class_lbls,
+                                                        num_outer_folds,
                                                         shuffle = True)
         else:
-            outer_cv = cross_validation.KFold(len(class_lbls), num_folds,
+            outer_cv = cross_validation.KFold(len(class_lbls), num_outer_folds,
                                               shuffle = True)
         inner_cvs = []
         for outer_train_indices, outer_test_indices in outer_cv:
             if strat_kfold:
                 inner_cv =\
                 cross_validation.StratifiedKFold(class_lbls[outer_train_indices],
-                                                 10, shuffle = True)                                 
+                                                 num_inner_folds, shuffle = True)                                 
             else:
-                inner_cv = 10
+                inner_cv = num_inner_folds
             inner_cvs.append(inner_cv)
             
         cvs[it] = (outer_cv, inner_cvs)
@@ -51,7 +53,7 @@ def optimize_embedding_param(clf, graph_of_num, embedding, param_range,
         print 'extracting features (h = %d)' % h
         data_matrix, class_lbls = embedding.extract_features(graph_of_num, h)
         
-        for i in xrange(num_it):
+        for i in xrange(num_iter):
             if not i in scores:
                 scores[i] = {}
             outer_cv, inner_cvs = cvs[i]
@@ -77,7 +79,7 @@ def optimize_embedding_param(clf, graph_of_num, embedding, param_range,
             print ''                                          
     
     best_h_values = {}
-    for i in xrange(num_it):
+    for i in xrange(num_iter):
         for j in scores[i].iterkeys():
             best_h = scores[i][j]['best_h']
             if best_h not in best_h_values:
@@ -90,7 +92,7 @@ def optimize_embedding_param(clf, graph_of_num, embedding, param_range,
     
     scores = {}
     outer_cv_lists = {}
-    for i in xrange(num_it):    
+    for i in xrange(num_iter):    
         scores[i] = []
         outer_cv, inner_cvs = cvs[i]
         outer_cv_lists[i] = list(outer_cv)
@@ -109,7 +111,7 @@ def optimize_embedding_param(clf, graph_of_num, embedding, param_range,
                                                              (i, j, score, best_h)
     
     mean_scores = []            
-    for i in xrange(num_it):
+    for i in xrange(num_iter):
         mean_score = np.mean(scores[i])
         mean_scores.append(mean_score)
         sys.stdout.write('\nRESULT for i = %d: %.2f' % (i, mean_score))
@@ -123,18 +125,156 @@ def optimize_embedding_param(clf, graph_of_num, embedding, param_range,
     else:
         result_file.write('KFold: ')
     sys.stdout.write('\n\nTOTAL RESULT: ')
-    utils.write('%.2f (+/-%.2f) in %.1f seconds\n' %\
+    utils.write('%.3f (+/-%.3f) in %.1f seconds\n' %\
+                (np.mean(mean_scores), np.std(mean_scores), cross_val_time),
+                 result_file)
+    print '\n'
+    
+
+def optimize_embedding_and_kernel_param(graph_of_num, embedding, param_range,
+                                        strat_kfold, num_iter, num_outer_folds,
+                                        num_inner_folds, result_file):
+    cross_val_start_time = time.time()
+    
+    lin_clf = svm.SVC(kernel = 'linear')
+    rbf_clf = svm.SVC(kernel = 'rbf')
+                                              
+    data_matrix, class_lbls = embedding.extract_features(graph_of_num,
+                                                         min(param_range))
+    # precompute KFold/StratifiedKFold objects
+    cvs = {}
+    for it in xrange(num_iter):
+        if strat_kfold:
+            outer_cv = cross_validation.StratifiedKFold(class_lbls,
+                                                        num_outer_folds,
+                                                        shuffle = True)
+        else:
+            outer_cv = cross_validation.KFold(len(class_lbls), num_outer_folds,
+                                              shuffle = True)
+        inner_cvs = []
+        for outer_train_indices, outer_test_indices in outer_cv:
+            if strat_kfold:
+                inner_cv =\
+                cross_validation.StratifiedKFold(class_lbls[outer_train_indices],
+                                                 num_inner_folds, shuffle = True)                                 
+            else:
+                inner_cv = num_inner_folds
+            inner_cvs.append(inner_cv)
+            
+        cvs[it] = (outer_cv, inner_cvs)
+                                    
+    scores = {}
+    for h in param_range:  
+        print 'extracting features (h = %d)' % h
+        data_matrix, class_lbls = embedding.extract_features(graph_of_num, h)
+        
+        for i in xrange(num_iter):
+            if not i in scores:
+                scores[i] = {}
+            outer_cv, inner_cvs = cvs[i]
+            
+            for j, (train_indices, test_indices) in enumerate(outer_cv):
+                if j not in scores[i]:
+                    scores[i][j] = {'best_h' : -1, 'best_score' : 0.0}
+                
+                inner_cv = inner_cvs[j]
+                
+                score =\
+                cross_validation.cross_val_score(lin_clf,
+                                                 data_matrix[train_indices],
+                                                 class_lbls[train_indices],
+                                                 cv = inner_cv).mean()
+            
+                sys.stdout.write('h = %d, i = %d, j = %d: score = %.2f\n' %\
+                                                                 (h, i, j, score))            
+            
+                if score > scores[i][j]['best_score']:
+                    scores[i][j]['best_score'] = score
+                    scores[i][j]['best_h'] = h
+            
+            print ''                                          
+    
+    best_h_values = {}
+    for i in xrange(num_iter):
+        for j in scores[i].iterkeys():
+            best_h = scores[i][j]['best_h']
+            if best_h not in best_h_values:
+                best_h_values[best_h] = {i:[j]}
+            else:
+                if i not in best_h_values[best_h].iterkeys():
+                    best_h_values[best_h][i] = [j]
+                else:
+                    best_h_values[best_h][i].append(j)
+    
+    scores = {}
+    outer_cv_lists = {}
+    for i in xrange(num_iter):    
+        scores[i] = []
+        outer_cv, inner_cvs = cvs[i]
+        outer_cv_lists[i] = list(outer_cv)
+        
+    for best_h in best_h_values.iterkeys():
+        print '\nextracting features (h = %d)' % best_h
+        data_matrix, class_lbls = embedding.extract_features(graph_of_num, best_h)
+        for i in best_h_values[best_h].iterkeys():
+            for j in best_h_values[best_h][i]:
+                train_indices, test_indices = outer_cv_lists[i][j]
+                                          
+                lin_train_score =\
+                cross_validation.cross_val_score(lin_clf,
+                                                 data_matrix[train_indices],
+                                                 class_lbls[train_indices],
+                                                 cv = 3).mean()
+                                                 
+                rbf_train_score =\
+                cross_validation.cross_val_score(rbf_clf,
+                                                 data_matrix[train_indices],
+                                                 class_lbls[train_indices],
+                                                 cv = 3).mean()
+                                                 
+                if lin_train_score > rbf_train_score:
+                    lin_clf.fit(data_matrix[train_indices], 
+                                class_lbls[train_indices])
+                    score = lin_clf.score(data_matrix[test_indices],
+                                          class_lbls[test_indices])
+                else:
+                    rbf_clf.fit(data_matrix[train_indices], 
+                                class_lbls[train_indices])
+                    score = rbf_clf.score(data_matrix[test_indices],
+                                          class_lbls[test_indices])
+                    
+                scores[i].append(score)
+                
+                print "i = %d, j = %d: score on test data = %.2f (for h = %d)" %\
+                                                             (i, j, score, best_h)
+    
+    mean_scores = []            
+    for i in xrange(num_iter):
+        mean_score = np.mean(scores[i])
+        mean_scores.append(mean_score)
+        sys.stdout.write('\nRESULT for i = %d: %.2f' % (i, mean_score))
+        
+    cross_val_end_time = time.time()
+    cross_val_time = cross_val_end_time - cross_val_start_time
+    
+         
+    if strat_kfold:
+        result_file.write('Strat: ')
+    else:
+        result_file.write('KFold: ')
+    sys.stdout.write('\n\nTOTAL RESULT: ')
+    utils.write('%.3f (+/-%.3f) in %.1f seconds\n' %\
                 (np.mean(mean_scores), np.std(mean_scores), cross_val_time),
                  result_file)
     print '\n'
 
 
-def cross_val(clf, data_matrix, class_lbls, num_it, num_folds, strat_kfold,
+def cross_val(clf, data_matrix, class_lbls, num_iter, num_folds, strat_kfold,
               result_file):
     cross_val_start_time = time.time()
 
     mean_scores = []
-    for i in xrange(1, num_it + 1):
+    for i in xrange(num_iter):
         if strat_kfold:
             cv = cross_validation.StratifiedKFold(class_lbls, num_folds,
                                                   shuffle = True)
@@ -157,13 +297,13 @@ def cross_val(clf, data_matrix, class_lbls, num_it, num_folds, strat_kfold,
     else:
         result_file.write('KFold: ')
     sys.stdout.write('RESULT: ')
-    utils.write('%.2f (+/-%.2f) in %.1f seconds\n' %\
+    utils.write('%.3f (+/-%.3f) in %.1f seconds\n' %\
                 (np.mean(mean_scores), np.std(mean_scores), cross_val_time),
                  result_file)
     print '\n'
     
     
-def optimize_gen_params(data_matrix, class_lbls, num_it, param_grid, num_folds,
+def optimize_gen_params(data_matrix, class_lbls, num_iter, param_grid, num_folds,
                         strat_kfold, verbose, result_file):
     cross_val_start_time = time.time()
     
@@ -171,7 +311,7 @@ def optimize_gen_params(data_matrix, class_lbls, num_it, param_grid, num_folds,
     
     mean_scores = []            
     
-    for i in xrange(num_it):
+    for i in xrange(num_iter):
         if strat_kfold:
             cv = cross_validation.StratifiedKFold(class_lbls, num_folds,
                                                   shuffle = True)
@@ -217,7 +357,7 @@ def optimize_gen_params(data_matrix, class_lbls, num_it, param_grid, num_folds,
     else:
         result_file.write('KFold: ')
     sys.stdout.write('RESULT: ')
-    utils.write('%.2f (+/-%.2f) in %.1f seconds\n' %\
+    utils.write('%.3f (+/-%.3f) in %.1f seconds\n' %\
                 (np.mean(mean_scores), np.std(mean_scores), cross_val_time),
                 result_file)
     print '\n'
@@ -225,6 +365,7 @@ def optimize_gen_params(data_matrix, class_lbls, num_it, param_grid, num_folds,
     	result_file.write('\n') 
 	
 
+# !!
 def loo_cross_val(clf, data_matrix, class_lbls):
     """leave-one-out cross-validation"""
     N = data_matrix.shape[0]
@@ -259,8 +400,7 @@ def compute_kernel_matrix(data_matrix):
     entries = []
     for i in xrange(data_matrix.shape[0]):
         x = np.asarray(data_matrix[i].todense())
-        vdot = np.vdot(x, x)
-        entries.append((K[i,i], vdot))
+        entries.append((K[i,i], np.vdot(x, x)))
         
     entries_array = np.array(entries)
     (entries_array[:,0] - entries_array[:,1]).max()

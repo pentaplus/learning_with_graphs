@@ -1,5 +1,0 @@
-Loading the dataset NCI109 took 5.3 seconds.
-
-Feature extraction took 0.5 seconds.
-
-

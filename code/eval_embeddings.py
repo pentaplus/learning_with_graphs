@@ -1,4 +1,21 @@
 # planed procedure:
+# at night: test LIBLINEAR (set LIBSVM = False)
+# 
+#
+# 0. test on DD:
+# * LIBSVM=True
+# ** NUM_INNER_FOLDS_LD=10, LIMIT_CLF_MAX_ITER_LD=False (score:0.789, time:8359)
+#    
+# ** NUM_INNER_FOLDS_LD=10, LIMIT_CLF_MAX_ITER_LD=True (score: 0.745, time: 2116)
+# ** NUM_INNER_FOLDS_LD=5, LIMIT_CLF_MAX_ITER_LD=False (score: , time:)
+#    
+# * LIBSVM=False
+# ** NUM_INNER_FOLDS_LD=10, LIMIT_CLF_MAX_ITER_LD=False: (score: , time:)
+# 
+# ** NUM_INNER_FOLDS_LD=10, LIMIT_CLF_MAX_ITER_LD=True (score: , time:)
+# ** NUM_INNER_FOLDS_LD=5, LIMIT_CLF_MAX_ITER_LD=False (score: , time:)
+#
+#
 # 1. implement neighborhood hash kernel
 # 2. test h = 1 in WEISFEILER_LEHMAN
 
@@ -22,6 +39,69 @@ del FILE_NAME
 
 from misc import datasetloader, utils
 from performance_evaluation import cross_validation
+
+# --------------------------------------------------------------------------------
+# parameter definitions
+# --------------------------------------------------------------------------------
+DATASETS_PATH = join(SCRIPT_PATH, '..', 'datasets')
+
+WEISFEILER_LEHMAN = 'weisfeiler_lehman'
+LABEL_COUNTER = 'label_counter'
+
+#EMBEDDING_NAMES = [LABEL_COUNTER]
+#EMBEDDING_NAMES = [WEISFEILER_LEHMAN, LABEL_COUNTER]
+EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
+
+# keys are indices of the list EMBEDDING_NAMES, values are the respective
+# parameters
+EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
+#EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [0, 1, 2]}
+
+#DATASET = 'ANDROID FCG' # !! change file names from hashes to numbers
+#DATASET = 'CFG' # !! change file names from hashes to numbers
+
+# sorted by number of graphs times average number of nodes in ascending order
+DATASETS = ['MUTAG', 'PTC(MR)', 'ENZYMES', 'NCI109', 'NCI1', 'DD']
+#DATASETS = ['ENZYMES', 'NCI109', 'NCI1', 'DD']
+#DATASETS = ['MUTAG', 'PTC(MR)']
+#DATASETS = ['NCI109']
+#DATASETS = ['ENZYMES']
+#DATASETS = ['MUTAG']
+#DATASETS = ['DD']
+#DATASETS = ['PTC(MR)']
+
+OPT_PARAM = True
+#OPT_PARAM = False
+
+#OPT = True
+OPT = False
+
+COMPARE_PARAM = True
+#COMPARE_PARAM = False
+
+#KERNELS = ['linear', 'rbf', 'poly', 'sigmoid']
+#KERNELS = ['linear', 'rbf', 'sigmoid']
+#KERNELS = ['linear', 'rbf']
+KERNELS = ['linear']
+
+#STRAT_KFOLD_VALUES = [False, True]
+STRAT_KFOLD_VALUES = [False]
+#STRAT_KFOLD_VALUES = [True]
+
+NUM_ITER = 1
+
+NUM_FOLDS = 10
+NUM_INNER_FOLDS_SD = 10
+NUM_INNER_FOLDS_LD = 10
+#NUM_INNER_FOLDS_LD = 5
+
+LIBSVM = False # LIBLINEAR is used
+#LIBSVM = True
+
+LIMIT_CLF_MAX_ITER_SD = False
+LIMIT_CLF_MAX_ITER_LD = False
+#LIMIT_CLF_MAX_ITER_LD = True
+
 
 
 def load_dataset(dataset, datasets_path):
@@ -55,55 +135,7 @@ def extract_features(graph_of_num, embedding, embedding_param, result_file):
     
 
 
-
 start_time = time.time()
-
-DATASETS_PATH = join(SCRIPT_PATH, '..', 'datasets')
-
-WEISFEILER_LEHMAN = 'weisfeiler_lehman'
-LABEL_COUNTER = 'label_counter'
-
-
-#EMBEDDING_NAMES = [LABEL_COUNTER]
-#EMBEDDING_NAMES = [WEISFEILER_LEHMAN, LABEL_COUNTER]
-EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
-
-# keys are indices of the list EMBEDDING_NAMES, values are the respective
-# parameters
-#EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [1, 2, 3]}
-EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
-#EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [0, 1, 2]}
-#EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [2]}
-
-#DATASET = 'ANDROID FCG' # !! change file names from hashes to numbers
-#DATASET = 'CFG' # !! change file names from hashes to numbers
-
-# sorted by number of graphs times average number of nodes in ascending order
-DATASETS = ['MUTAG', 'PTC(MR)', 'ENZYMES', 'NCI109', 'NCI1', 'DD']
-
-#DATASETS = ['ENZYMES']
-#DATASETS = ['MUTAG', 'PTC(MR)']
-
-OPT_PARAM = True
-#OPT_PARAM = False
-
-#OPT = True
-OPT = False
-
-COMPARE_PARAM = True
-#COMPARE_PARAM = False
-
-#KERNELS = ['linear', 'rbf', 'poly', 'sigmoid']
-#KERNELS = ['linear', 'rbf', 'sigmoid']
-KERNELS = ['linear', 'rbf']
-
-STRAT_KFOLD_VALUES = [False, True]
-#STRAT_KFOLD_VALUES = [False]
-#STRAT_KFOLD_VALUES = [True]
-
-NUM_IT = 10
-
-NUM_FOLDS = 10
 
 for dataset in DATASETS:
     # ----------------------------------------------------------------------------
@@ -111,12 +143,37 @@ for dataset in DATASETS:
     # ----------------------------------------------------------------------------
     graph_of_num = load_dataset(dataset, DATASETS_PATH)
     
+    num_samples = len(graph_of_num)
+    if num_samples > 1000:
+        NUM_INNER_FOLDS = NUM_INNER_FOLDS_LD
+        LIMIT_CLF_MAX_ITER = LIMIT_CLF_MAX_ITER_LD
+    else:
+        NUM_INNER_FOLDS = NUM_INNER_FOLDS_SD
+        LIMIT_CLF_MAX_ITER = LIMIT_CLF_MAX_ITER_SD
+    
+    if LIBSVM:
+        CLF_MAX_ITER = 100 if LIMIT_CLF_MAX_ITER else -1
+    else:
+        # LIBLINEAR
+        CLF_MAX_ITER = 100 if LIMIT_CLF_MAX_ITER else 1000
+    
     
     for embedding_name in EMBEDDING_NAMES:
         result_path = join(SCRIPT_PATH, '..', 'results', embedding_name)
         utils.makedir(result_path)
         result_file = open(join(result_path, dataset + '.txt'), 'w')
-        utils.write('NUMBER OF ITERATIONS: %d\n' % NUM_IT, result_file)
+        
+        if LIBSVM:
+            utils.write('LIBRARY: LIBSVM\n', result_file)
+        else:
+            utils.write('LIBRARY: LIBLINEAR\n', result_file)
+        utils.write('NUM_ITER: %d\n' % NUM_ITER, result_file)
+        if OPT_PARAM:
+            utils.write('NUM_INNER_FOLDS: %d\n' % NUM_INNER_FOLDS, result_file)
+            if CLF_MAX_ITER == -1:
+                utils.write('CLF_MAX_ITER: -1 (unlimited)\n', result_file)
+            else:
+                utils.write('CLF_MAX_ITER: %d\n' % CLF_MAX_ITER, result_file)
         print ''
         
         embedding = importlib.import_module('embeddings.' + embedding_name)
@@ -126,7 +183,12 @@ for dataset in DATASETS:
             
             for kernel in KERNELS:
                 result_file.write('\n%s (OPT_PARAM)\n' % kernel.upper())
-                clf = svm.SVC(kernel = kernel)
+                
+                # initialize classifier
+                if LIBSVM:
+                    clf = svm.SVC(kernel = kernel, max_iter = CLF_MAX_ITER)
+                else:
+                    clf = svm.LinearSVC(max_iter = CLF_MAX_ITER)
                 
                 for strat_kfold in STRAT_KFOLD_VALUES: 
                     if strat_kfold:
@@ -137,13 +199,16 @@ for dataset in DATASETS:
                         print ('%s with %s (OPT_PARAM) kernel and k-fold CV on '
                                '%s\n') % (embedding_name.upper(), kernel.upper(),
                                           dataset)
-                                          
                     
                     cross_validation.optimize_embedding_param(clf, graph_of_num,
+#                    cross_validation.optimize_embedding_and_kernel_param(
+#                                                              graph_of_num,
                                                               embedding,
                                                               param_range,
                                                               strat_kfold,
-                                                              NUM_IT, NUM_FOLDS,
+                                                              NUM_ITER,
+                                                              NUM_FOLDS,
+                                                              NUM_INNER_FOLDS,
                                                               result_file)                                           
         if not OPT and not COMPARE_PARAM:
             result_file.close()
@@ -171,6 +236,7 @@ for dataset in DATASETS:
                 for kernel in KERNELS:
                     # initialize classifier
                     clf = svm.SVC(kernel = kernel)
+
                     result_file.write('\n%s\n' % kernel.upper())
                     
                     for strat_kfold in STRAT_KFOLD_VALUES:            
@@ -185,8 +251,8 @@ for dataset in DATASETS:
                 
                         
                         cross_validation.cross_val(clf, data_matrix, class_lbls,
-                                                   NUM_IT, NUM_FOLDS, strat_kfold,
-                                                   result_file)
+                                                   NUM_ITER, NUM_FOLDS,
+                                                   strat_kfold, result_file)
                                                
 #            if OPT:
 #                for strat_kfold in STRAT_KFOLD_VALUES:
@@ -198,7 +264,7 @@ for dataset in DATASETS:
 #                               '%s\n') % (embedding_name.upper(), dataset)
 #                              
 #                    cross_validation.optimize_gen_params(data_matrix, class_lbls,
-#                                                         num_it = NUM_IT,
+#                                                         num_iter = NUM_ITER,
 #                                                         ref_clf = None,
 #                                                         strat_kfold =\
 #                                                                     strat_kfold,
@@ -220,7 +286,6 @@ print 'The evaluation of the emedding method(s) took %.1f seconds' % total_time
     
 
 #        if opt:
-#            # initialize classifier
 #    #        ref_clf = svm.SVC(kernel = 'linear')
 #    #        ref_clf = svm.SVC(kernel = 'poly')
 #    #        ref_clf = svm.SVC(kernel = 'rbf') # default
@@ -235,7 +300,7 @@ print 'The evaluation of the emedding method(s) took %.1f seconds' % total_time
 #            lin_clf_scores, opt_clf_scores, cross_val_time =\
 #            cross_validation.optimize_gen_params(data_matrix,
 #                                                 class_lbls,
-#                                                 num_it = 1,
+#                                                 num_iter = 1,
 ##                                                 param_grid = param_grid,
 ##                                                 ref_clf = ref_clf,
 #                                                 ref_clf = None,

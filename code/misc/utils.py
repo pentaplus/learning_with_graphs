@@ -26,8 +26,7 @@ def clear_dicts_of_dict(d):
             
 def write(string, result_file):
     sys.stdout.write(string)
-    if result_file:
-        result_file.write(string)
+    result_file.write(string)
         
     
 
