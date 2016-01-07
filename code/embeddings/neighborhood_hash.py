@@ -1,5 +1,8 @@
 import inspect
+import networkx as nx
+import numpy as np
 import sys
+import time
 
 from numpy import array, float64
 from os.path import abspath, dirname, join
@@ -18,39 +21,6 @@ from misc import datasetloader, utils
 
 # test section -------------------------------------------------------------------
 
-#from sklearn import datasets
-#
-#iris = datasets.load_iris()
-#iris.data
-#iris.data.shape
-#iris.target
-#iris.target.shape
-
-
-
-#for i,d in enumerate(['aha', 'jo', 'blub']):
-#    print i, d
-
-#l = []
-#l = array(l)
-#l[2] = 2
-
-#
-#import timeit
-#
-#setup = """
-#from utils import radixsort as rs
-#import random
-#N = 10000
-#l = [random.randint(0,9) for _ in xrange(N)]
-#"""
-#
-#code1 = "l.sort()"
-#
-#code2 = "rs.radixsort(l)"
-#
-#min(timeit.repeat(code1, setup, number = 10))
-#min(timeit.repeat(code2, setup, number = 10))
 
 
 
@@ -183,6 +153,71 @@ def extract_features(graph_of_num, h = 2):
         next_upd_lbls_dict = dict_of_cleared_dicts
     
    
+   
+## iterate over all graphs in the dataset !!! ---------------------------------
+## r == 1
+##for (graph_num, (G, class_lbl)) in graph_of_num.iteritems():
+#graph_num = 1
+#G = graph_of_num[1][0]
+#for v in G.nodes_iter():
+#    has_elements, nodes_iter = utils.has_elements(G.neighbors_iter(v))
+#    if not has_elements:
+#        # node v has no neighbors
+#        continue
+#
+#    # determine the list of labels belonging to nodes adjacent to v
+#    neigh_lbls = []
+#    for v_neigh in nodes_iter:
+#        neigh_lbls.append(upd_lbls_dict[graph_num][v_neigh])
+#
+#    # sort neigh_lbl_lst in ascending order
+#    if len(neigh_lbls) > 1:
+#        neigh_lbls.sort()
+#
+#    # concatenate the neighboring lbls to the lbl of v
+#    s = str(upd_lbls_dict[graph_num][v])
+#    if len(neigh_lbls) == 1:
+#        s += ',' + str(neigh_lbls[0])
+#    elif len(neigh_lbls) > 1:
+#        s += ',' + ','.join(map(str, neigh_lbls))
+#
+#    # !! incorrect
+#    if not s in compr_func:
+#        new_compr_lbl = next_compr_lbl
+#        compr_func[s] = next_compr_lbl        
+#        next_compr_lbl += 1
+#    else:
+#        new_compr_lbl = compr_func[s]
+#        
+#    if new_compr_lbl not in index_of_lbl_dict[graph_num]:
+#            # len(feature_counts_dict[graph_num])
+#            # == len(features_dict[graph_num])
+#            index = len(feature_counts_dict[graph_num])
+#
+#            index_of_lbl_dict[graph_num][new_compr_lbl] = index
+#
+#            # features_dict[graph_num][index]
+#            # == feature upd_lbls_dict[graph_num][v] (== new_compr_lbl)
+#            features_dict[graph_num].append(new_compr_lbl)
+#
+#            # set number of occurrences of the feature
+#            # upd_lbls_dict[graph_num][v] (== new_compr_lbl) to 1
+#            feature_counts_dict[graph_num].append(1)
+#        else:
+#            # features_dict[graph_num][index]
+#            # == feature upd_lbls_dict[graph_num][v] (== new_compr_lbl)
+#            index = index_of_lbl_dict[graph_num][new_compr_lbl]
+#
+#            # increase num of occurrences of the feature
+#            # upd_lbls_dict[graph_num][v] (== new_compr_lbl)
+#            feature_counts_dict[graph_num][index] += 1
+#
+#        # upd_lbls_dict[graph_num][v] == compr_func[lbl]
+#        # == new_compr_lbl
+#        upd_lbls_dict[graph_num][v] = new_compr_lbl
+    
+        
+
 
     # list containing the features of all graphs
     features = []
@@ -234,3 +269,17 @@ def extract_features(graph_of_num, h = 2):
 #    Z = data_matrix.todense()
     
     return data_matrix, class_lbls
+
+
+
+
+
+#DATASETS_PATH = join(script_path, '..', '..', 'datasets')
+#dataset = 'MUTAG'
+#graph_of_num = datasetloader.load_dataset(DATASETS_PATH, dataset)
+#data_matrix, class_lbls = extract_features(graph_of_num)
+
+
+
+
+

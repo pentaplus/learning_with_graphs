@@ -19,8 +19,8 @@ sys.path.append(join(script_path, '..'))
 from misc import utils
 
 
-def cross_val_opt_embedding_param(clf, graph_of_num, embedding, param_range,
-                                  strat_kfold, num_it, num_folds, result_file):
+def optimize_embedding_param(clf, graph_of_num, embedding, param_range,
+                             strat_kfold, num_it, num_folds, result_file):
     cross_val_start_time = time.time()                                              
                                               
     data_matrix, class_lbls = embedding.extract_features(graph_of_num,
@@ -163,8 +163,8 @@ def cross_val(clf, data_matrix, class_lbls, num_it, num_folds, strat_kfold,
     print '\n'
     
     
-def cross_val_with_opt_clf(data_matrix, class_lbls, num_it, param_grid, num_folds,
-                           strat_kfold, verbose, result_file):
+def optimize_gen_params(data_matrix, class_lbls, num_it, param_grid, num_folds,
+                        strat_kfold, verbose, result_file):
     cross_val_start_time = time.time()
     
     grid_clf = GridSearchCV(svm.SVC(), param_grid, cv = 3)
