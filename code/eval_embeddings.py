@@ -6,7 +6,7 @@
 # * LIBSVM=True
 # ** NUM_INNER_FOLDS_LD=10, LIMIT_CLF_MAX_ITER_LD=False (score:0.789, time:8359)
 #    
-# ** NUM_INNER_FOLDS_LD=10, LIMIT_CLF_MAX_ITER_LD=True (score: 0.745, time: 2116)
+# ** NUM_INNER_FOLDS_LD=10, LIMIT_CLF_MAX_ITER_LD=True (score:0.745, time:2116)
 # ** NUM_INNER_FOLDS_LD=5, LIMIT_CLF_MAX_ITER_LD=False (score: , time:)
 #    
 # * LIBSVM=False
