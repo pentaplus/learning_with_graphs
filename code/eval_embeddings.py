@@ -1,19 +1,19 @@
 # planed procedure:
-# at night: test LIBLINEAR (set LIBSVM = False)
+# at night: test LIBLINEAR (set LIBLINEAR = True)
 # 
 #
 # 0. test on DD:
-# * LIBSVM=True
-# ** NUM_INNER_FOLDS_LD=10, LIMIT_CLF_MAX_ITER_LD=False (score:0.789, time:8359)
+# * LIBSVM
+# ** NUM_INNER_FOLDS_LD=10, CLF_MAX_ITER=-1 (unlimited) (score:0.789, time:8359)
 #    
-# ** NUM_INNER_FOLDS_LD=10, LIMIT_CLF_MAX_ITER_LD=True (score:0.745, time:2116)
-# ** NUM_INNER_FOLDS_LD=5, LIMIT_CLF_MAX_ITER_LD=False (score: , time:)
+# ** NUM_INNER_FOLDS_LD=10, CLF_MAX_ITER=100 (score:0.745, time:2116)
+# ** NUM_INNER_FOLDS_LD=5, CLF_MAX_ITER=-1 (unlimited)  (score: , time:)
 #    
-# * LIBSVM=False
-# ** NUM_INNER_FOLDS_LD=10, LIMIT_CLF_MAX_ITER_LD=False: (score: , time:)
+# * LIBLINEAR
+# ** NUM_INNER_FOLDS_LD=10, CLF_MAX_ITER=1000: (score:0.786, time:1652)
 # 
-# ** NUM_INNER_FOLDS_LD=10, LIMIT_CLF_MAX_ITER_LD=True (score: , time:)
-# ** NUM_INNER_FOLDS_LD=5, LIMIT_CLF_MAX_ITER_LD=False (score: , time:)
+# ** NUM_INNER_FOLDS_LD=10, CLF_MAX_ITER=100 (score:, time:)
+# ** NUM_INNER_FOLDS_LD=5, CLF_MAX_ITER=1000 (score:, time:)
 #
 #
 # 1. implement neighborhood hash kernel
@@ -60,8 +60,8 @@ EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
 #DATASET = 'ANDROID FCG' # !! change file names from hashes to numbers
 #DATASET = 'CFG' # !! change file names from hashes to numbers
 
-# sorted by number of graphs times average number of nodes in ascending order
-DATASETS = ['MUTAG', 'PTC(MR)', 'ENZYMES', 'NCI109', 'NCI1', 'DD']
+# sorted by number of graphs times in ascending order
+DATASETS = ['MUTAG', 'PTC(MR)', 'ENZYMES', 'DD', 'NCI1', 'NCI109']
 #DATASETS = ['ENZYMES', 'NCI109', 'NCI1', 'DD']
 #DATASETS = ['MUTAG', 'PTC(MR)']
 #DATASETS = ['NCI109']
@@ -73,11 +73,11 @@ DATASETS = ['MUTAG', 'PTC(MR)', 'ENZYMES', 'NCI109', 'NCI1', 'DD']
 OPT_PARAM = True
 #OPT_PARAM = False
 
-#OPT = True
-OPT = False
-
 COMPARE_PARAM = True
 #COMPARE_PARAM = False
+
+#OPT = True
+OPT = False
 
 #KERNELS = ['linear', 'rbf', 'poly', 'sigmoid']
 #KERNELS = ['linear', 'rbf', 'sigmoid']
@@ -91,16 +91,14 @@ STRAT_KFOLD_VALUES = [False]
 NUM_ITER = 1
 
 NUM_FOLDS = 10
+
 NUM_INNER_FOLDS_SD = 10
 NUM_INNER_FOLDS_LD = 10
 #NUM_INNER_FOLDS_LD = 5
 
-LIBSVM = False # LIBLINEAR is used
-#LIBSVM = True
-
 LIMIT_CLF_MAX_ITER_SD = False
-LIMIT_CLF_MAX_ITER_LD = False
-#LIMIT_CLF_MAX_ITER_LD = True
+#LIMIT_CLF_MAX_ITER_LD = False
+LIMIT_CLF_MAX_ITER_LD = True
 
 
 
@@ -145,17 +143,14 @@ for dataset in DATASETS:
     
     num_samples = len(graph_of_num)
     if num_samples > 1000:
+        LIBLINEAR = True
         NUM_INNER_FOLDS = NUM_INNER_FOLDS_LD
-        LIMIT_CLF_MAX_ITER = LIMIT_CLF_MAX_ITER_LD
+        CLF_MAX_ITER = 100 if LIMIT_CLF_MAX_ITER_LD else 1000
     else:
+        # use library LIBSVM
+        LIBLINEAR = False
         NUM_INNER_FOLDS = NUM_INNER_FOLDS_SD
-        LIMIT_CLF_MAX_ITER = LIMIT_CLF_MAX_ITER_SD
-    
-    if LIBSVM:
-        CLF_MAX_ITER = 100 if LIMIT_CLF_MAX_ITER else -1
-    else:
-        # LIBLINEAR
-        CLF_MAX_ITER = 100 if LIMIT_CLF_MAX_ITER else 1000
+        CLF_MAX_ITER = 100 if LIMIT_CLF_MAX_ITER_SD else -1        
     
     
     for embedding_name in EMBEDDING_NAMES:
@@ -163,10 +158,10 @@ for dataset in DATASETS:
         utils.makedir(result_path)
         result_file = open(join(result_path, dataset + '.txt'), 'w')
         
-        if LIBSVM:
-            utils.write('LIBRARY: LIBSVM\n', result_file)
-        else:
+        if LIBLINEAR:
             utils.write('LIBRARY: LIBLINEAR\n', result_file)
+        else:
+            utils.write('LIBRARY: LIBSVM\n', result_file)
         utils.write('NUM_ITER: %d\n' % NUM_ITER, result_file)
         if OPT_PARAM:
             utils.write('NUM_INNER_FOLDS: %d\n' % NUM_INNER_FOLDS, result_file)
@@ -185,10 +180,12 @@ for dataset in DATASETS:
                 result_file.write('\n%s (OPT_PARAM)\n' % kernel.upper())
                 
                 # initialize classifier
-                if LIBSVM:
-                    clf = svm.SVC(kernel = kernel, max_iter = CLF_MAX_ITER)
-                else:
+                if LIBLINEAR:
+                    # library LIBLINEAR is used
                     clf = svm.LinearSVC(max_iter = CLF_MAX_ITER)
+                else:
+                    # library LIBSVM is used
+                    clf = svm.SVC(kernel = kernel, max_iter = CLF_MAX_ITER)
                 
                 for strat_kfold in STRAT_KFOLD_VALUES: 
                     if strat_kfold:
