@@ -34,7 +34,7 @@ del filename
 del script_path
 del dataset
 
-def extract_features(graph_of_num, h = 2):
+def extract_features(graph_of_num, h):
     # the keys are graph numbers and the values are lists of features
     features_dict = {}
     

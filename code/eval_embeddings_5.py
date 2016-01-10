@@ -56,7 +56,7 @@ EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
 # keys are indices of the list EMBEDDING_NAMES, values are the respective
 # parameters
 EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
-#EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [0, 1, 2]}
+#EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [0]}
 
 #DATASET = 'ANDROID FCG' # !! change file names from hashes to numbers
 #DATASET = 'CFG' # !! change file names from hashes to numbers
