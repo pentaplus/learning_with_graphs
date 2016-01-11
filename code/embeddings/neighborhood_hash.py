@@ -4,7 +4,8 @@ import numpy as np
 import sys
 import time
 
-from numpy import array, float64
+from numpy import array, bitwise_xor, float64, frombuffer, uint64
+from os import urandom
 from os.path import abspath, dirname, join
 from scipy.sparse import csr_matrix
 
@@ -21,8 +22,84 @@ from misc import datasetloader, utils
 
 # test section -------------------------------------------------------------------
 
+import timeit
+
+setup1 = """
+from os import urandom
+from numpy import bitwise_xor, frombuffer, uint64
+l = []
+for i in xrange(1000):
+    l.append(frombuffer(urandom(8), dtype = uint64))
+"""
+
+code1 = """
+s = l[0]
+for i in xrange(1, 1000):
+    s = bitwise_xor(s, l[i])
+"""
+
+setup2 = """
+from random import randint
+l = []
+for i in xrange(1000):
+    l.append(randint(0, 18446744073709551615))
+"""
+
+code2 = """
+s = l[0]
+for i in xrange(1, 1000):
+    s = s ^ i
+"""
 
 
+
+
+N = 1
+min(timeit.repeat(code1, setup1, repeat = 3, number = N))/N
+min(timeit.repeat(code2, setup2, repeat = 3, number = N))/N
+
+
+np.frombuffer(urandom(8), dtype = uint64)
+
+l = []
+for i in xrange(1000):
+    l.append(np.frombuffer(urandom(8), dtype = uint64))
+
+s = l[0]
+for i in xrange(1, 82):
+    s = bitwise_xor(s, l[i])
+    
+
+for x in xrange(1000):
+    x = np.frombuffer(urandom(8), dtype = uint64)
+    
+# http://www.falatic.com/index.php/108/python-and-bitwise-rotation
+    
+# max bits > 0 == width of the value in bits (e.g., int_16 -> 16)
+ 
+# Rotate left: 0b1001 --> 0b0011
+rol = lambda val, r_bits, max_bits: \
+    (val << r_bits%max_bits) & (2**max_bits-1) | \
+    ((val & (2**max_bits-1)) >> (max_bits-(r_bits%max_bits)))
+ 
+# Rotate right: 0b1001 --> 0b1100
+ror = lambda val, r_bits, max_bits: \
+    ((val & (2**max_bits-1)) >> r_bits%max_bits) | \
+    (val << (max_bits-(r_bits%max_bits)) & (2**max_bits-1))
+ 
+max_bits = 16  # For fun, try 2, 17 or other arbitrary (positive!) values
+ 
+print()
+for i in xrange(0, max_bits*2-1):
+    value = 0xC000
+    newval = rol(value, i, max_bits)
+    print("0x%08x << 0x%02x --> 0x%08x" % (value, i, newval))
+ 
+print()
+for i in xrange(0, max_bits*2-1):
+    value = 0x0003
+    newval = ror(value, i, max_bits)
+    print("0x%08x >> 0x%02x --> 0x%08x" % (value, i, newval))
 
 #---------------------------------------------------------------------------------
 

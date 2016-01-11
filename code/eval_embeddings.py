@@ -1,21 +1,7 @@
 # planed procedure:
-# at night: create three script of the current version
-# NUM_INNER_FOLDS_LD = 5, NUM_INNER_FOLDS_LD = 4, NUM_INNER_FOLDS_LD = 3
+# at night: run on all datasets with NUM_ITER = 10
 # 
 # 1. test on PTC(MR): 10 iter of LIBSVM, 10 iter of LIBLINEAR
-# 0. test on DD:
-# * LIBSVM
-# ** NUM_INNER_FOLDS_LD=10, CLF_MAX_ITER=-1 (unlimited) (score:0.789, time:8359)
-#    
-# ** NUM_INNER_FOLDS_LD=10, CLF_MAX_ITER=100 (score:0.745, time:2116)
-# ** NUM_INNER_FOLDS_LD=5, CLF_MAX_ITER=-1 (unlimited)  (score: , time:)
-#    
-# * LIBLINEAR
-# ** NUM_INNER_FOLDS_LD=10, CLF_MAX_ITER=1000: (score:0.786, time:1652)
-# 
-# ** NUM_INNER_FOLDS_LD=10, CLF_MAX_ITER=100 (score:0.787, time:1524)
-# ** NUM_INNER_FOLDS_LD=5, CLF_MAX_ITER=1000 (score:0.788, time:979)
-# ** NUM_INNER_FOLDS_LD=3, CLF_MAX_ITER=1000 (score:0.783, time:619)
 #
 # 1. implement neighborhood hash kernel
 # 2. test h = 1 in WEISFEILER_LEHMAN
@@ -94,8 +80,7 @@ NUM_ITER = 1
 NUM_FOLDS = 10
 
 NUM_INNER_FOLDS_SD = 10
-#NUM_INNER_FOLDS_LD = 10
-NUM_INNER_FOLDS_LD = 5
+NUM_INNER_FOLDS_LD = 4 # even on DD 0.79 were reached!!! :-)
 
 LIMIT_CLF_MAX_ITER_SD = False
 #LIMIT_CLF_MAX_ITER_SD = True
