@@ -7,6 +7,7 @@ import time
 from numpy import array, bitwise_xor, float64, frombuffer, uint64
 from os import urandom
 from os.path import abspath, dirname, join
+from random import randint
 from scipy.sparse import csr_matrix
 
 
@@ -51,8 +52,10 @@ for i in xrange(1, 1000):
     s = s ^ i
 """
 
+2**64-1 - 18446744073709551615
+%timeit randint(0, 18446744073709551615)
 
-
+%timeit frombuffer(urandom(8), dtype = uint64)
 
 N = 1
 min(timeit.repeat(code1, setup1, repeat = 3, number = N))/N
@@ -79,27 +82,27 @@ for x in xrange(1000):
  
 # Rotate left: 0b1001 --> 0b0011
 rol = lambda val, r_bits, max_bits: \
-    (val << r_bits%max_bits) & (2**max_bits-1) | \
-    ((val & (2**max_bits-1)) >> (max_bits-(r_bits%max_bits)))
+    (val << r_bits % max_bits) & (2**max_bits - 1) | \
+    ((val & (2**max_bits - 1)) >> (max_bits - (r_bits % max_bits)))
  
 # Rotate right: 0b1001 --> 0b1100
 ror = lambda val, r_bits, max_bits: \
-    ((val & (2**max_bits-1)) >> r_bits%max_bits) | \
-    (val << (max_bits-(r_bits%max_bits)) & (2**max_bits-1))
+    ((val & (2**max_bits - 1)) >> r_bits % max_bits) | \
+    (val << (max_bits - (r_bits%max_bits)) & (2**max_bits - 1))
  
-max_bits = 16  # For fun, try 2, 17 or other arbitrary (positive!) values
+max_bits = 64  # For fun, try 2, 17 or other arbitrary (positive!) values
  
 print()
-for i in xrange(0, max_bits*2-1):
+for i in xrange(0, 16):
     value = 0xC000
     newval = rol(value, i, max_bits)
-    print("0x%08x << 0x%02x --> 0x%08x" % (value, i, newval))
+    print "{0:016b} {1:016b} {2:016b}".format(value, i, newval)
  
 print()
-for i in xrange(0, max_bits*2-1):
+for i in xrange(0, 16):
     value = 0x0003
     newval = ror(value, i, max_bits)
-    print("0x%08x >> 0x%02x --> 0x%08x" % (value, i, newval))
+    print "{0:064b} {1:04b} {2:064b}".format(value, i, newval)
 
 #---------------------------------------------------------------------------------
 
@@ -112,6 +115,18 @@ del script_path
 del dataset
 
 def extract_features(graph_of_num, h):
+    BIT_LBL_LEN = 64
+    
+    # rotate left
+    rot_left = lambda val, r_bits: \
+        (val << r_bits % BIT_LBL_LEN) & (2**BIT_LBL_LEN - 1) | \
+        ((val & (2**BIT_LBL_LEN - 1)) >> (BIT_LBL_LEN - (r_bits % BIT_LBL_LEN)))
+    
+    # rotate right
+    rot_right = lambda val, r_bits: \
+        ((val & (2**BIT_LBL_LEN - 1)) >> r_bits % BIT_LBL_LEN) | \
+        (val << (BIT_LBL_LEN - (r_bits%BIT_LBL_LEN)) & (2**BIT_LBL_LEN - 1))
+    
     # the keys are graph numbers and the values are lists of features
     features_dict = {}
     
@@ -133,13 +148,8 @@ def extract_features(graph_of_num, h):
     upd_lbls_dict = {}
     
     # keys are the node labels which are stored in the dataset and the values are
-    # new compressed labels
-    compr_func = {}
-    
-    # next_compr_lbl is used for assigning new compressed labels to the nodes
-    # These build the features (= columns in data_matrix) used for the explicit
-    # graph embedding
-    next_compr_lbl = 0
+    # 64-bit integers
+    label_map = {}
     
     # initialize feature_counts_dict, features_dict, index_of_lbl_dict,
     # next_upd_lbls_dict and upd_lbls_dict
@@ -153,13 +163,11 @@ def extract_features(graph_of_num, h):
     
     
     # iterate over all graphs in the dataset -------------------------------------
-    # !!
-#    num_of_it = 5
     for r in xrange(h + 1):
         for (graph_num, (G, class_lbl)) in graph_of_num.iteritems():
             for v in G.nodes_iter():
                 if r == 0:
-                    uncompr_lbl = G.node[v]['label']
+                    orig_lbl = G.node[v]['label']
                 else:
                     # r > 0
                     has_elem, neigh_iter = utils.has_elem(G.neighbors_iter(v))
@@ -177,49 +185,47 @@ def extract_features(graph_of_num, h):
                         neigh_lbls.sort()
                 
                     # concatenate the neighboring labels to the label of v
-                    uncompr_lbl = str(upd_lbls_dict[graph_num][v])
+                    orig_lbl = str(upd_lbls_dict[graph_num][v])
                     if len(neigh_lbls) == 1:
-                        uncompr_lbl += ',' + str(neigh_lbls[0])
+                        orig_lbl += ',' + str(neigh_lbls[0])
                     elif len(neigh_lbls) > 1:
-                        uncompr_lbl += ',' + ','.join(map(str, neigh_lbls))
+                        orig_lbl += ',' + ','.join(map(str, neigh_lbls))
                         
                 
-                if not uncompr_lbl in compr_func:
-                    # assign a compressed label new_compr_lbl to uncompr_lbl
-                    new_compr_lbl = next_compr_lbl
-                    compr_func[uncompr_lbl] = new_compr_lbl
-                    next_compr_lbl += 1
+                if not orig_lbl in label_map.iterkeys():
+                    # assign a bit label new_bit_lbl to orig_lbl
+                    new_bit_lbl = randint(0, 2**BIT_LBL_LEN - 1)
+                    label_map[orig_lbl] = new_bit_lbl
                 else:
-                    # determine compressed label new_compr_lbl assigned to
-                    # uncompr_lbl
-                    new_compr_lbl = compr_func[uncompr_lbl]
+                    # determine bit label new_bit_lbl assigned to orig_lbl
+                    new_bit_lbl = label_map[orig_lbl]
         
-                if new_compr_lbl not in index_of_lbl_dict[graph_num]:
-                    # len(feature_counts_dict[graph_num])
-                    # == len(features_dict[graph_num])
-                    index = len(feature_counts_dict[graph_num])
+#                if new_bit_lbl not in index_of_lbl_dict[graph_num]:
+#                    # len(feature_counts_dict[graph_num])
+#                    # == len(features_dict[graph_num])
+#                    index = len(feature_counts_dict[graph_num])
+#        
+#                    index_of_lbl_dict[graph_num][new_bit_lbl] = index
+#        
+#                    # features_dict[graph_num][index]
+#                    # == feature upd_lbls_dict[graph_num][v] (== new_bit_lbl)
+#                    features_dict[graph_num].append(new_bit_lbl)
+#        
+#                    # set number of occurrences of the feature
+#                    # upd_lbls_dict[graph_num][v] (== new_bit_lbl) to 1
+#                    feature_counts_dict[graph_num].append(1)
+#                else:
+#                    # features_dict[graph_num][index]
+#                    # == feature upd_lbls_dict[graph_num][v] (== new_bit_lbl)
+#                    index = index_of_lbl_dict[graph_num][new_bit_lbl]
+#        
+#                    # increase number of occurrences of the feature
+#                    # upd_lbls_dict[graph_num][v] (== new_bit_lbl)
+#                    feature_counts_dict[graph_num][index] += 1
         
-                    index_of_lbl_dict[graph_num][new_compr_lbl] = index
-        
-                    # features_dict[graph_num][index]
-                    # == feature upd_lbls_dict[graph_num][v] (== new_compr_lbl)
-                    features_dict[graph_num].append(new_compr_lbl)
-        
-                    # set number of occurrences of the feature
-                    # upd_lbls_dict[graph_num][v] (== new_compr_lbl) to 1
-                    feature_counts_dict[graph_num].append(1)
-                else:
-                    # features_dict[graph_num][index]
-                    # == feature upd_lbls_dict[graph_num][v] (== new_compr_lbl)
-                    index = index_of_lbl_dict[graph_num][new_compr_lbl]
-        
-                    # increase number of occurrences of the feature
-                    # upd_lbls_dict[graph_num][v] (== new_compr_lbl)
-                    feature_counts_dict[graph_num][index] += 1
-        
-                # upd_lbls_dict[graph_num][v] == compr_func[lbl]
-                # == new_compr_lbl
-                next_upd_lbls_dict[graph_num][v] = new_compr_lbl
+                # next_upd_lbls_dict[graph_num][v] == label_map[lbl]
+                # == new_bit_lbl
+                next_upd_lbls_dict[graph_num][v] = new_bit_lbl
         
         if r > 0:
             # prepare upd_lbls_dict for reuse
@@ -227,73 +233,8 @@ def extract_features(graph_of_num, h):
         dict_of_cleared_dicts = upd_lbls_dict
            
         upd_lbls_dict = next_upd_lbls_dict
-        next_upd_lbls_dict = dict_of_cleared_dicts
-    
-   
-   
-## iterate over all graphs in the dataset !!! ---------------------------------
-## r == 1
-##for (graph_num, (G, class_lbl)) in graph_of_num.iteritems():
-#graph_num = 1
-#G = graph_of_num[1][0]
-#for v in G.nodes_iter():
-#    has_elements, nodes_iter = utils.has_elements(G.neighbors_iter(v))
-#    if not has_elements:
-#        # node v has no neighbors
-#        continue
-#
-#    # determine the list of labels belonging to nodes adjacent to v
-#    neigh_lbls = []
-#    for v_neigh in nodes_iter:
-#        neigh_lbls.append(upd_lbls_dict[graph_num][v_neigh])
-#
-#    # sort neigh_lbl_lst in ascending order
-#    if len(neigh_lbls) > 1:
-#        neigh_lbls.sort()
-#
-#    # concatenate the neighboring lbls to the lbl of v
-#    s = str(upd_lbls_dict[graph_num][v])
-#    if len(neigh_lbls) == 1:
-#        s += ',' + str(neigh_lbls[0])
-#    elif len(neigh_lbls) > 1:
-#        s += ',' + ','.join(map(str, neigh_lbls))
-#
-#    # !! incorrect
-#    if not s in compr_func:
-#        new_compr_lbl = next_compr_lbl
-#        compr_func[s] = next_compr_lbl        
-#        next_compr_lbl += 1
-#    else:
-#        new_compr_lbl = compr_func[s]
-#        
-#    if new_compr_lbl not in index_of_lbl_dict[graph_num]:
-#            # len(feature_counts_dict[graph_num])
-#            # == len(features_dict[graph_num])
-#            index = len(feature_counts_dict[graph_num])
-#
-#            index_of_lbl_dict[graph_num][new_compr_lbl] = index
-#
-#            # features_dict[graph_num][index]
-#            # == feature upd_lbls_dict[graph_num][v] (== new_compr_lbl)
-#            features_dict[graph_num].append(new_compr_lbl)
-#
-#            # set number of occurrences of the feature
-#            # upd_lbls_dict[graph_num][v] (== new_compr_lbl) to 1
-#            feature_counts_dict[graph_num].append(1)
-#        else:
-#            # features_dict[graph_num][index]
-#            # == feature upd_lbls_dict[graph_num][v] (== new_compr_lbl)
-#            index = index_of_lbl_dict[graph_num][new_compr_lbl]
-#
-#            # increase num of occurrences of the feature
-#            # upd_lbls_dict[graph_num][v] (== new_compr_lbl)
-#            feature_counts_dict[graph_num][index] += 1
-#
-#        # upd_lbls_dict[graph_num][v] == compr_func[lbl]
-#        # == new_compr_lbl
-#        upd_lbls_dict[graph_num][v] = new_compr_lbl
-    
-        
+        next_upd_lbls_dict = dict_of_cleared_dicts        
+
 
 
     # list containing the features of all graphs
@@ -315,10 +256,9 @@ def extract_features(graph_of_num, h):
     del graph_num
     del class_lbl
     del v
-    del uncompr_lbl
+    del orig_lbl
     del index
-    del new_compr_lbl
-    del next_compr_lbl
+    del new_bit_lbl
     
     
     for (graph_num, (G, class_lbl)) in graph_of_num.iteritems():
@@ -339,24 +279,10 @@ def extract_features(graph_of_num, h):
     #  feature vector of the last graph]
     data_matrix = csr_matrix((array(feature_counts), array(features),
                               array(feature_ptr)),
-                              shape = (len(graph_of_num), len(compr_func)),
+                              shape = (len(graph_of_num), len(label_map)),
                               dtype = float64)
     
     # !! DEBUG
 #    Z = data_matrix.todense()
     
     return data_matrix, class_lbls
-
-
-
-
-
-#DATASETS_PATH = join(script_path, '..', '..', 'datasets')
-#dataset = 'MUTAG'
-#graph_of_num = datasetloader.load_dataset(DATASETS_PATH, dataset)
-#data_matrix, class_lbls = extract_features(graph_of_num)
-
-
-
-
-

@@ -47,15 +47,15 @@ EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
 #DATASET = 'ANDROID FCG' # !! change file names from hashes to numbers
 #DATASET = 'CFG' # !! change file names from hashes to numbers
 
-# sorted by number of graphs times in ascending order
-DATASETS = ['MUTAG', 'PTC(MR)', 'ENZYMES', 'DD', 'NCI1', 'NCI109']
+# sorted by number of graphs in ascending order
+#DATASETS = ['MUTAG', 'PTC(MR)', 'ENZYMES', 'DD', 'NCI1', 'NCI109']
 #DATASETS = ['ENZYMES', 'NCI109', 'NCI1', 'DD']
 #DATASETS = ['MUTAG', 'PTC(MR)']
 #DATASETS = ['NCI109']
 #DATASETS = ['ENZYMES']
 #DATASETS = ['MUTAG']
 #DATASETS = ['DD']
-#DATASETS = ['PTC(MR)']
+DATASETS = ['PTC(MR)']
 
 OPT_PARAM = True
 #OPT_PARAM = False
@@ -66,10 +66,12 @@ COMPARE_PARAM = True
 #OPT = True
 OPT = False
 
+# kernels for LIBSVM classifier
 #KERNELS = ['linear', 'rbf', 'poly', 'sigmoid']
 #KERNELS = ['linear', 'rbf', 'sigmoid']
 #KERNELS = ['linear', 'rbf']
-KERNELS = ['linear']
+#KERNELS = ['rbf']
+LIBSVM_KERNELS = ['linear']
 
 #STRAT_KFOLD_VALUES = [False, True]
 STRAT_KFOLD_VALUES = [False]
@@ -131,13 +133,15 @@ for dataset in DATASETS:
     num_samples = len(graph_of_num)
     if num_samples > 1000:
         LIBLINEAR = True
+        KERNELS = ['linear']
         NUM_INNER_FOLDS = NUM_INNER_FOLDS_LD
         CLF_MAX_ITER = 100 if LIMIT_CLF_MAX_ITER_LD else 1000
     else:
         # use library LIBSVM
         LIBLINEAR = False
+        KERNELS = LIBSVM_KERNELS
         NUM_INNER_FOLDS = NUM_INNER_FOLDS_SD
-        CLF_MAX_ITER = 100 if LIMIT_CLF_MAX_ITER_SD else -1  
+        CLF_MAX_ITER = 100 if LIMIT_CLF_MAX_ITER_SD else -1
     
     
     for embedding_name in EMBEDDING_NAMES:
@@ -173,6 +177,7 @@ for dataset in DATASETS:
                 else:
                     # library LIBSVM is used
                     clf = svm.SVC(kernel = kernel, max_iter = CLF_MAX_ITER)
+#                    clf = svm.LinearSVC() # !!
                 
                 for strat_kfold in STRAT_KFOLD_VALUES: 
                     if strat_kfold:

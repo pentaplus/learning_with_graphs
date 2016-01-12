@@ -13,56 +13,14 @@ script_path = dirname(abspath(filename))
 # of the script's parent directory
 sys.path.append(join(script_path, '..'))
 
-from misc import datasetloader, utils
+from misc import utils
 
-
+# !!
 # test section -------------------------------------------------------------------
-
-#from sklearn import datasets
-#
-#iris = datasets.load_iris()
-#iris.data
-#iris.data.shape
-#iris.target
-#iris.target.shape
-
-
-
-#for i,d in enumerate(['aha', 'jo', 'blub']):
-#    print i, d
-
-#l = []
-#l = array(l)
-#l[2] = 2
-
-#
-#import timeit
-#
-#setup = """
-#from utils import radixsort as rs
-#import random
-#N = 10000
-#l = [random.randint(0,9) for _ in xrange(N)]
-#"""
-#
-#code1 = "l.sort()"
-#
-#code2 = "rs.radixsort(l)"
-#
-#min(timeit.repeat(code1, setup, number = 10))
-#min(timeit.repeat(code2, setup, number = 10))
 
 
 
 #---------------------------------------------------------------------------------
-
-DATASETS_PATH = join(script_path, '..', '..', 'datasets')
-dataset = 'MUTAG'
-graph_of_num = datasetloader.load_dataset(DATASETS_PATH, dataset)
-
-del filename
-del script_path
-del dataset
 
 def extract_features(graph_of_num, h):
     # the keys are graph numbers and the values are lists of features
@@ -106,8 +64,6 @@ def extract_features(graph_of_num, h):
     
     
     # iterate over all graphs in the dataset -------------------------------------
-    # !!
-#    num_of_it = 5
     for r in xrange(h + 1):
         for (graph_num, (G, class_lbl)) in graph_of_num.iteritems():
             for v in G.nodes_iter():
@@ -137,7 +93,7 @@ def extract_features(graph_of_num, h):
                         uncompr_lbl += ',' + ','.join(map(str, neigh_lbls))
                         
                 
-                if not uncompr_lbl in compr_func:
+                if not uncompr_lbl in compr_func.iterkeys():
                     # assign a compressed label new_compr_lbl to uncompr_lbl
                     new_compr_lbl = next_compr_lbl
                     compr_func[uncompr_lbl] = new_compr_lbl
@@ -170,7 +126,7 @@ def extract_features(graph_of_num, h):
                     # upd_lbls_dict[graph_num][v] (== new_compr_lbl)
                     feature_counts_dict[graph_num][index] += 1
         
-                # upd_lbls_dict[graph_num][v] == compr_func[lbl]
+                # next_upd_lbls_dict[graph_num][v] == compr_func[lbl]
                 # == new_compr_lbl
                 next_upd_lbls_dict[graph_num][v] = new_compr_lbl
         
@@ -198,16 +154,7 @@ def extract_features(graph_of_num, h):
     
     # list containing the class labels of all graphs
     class_lbls = []
-    
-    # !!
-    del graph_num
-    del class_lbl
-    del v
-    del uncompr_lbl
-    del index
-    del new_compr_lbl
-    del next_compr_lbl
-    
+        
     
     for (graph_num, (G, class_lbl)) in graph_of_num.iteritems():
         features += features_dict[graph_num]
