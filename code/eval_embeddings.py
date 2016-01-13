@@ -1,10 +1,14 @@
 # planed procedure:
-# at night: run on all datasets with NUM_ITER = 10
+# at night: run large datasets with NUM_ITER = 10
 # 
-# 1. test on PTC(MR): 10 iter of LIBSVM, 10 iter of LIBLINEAR
+# 1. test on small datasets: 10 iter of LIBLINEAR
 #
 # 1. implement neighborhood hash kernel
 # 2. test h = 1 in WEISFEILER_LEHMAN
+
+# CAREFUL: PERFECTIONISM!
+# 1000. make a grid search for kernels = ['linear', 'rbf'] in each optimization
+# step (speedup by parallelization?)
 
 
 import importlib
@@ -42,20 +46,21 @@ EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
 # keys are indices of the list EMBEDDING_NAMES, values are the respective
 # parameters
 EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
-#EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [0, 1, 2]}
+#EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [0, 1, 2, 3]}
 
 #DATASET = 'ANDROID FCG' # !! change file names from hashes to numbers
 #DATASET = 'CFG' # !! change file names from hashes to numbers
 
 # sorted by number of graphs in ascending order
 #DATASETS = ['MUTAG', 'PTC(MR)', 'ENZYMES', 'DD', 'NCI1', 'NCI109']
-#DATASETS = ['ENZYMES', 'NCI109', 'NCI1', 'DD']
-#DATASETS = ['MUTAG', 'PTC(MR)']
-#DATASETS = ['NCI109']
-#DATASETS = ['ENZYMES']
+#DATASETS = ['MUTAG', 'PTC(MR)', 'ENZYMES']
+#DATASETS = ['DD', 'NCI1', 'NCI109']
 #DATASETS = ['MUTAG']
+#DATASETS = ['PTC(MR)']
+DATASETS = ['ENZYMES']
 #DATASETS = ['DD']
-DATASETS = ['PTC(MR)']
+#DATASETS = ['NCI1']
+#DATASETS = ['NCI109']
 
 OPT_PARAM = True
 #OPT_PARAM = False
@@ -67,22 +72,22 @@ COMPARE_PARAM = True
 OPT = False
 
 # kernels for LIBSVM classifier
-#KERNELS = ['linear', 'rbf', 'poly', 'sigmoid']
-#KERNELS = ['linear', 'rbf', 'sigmoid']
-#KERNELS = ['linear', 'rbf']
-#KERNELS = ['rbf']
+#LIBSVM_KERNELS = ['linear', 'rbf', 'poly', 'sigmoid']
+#LIBSVM_KERNELS = ['linear', 'rbf', 'sigmoid']
+#LIBSVM_KERNELS = ['linear', 'rbf']
+#LIBSVM_KERNELS = ['rbf']
 LIBSVM_KERNELS = ['linear']
 
 #STRAT_KFOLD_VALUES = [False, True]
 STRAT_KFOLD_VALUES = [False]
 #STRAT_KFOLD_VALUES = [True]
 
-NUM_ITER = 1
+NUM_ITER = 10
 
 NUM_FOLDS = 10
 
 NUM_INNER_FOLDS_SD = 10
-NUM_INNER_FOLDS_LD = 4 # even on DD 0.79 were reached!!! :-)
+NUM_INNER_FOLDS_LD = 4
 
 LIMIT_CLF_MAX_ITER_SD = False
 #LIMIT_CLF_MAX_ITER_SD = True
@@ -132,12 +137,18 @@ for dataset in DATASETS:
     
     num_samples = len(graph_of_num)
     if num_samples > 1000:
+        # use library LIBLINEAR
+        # for multiclass classification the One-Versus-Rest scheme is applied,
+        # i.e., in case of N different classes N classifiers are trained in total
         LIBLINEAR = True
         KERNELS = ['linear']
         NUM_INNER_FOLDS = NUM_INNER_FOLDS_LD
         CLF_MAX_ITER = 100 if LIMIT_CLF_MAX_ITER_LD else 1000
     else:
         # use library LIBSVM
+        # for multiclass classification the One-Versus-One scheme is applied,
+        # i.e., in case of N different classes N(N-1)/2 classifiers are trained in
+        # total
         LIBLINEAR = False
         KERNELS = LIBSVM_KERNELS
         NUM_INNER_FOLDS = NUM_INNER_FOLDS_SD
@@ -176,7 +187,10 @@ for dataset in DATASETS:
                     clf = svm.LinearSVC(max_iter = CLF_MAX_ITER)
                 else:
                     # library LIBSVM is used
-                    clf = svm.SVC(kernel = kernel, max_iter = CLF_MAX_ITER)
+#                    clf = svm.SVC(kernel = kernel, max_iter = CLF_MAX_ITER)
+                    clf = svm.SVC(kernel = kernel,
+                                  max_iter = CLF_MAX_ITER,
+                                  decision_function_shape = 'ovr')
 #                    clf = svm.LinearSVC() # !!
                 
                 for strat_kfold in STRAT_KFOLD_VALUES: 
@@ -242,7 +256,7 @@ for dataset in DATASETS:
                         cross_validation.cross_val(clf, data_matrix, class_lbls,
                                                    NUM_ITER, NUM_FOLDS,
                                                    strat_kfold, result_file)
-                                               
+# !!                                               
 #            if OPT:
 #                for strat_kfold in STRAT_KFOLD_VALUES:
 #                    if strat_kfold:
@@ -273,7 +287,7 @@ print 'The evaluation of the emedding method(s) took %.1f seconds' % total_time
 
     
     
-
+# !!
 #        if opt:
 #    #        ref_clf = svm.SVC(kernel = 'linear')
 #    #        ref_clf = svm.SVC(kernel = 'poly')
