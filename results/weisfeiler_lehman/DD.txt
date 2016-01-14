@@ -1,6 +1,8 @@
 LIBRARY: LIBLINEAR
 NUM_ITER: 1
-NUM_INNER_FOLDS: 4
-CLF_MAX_ITER: 1000
+-------------------------------------------------------------
+Parameter: 0 
 
-RBF (OPT_PARAM)
+Feature extraction took 0.4 seconds.
+
+LINEAR

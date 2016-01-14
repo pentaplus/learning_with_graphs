@@ -23,96 +23,91 @@ from misc import datasetloader, utils
 
 # test section -------------------------------------------------------------------
 
-import timeit
-
-setup1 = """
-from os import urandom
-from numpy import bitwise_xor, frombuffer, uint64
-l = []
-for i in xrange(1000):
-    l.append(frombuffer(urandom(8), dtype = uint64))
-"""
-
-code1 = """
-s = l[0]
-for i in xrange(1, 1000):
-    s = bitwise_xor(s, l[i])
-"""
-
-setup2 = """
-from random import randint
-l = []
-for i in xrange(1000):
-    l.append(randint(0, 18446744073709551615))
-"""
-
-code2 = """
-s = l[0]
-for i in xrange(1, 1000):
-    s = s ^ i
-"""
-
-2**64-1 - 18446744073709551615
-%timeit randint(0, 18446744073709551615)
-
-%timeit frombuffer(urandom(8), dtype = uint64)
-
-N = 1
-min(timeit.repeat(code1, setup1, repeat = 3, number = N))/N
-min(timeit.repeat(code2, setup2, repeat = 3, number = N))/N
-
-
-np.frombuffer(urandom(8), dtype = uint64)
-
-l = []
-for i in xrange(1000):
-    l.append(np.frombuffer(urandom(8), dtype = uint64))
-
-s = l[0]
-for i in xrange(1, 82):
-    s = bitwise_xor(s, l[i])
-    
-
-for x in xrange(1000):
-    x = np.frombuffer(urandom(8), dtype = uint64)
+#import timeit
+#
+#setup1 = """
+#from os import urandom
+#from numpy import bitwise_xor, frombuffer, uint64
+#l = []
+#for i in xrange(1000):
+#    l.append(frombuffer(urandom(8), dtype = uint64))
+#"""
+#
+#code1 = """
+#s = l[0]
+#for i in xrange(1, 1000):
+#    s = bitwise_xor(s, l[i])
+#"""
+#
+#setup2 = """
+#from random import randint
+#l = []
+#for i in xrange(1000):
+#    l.append(randint(0, 18446744073709551615))
+#"""
+#
+#code2 = """
+#s = l[0]
+#for i in xrange(1, 1000):
+#    s = s ^ i
+#"""
+#
+#2**64-1 - 18446744073709551615
+#%timeit randint(0, 18446744073709551615)
+#
+#%timeit frombuffer(urandom(8), dtype = uint64)
+#
+#N = 1
+#min(timeit.repeat(code1, setup1, repeat = 3, number = N))/N
+#min(timeit.repeat(code2, setup2, repeat = 3, number = N))/N
+#
+#
+#np.frombuffer(urandom(8), dtype = uint64)
+#
+#l = []
+#for i in xrange(1000):
+#    l.append(np.frombuffer(urandom(8), dtype = uint64))
+#
+#s = l[0]
+#for i in xrange(1, 82):
+#    s = bitwise_xor(s, l[i])
+#    
+#
+#for x in xrange(1000):
+#    x = np.frombuffer(urandom(8), dtype = uint64)
     
 # http://www.falatic.com/index.php/108/python-and-bitwise-rotation
     
 # max bits > 0 == width of the value in bits (e.g., int_16 -> 16)
  
 # Rotate left: 0b1001 --> 0b0011
-rol = lambda val, r_bits, max_bits: \
-    (val << r_bits % max_bits) & (2**max_bits - 1) | \
-    ((val & (2**max_bits - 1)) >> (max_bits - (r_bits % max_bits)))
- 
-# Rotate right: 0b1001 --> 0b1100
-ror = lambda val, r_bits, max_bits: \
-    ((val & (2**max_bits - 1)) >> r_bits % max_bits) | \
-    (val << (max_bits - (r_bits%max_bits)) & (2**max_bits - 1))
- 
-max_bits = 64  # For fun, try 2, 17 or other arbitrary (positive!) values
- 
-print()
-for i in xrange(0, 16):
-    value = 0xC000
-    newval = rol(value, i, max_bits)
-    print "{0:016b} {1:016b} {2:016b}".format(value, i, newval)
- 
-print()
-for i in xrange(0, 16):
-    value = 0x0003
-    newval = ror(value, i, max_bits)
-    print "{0:064b} {1:04b} {2:064b}".format(value, i, newval)
+#rol = lambda val, r_bits, max_bits: \
+#    (val << r_bits % max_bits) & (2**max_bits - 1) | \
+#    ((val & (2**max_bits - 1)) >> (max_bits - (r_bits % max_bits)))
+# 
+## Rotate right: 0b1001 --> 0b1100
+#ror = lambda val, r_bits, max_bits: \
+#    ((val & (2**max_bits - 1)) >> r_bits % max_bits) | \
+#    (val << (max_bits - (r_bits%max_bits)) & (2**max_bits - 1))
+# 
+#max_bits = 64  # For fun, try 2, 17 or other arbitrary (positive!) values
+# 
+#print()
+#for i in xrange(0, 16):
+#    value = 0xC000
+#    newval = rol(value, i, max_bits)
+#    print "{0:016b} {1:016b} {2:016b}".format(value, i, newval)
+# 
+#print()
+#for i in xrange(0, 16):
+#    value = 0x0003
+#    newval = ror(value, i, max_bits)
+#    print "{0:064b} {1:04b} {2:064b}".format(value, i, newval)
 
 #---------------------------------------------------------------------------------
+#del filename
+#del script_path
 
-DATASETS_PATH = join(script_path, '..', '..', 'datasets')
-dataset = 'MUTAG'
-graph_of_num = datasetloader.load_dataset(DATASETS_PATH, dataset)
-
-del filename
-del script_path
-del dataset
 
 def extract_features(graph_of_num, h):
     BIT_LBL_LEN = 64
@@ -163,11 +158,20 @@ def extract_features(graph_of_num, h):
     
     
     # iterate over all graphs in the dataset -------------------------------------
-    for r in xrange(h + 1):
+    # !!
+#    for r in xrange(h + 1):
+    for r in xrange(1):
         for (graph_num, (G, class_lbl)) in graph_of_num.iteritems():
             for v in G.nodes_iter():
                 if r == 0:
                     orig_lbl = G.node[v]['label']
+                    if not orig_lbl in label_map.iterkeys():
+                        # assign a bit label new_bit_lbl to orig_lbl
+                        new_bit_lbl = randint(0, 2**BIT_LBL_LEN - 1)
+                        label_map[orig_lbl] = new_bit_lbl
+                    else:
+                        # determine bit label new_bit_lbl assigned to orig_lbl
+                        new_bit_lbl = label_map[orig_lbl]
                 else:
                     # r > 0
                     has_elem, neigh_iter = utils.has_elem(G.neighbors_iter(v))
@@ -192,13 +196,7 @@ def extract_features(graph_of_num, h):
                         orig_lbl += ',' + ','.join(map(str, neigh_lbls))
                         
                 
-                if not orig_lbl in label_map.iterkeys():
-                    # assign a bit label new_bit_lbl to orig_lbl
-                    new_bit_lbl = randint(0, 2**BIT_LBL_LEN - 1)
-                    label_map[orig_lbl] = new_bit_lbl
-                else:
-                    # determine bit label new_bit_lbl assigned to orig_lbl
-                    new_bit_lbl = label_map[orig_lbl]
+
         
 #                if new_bit_lbl not in index_of_lbl_dict[graph_num]:
 #                    # len(feature_counts_dict[graph_num])
@@ -253,12 +251,12 @@ def extract_features(graph_of_num, h):
     class_lbls = []
     
     # !!
-    del graph_num
-    del class_lbl
-    del v
-    del orig_lbl
-    del index
-    del new_bit_lbl
+#    del graph_num
+#    del class_lbl
+#    del v
+#    del orig_lbl
+#    del index
+#    del new_bit_lbl
     
     
     for (graph_num, (G, class_lbl)) in graph_of_num.iteritems():
@@ -286,3 +284,16 @@ def extract_features(graph_of_num, h):
 #    Z = data_matrix.todense()
     
     return data_matrix, class_lbls
+
+
+
+
+DATASETS_PATH = join(script_path, '..', '..', 'datasets')
+dataset = 'MUTAG'
+graph_of_num = datasetloader.load_dataset(DATASETS_PATH, dataset)
+
+del filename
+del script_path
+del dataset
+
+data_matrix, class_lbls = extract_features(graph_of_num, 0)

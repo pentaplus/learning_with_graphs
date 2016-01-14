@@ -1,8 +1,12 @@
 # planed procedure:
-# at night: run large datasets with NUM_ITER = 10
-# 
-# 1. test on small datasets: 10 iter of LIBLINEAR
+# at night:
+# 1. run large datasets with NUM_ITER = 10
+# 2. download dataset ANDROID FCG
 #
+# by day:
+# 1. 10 iterations with LIBSVM on ENZYMES ('ovr')
+# 2. 10 iterations with LIBLINEAR on small datasets (bad extraction)
+
 # 1. implement neighborhood hash kernel
 # 2. test h = 1 in WEISFEILER_LEHMAN
 
@@ -37,15 +41,18 @@ from performance_evaluation import cross_validation
 DATASETS_PATH = join(SCRIPT_PATH, '..', 'datasets')
 
 WEISFEILER_LEHMAN = 'weisfeiler_lehman'
+NEIGHBORHOOD_HASH = 'neighborhood_hash'
 LABEL_COUNTER = 'label_counter'
 
 #EMBEDDING_NAMES = [LABEL_COUNTER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, LABEL_COUNTER]
 EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
+#EMBEDDING_NAMES = [NEIGHBORHOOD_HASH]
 
 # keys are indices of the list EMBEDDING_NAMES, values are the respective
 # parameters
-EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
+EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                    NEIGHBORHOOD_HASH : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
 #EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [0, 1, 2, 3]}
 
 #DATASET = 'ANDROID FCG' # !! change file names from hashes to numbers
@@ -189,8 +196,8 @@ for dataset in DATASETS:
                     # library LIBSVM is used
 #                    clf = svm.SVC(kernel = kernel, max_iter = CLF_MAX_ITER)
                     clf = svm.SVC(kernel = kernel,
-                                  max_iter = CLF_MAX_ITER,
-                                  decision_function_shape = 'ovr')
+                                  decision_function_shape = 'ovr',
+                                  max_iter = CLF_MAX_ITER)
 #                    clf = svm.LinearSVC() # !!
                 
                 for strat_kfold in STRAT_KFOLD_VALUES: 
@@ -283,7 +290,15 @@ total_time = end_time - start_time
 print 'The evaluation of the emedding method(s) took %.1f seconds' % total_time
 
 
-
+#result_file = open('test', 'w')
+#
+#for embedding_param in [10]:
+#    # --------------------------------------------------------------------
+#    # 2) extract features
+#    # --------------------------------------------------------------------
+#    data_matrix, class_lbls = extract_features(graph_of_num, embedding,
+#                                               embedding_param, 
+#                                               result_file)
 
     
     
