@@ -4,8 +4,7 @@
 # 2. download dataset ANDROID FCG
 #
 # by day:
-# 1. 10 iterations with LIBSVM on ENZYMES ('ovr')
-# 2. 10 iterations with LIBLINEAR on small datasets (bad extraction)
+# 1. 10 iterations with LIBLINEAR on small datasets (bad extraction)
 
 # 1. implement neighborhood hash kernel
 # 2. test h = 1 in WEISFEILER_LEHMAN
@@ -60,9 +59,9 @@ EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
 
 # sorted by number of graphs in ascending order
 #DATASETS = ['MUTAG', 'PTC(MR)', 'ENZYMES', 'DD', 'NCI1', 'NCI109']
-#DATASETS = ['MUTAG', 'PTC(MR)', 'ENZYMES']
+DATASETS = ['MUTAG', 'PTC(MR)', 'ENZYMES']
 #DATASETS = ['DD', 'NCI1', 'NCI109']
-DATASETS = ['MUTAG']
+#DATASETS = ['MUTAG']
 #DATASETS = ['PTC(MR)']
 #DATASETS = ['ENZYMES']
 #DATASETS = ['DD']
@@ -89,7 +88,7 @@ LIBSVM_KERNELS = ['linear']
 STRAT_KFOLD_VALUES = [False]
 #STRAT_KFOLD_VALUES = [True]
 
-NUM_ITER = 1
+NUM_ITER = 10
 
 NUM_FOLDS = 10
 
@@ -143,8 +142,9 @@ def init_clf(liblinear, max_iter, kernel = None):
         clf = svm.SVC(kernel = kernel,
                       decision_function_shape = 'ovr',
                       max_iter = max_iter)
-#        clf = svm.LinearSVC() # !!
-    return clf
+
+    return svm.LinearSVC()
+#    return clf
         
     
 def set_params(num_samples, limit_clf_max_iter_sd, limit_clf_max_iter_ld):
