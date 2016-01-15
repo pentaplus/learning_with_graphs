@@ -41,17 +41,21 @@ DATASETS_PATH = join(SCRIPT_PATH, '..', 'datasets')
 
 WEISFEILER_LEHMAN = 'weisfeiler_lehman'
 NEIGHBORHOOD_HASH = 'neighborhood_hash'
+COUNT_SENSITIVE_NEIGHBORHOOD_HASH = 'count_sensitive_neighborhood_hash'
 LABEL_COUNTER = 'label_counter'
 
 #EMBEDDING_NAMES = [LABEL_COUNTER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, LABEL_COUNTER]
 EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
 #EMBEDDING_NAMES = [NEIGHBORHOOD_HASH]
+#EMBEDDING_NAMES = [COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
 
 # keys are indices of the list EMBEDDING_NAMES, values are the respective
 # parameters
 EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                    NEIGHBORHOOD_HASH : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
+                    NEIGHBORHOOD_HASH : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                    COUNT_SENSITIVE_NEIGHBORHOOD_HASH :\
+                                               [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
 #EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [0, 1, 2, 3]}
 
 #DATASET = 'ANDROID FCG' # !! change file names from hashes to numbers
@@ -59,8 +63,8 @@ EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
 
 # sorted by number of graphs in ascending order
 #DATASETS = ['MUTAG', 'PTC(MR)', 'ENZYMES', 'DD', 'NCI1', 'NCI109']
-DATASETS = ['MUTAG', 'PTC(MR)', 'ENZYMES']
-#DATASETS = ['DD', 'NCI1', 'NCI109']
+#DATASETS = ['MUTAG', 'PTC(MR)', 'ENZYMES']
+DATASETS = ['DD', 'NCI1', 'NCI109']
 #DATASETS = ['MUTAG']
 #DATASETS = ['PTC(MR)']
 #DATASETS = ['ENZYMES']
@@ -68,8 +72,8 @@ DATASETS = ['MUTAG', 'PTC(MR)', 'ENZYMES']
 #DATASETS = ['NCI1']
 #DATASETS = ['NCI109']
 
-#OPT_PARAM = True
-OPT_PARAM = False
+OPT_PARAM = True
+#OPT_PARAM = False
 
 COMPARE_PARAMS = True
 #COMPARE_PARAMS = False
@@ -135,10 +139,12 @@ def extract_features(graph_of_num, embedding, embedding_param, result_file):
 def init_clf(liblinear, max_iter, kernel = None):
     if LIBLINEAR:
         # library LIBLINEAR is used
+        # for multiclass classification the One-Versus-Rest scheme is applied,
+        # i.e., in case of N different classes N classifiers are trained in total
         clf = svm.LinearSVC(max_iter = max_iter)
     else:
         # library LIBSVM is used
-#        clf = svm.SVC(kernel = kernel, max_iter = CLF_MAX_ITER)
+        # for multiclass classification also the One-Versus-Rest scheme is applied
         clf = svm.SVC(kernel = kernel,
                       decision_function_shape = 'ovr',
                       max_iter = max_iter)
@@ -150,17 +156,12 @@ def init_clf(liblinear, max_iter, kernel = None):
 def set_params(num_samples, limit_clf_max_iter_sd, limit_clf_max_iter_ld):
     if num_samples > 1000:
         # use library LIBLINEAR
-        # for multiclass classification the One-Versus-Rest scheme is applied,
-        # i.e., in case of N different classes N classifiers are trained in total
         LIBLINEAR = True
         KERNELS = ['linear']
         NUM_INNER_FOLDS = NUM_INNER_FOLDS_LD
         CLF_MAX_ITER = 100 if LIMIT_CLF_MAX_ITER_LD else 1000
     else:
         # use library LIBSVM
-        # for multiclass classification the One-Versus-One scheme is applied,
-        # i.e., in case of N different classes N(N-1)/2 classifiers are trained in
-        # total
         LIBLINEAR = False
         KERNELS = LIBSVM_KERNELS
         NUM_INNER_FOLDS = NUM_INNER_FOLDS_SD
@@ -240,6 +241,7 @@ for dataset in DATASETS:
                                     mode)
                     
                     cross_validation.optimize_embedding_param(clf, graph_of_num,
+# !!
 #                    cross_validation.optimize_embedding_and_kernel_param(
 #                                                              graph_of_num,
                                                               embedding,

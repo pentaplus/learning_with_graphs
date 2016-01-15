@@ -15,8 +15,7 @@ from embeddings import neighborhood_hash_main
 
 
 def extract_features(graph_of_num, h):
-    return neighborhood_hash_main.extract_features(graph_of_num, h,
-                                                   count_sensitive = False)
+    return neighborhood_hash_main.extract_features(graph_of_num, h)
     
 
 # !!
