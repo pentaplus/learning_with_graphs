@@ -62,9 +62,9 @@ EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
 #DATASETS = ['MUTAG', 'PTC(MR)', 'ENZYMES', 'DD', 'NCI1', 'NCI109']
 #DATASETS = ['MUTAG', 'PTC(MR)', 'ENZYMES']
 #DATASETS = ['DD', 'NCI1', 'NCI109']
-#DATASETS = ['MUTAG']
+DATASETS = ['MUTAG']
 #DATASETS = ['PTC(MR)']
-DATASETS = ['ENZYMES']
+#DATASETS = ['ENZYMES']
 #DATASETS = ['DD']
 #DATASETS = ['NCI1']
 #DATASETS = ['NCI109']
@@ -72,8 +72,8 @@ DATASETS = ['ENZYMES']
 OPT_PARAM = True
 #OPT_PARAM = False
 
-COMPARE_PARAM = True
-#COMPARE_PARAM = False
+COMPARE_PARAMS = True
+#COMPARE_PARAMS = False
 
 #OPT = True
 OPT = False
@@ -89,7 +89,7 @@ LIBSVM_KERNELS = ['linear']
 STRAT_KFOLD_VALUES = [False]
 #STRAT_KFOLD_VALUES = [True]
 
-NUM_ITER = 10
+NUM_ITER = 1
 
 NUM_FOLDS = 10
 
@@ -132,17 +132,22 @@ def extract_features(graph_of_num, embedding, embedding_param, result_file):
 
     return data_matrix, class_lbls
     
-
-
-start_time = time.time()
-
-for dataset in DATASETS:
-    # ----------------------------------------------------------------------------
-    # 1) load dataset
-    # ----------------------------------------------------------------------------
-    graph_of_num = load_dataset(dataset, DATASETS_PATH)
     
-    num_samples = len(graph_of_num)
+def init_clf(liblinear, max_iter, kernel = None):
+    if LIBLINEAR:
+        # library LIBLINEAR is used
+        clf = svm.LinearSVC(max_iter = max_iter)
+    else:
+        # library LIBSVM is used
+#        clf = svm.SVC(kernel = kernel, max_iter = CLF_MAX_ITER)
+        clf = svm.SVC(kernel = kernel,
+                      decision_function_shape = 'ovr',
+                      max_iter = max_iter)
+#        clf = svm.LinearSVC() # !!
+    return clf
+        
+    
+def set_params(num_samples, limit_clf_max_iter_sd, limit_clf_max_iter_ld):
     if num_samples > 1000:
         # use library LIBLINEAR
         # for multiclass classification the One-Versus-Rest scheme is applied,
@@ -160,55 +165,79 @@ for dataset in DATASETS:
         KERNELS = LIBSVM_KERNELS
         NUM_INNER_FOLDS = NUM_INNER_FOLDS_SD
         CLF_MAX_ITER = 100 if LIMIT_CLF_MAX_ITER_SD else -1
+        
+    return LIBLINEAR, KERNELS, NUM_INNER_FOLDS, CLF_MAX_ITER
     
+
+def write_param_info(liblinear, num_iter, opt_param, num_inner_folds,
+                     clf_max_iter, result_file):
+    if liblinear:
+        utils.write('LIBRARY: LIBLINEAR\n', result_file)
+    else:
+        utils.write('LIBRARY: LIBSVM\n', result_file)
+    utils.write('NUM_ITER: %d\n' % num_iter, result_file)
+    if opt_param:
+        utils.write('NUM_INNER_FOLDS: %d\n' % num_inner_folds, result_file)
+        if clf_max_iter == -1:
+            utils.write('CLF_MAX_ITER: -1 (unlimited)\n', result_file)
+        else:
+            utils.write('CLF_MAX_ITER: %d\n' % clf_max_iter, result_file)
+    print ''
+    
+    
+def write_eval_info(dataset, embedding_name, kernel, strat_kfold, mode = None):
+    mode_str = ' (' + mode + ')' if mode else ''
+    kfold_str = 'strat k-fold' if strat_kfold else 'k-fold'
+    
+    print ('%s with %s kernel%s and %s CV on %s\n') %\
+          (embedding_name.upper(), kernel.upper(), mode_str.upper(), kfold_str,
+           dataset)
+    
+
+start_time = time.time()
+
+for dataset in DATASETS:
+    # ----------------------------------------------------------------------------
+    # 1) load dataset
+    # ----------------------------------------------------------------------------
+    graph_of_num = load_dataset(dataset, DATASETS_PATH)
+    
+    num_samples = len(graph_of_num)
+    
+    # set parameters depending on whether or not the number of samples within the
+    # dataset is larger than 1000
+    LIBLINEAR, KERNELS, NUM_INNER_FOLDS, CLF_MAX_ITER =\
+    set_params(num_samples, LIMIT_CLF_MAX_ITER_SD, LIMIT_CLF_MAX_ITER_LD)
+        
     
     for embedding_name in EMBEDDING_NAMES:
         result_path = join(SCRIPT_PATH, '..', 'results', embedding_name)
         utils.makedir(result_path)
         result_file = open(join(result_path, dataset + '.txt'), 'w')
         
-        if LIBLINEAR:
-            utils.write('LIBRARY: LIBLINEAR\n', result_file)
-        else:
-            utils.write('LIBRARY: LIBSVM\n', result_file)
-        utils.write('NUM_ITER: %d\n' % NUM_ITER, result_file)
-        if OPT_PARAM:
-            utils.write('NUM_INNER_FOLDS: %d\n' % NUM_INNER_FOLDS, result_file)
-            if CLF_MAX_ITER == -1:
-                utils.write('CLF_MAX_ITER: -1 (unlimited)\n', result_file)
-            else:
-                utils.write('CLF_MAX_ITER: %d\n' % CLF_MAX_ITER, result_file)
-        print ''
+        write_param_info(LIBLINEAR, NUM_ITER, OPT_PARAM, NUM_INNER_FOLDS,
+                         CLF_MAX_ITER, result_file)
         
         embedding = importlib.import_module('embeddings.' + embedding_name)
         
+        
         if OPT_PARAM:
+            #---------------------------------------------------------------------
+            # 2) evaluate the embedding's performance with optimized embedding
+            #    parameter
+            # --------------------------------------------------------------------
+            mode = 'opt_param'
             param_range = EMBEDDING_PARAMS[embedding_name]
             
             for kernel in KERNELS:
-                result_file.write('\n%s (OPT_PARAM)\n' % kernel.upper())
+                result_file.write('\n%s (%s)\n' % (kernel.upper(), mode.upper()))
                 
-                # initialize classifier
-                if LIBLINEAR:
-                    # library LIBLINEAR is used
-                    clf = svm.LinearSVC(max_iter = CLF_MAX_ITER)
-                else:
-                    # library LIBSVM is used
-#                    clf = svm.SVC(kernel = kernel, max_iter = CLF_MAX_ITER)
-                    clf = svm.SVC(kernel = kernel,
-                                  decision_function_shape = 'ovr',
-                                  max_iter = CLF_MAX_ITER)
-#                    clf = svm.LinearSVC() # !!
+                # initialize SVM classifier
+                clf = init_clf(LIBLINEAR, CLF_MAX_ITER, kernel)
                 
-                for strat_kfold in STRAT_KFOLD_VALUES: 
-                    if strat_kfold:
-                        print ('%s with %s (OPT_PARAM) kernel and strat k-fold '
-                               'CV on %s\n') % (embedding_name.upper(),
-                                                kernel.upper(), dataset)
-                    else:
-                        print ('%s with %s (OPT_PARAM) kernel and k-fold CV on '
-                               '%s\n') % (embedding_name.upper(), kernel.upper(),
-                                          dataset)
+                for strat_kfold in STRAT_KFOLD_VALUES:
+                    write_eval_info(dataset, embedding_name, kernel, strat_kfold,
+                                    mode)
                     
                     cross_validation.optimize_embedding_param(clf, graph_of_num,
 #                    cross_validation.optimize_embedding_and_kernel_param(
@@ -220,7 +249,7 @@ for dataset in DATASETS:
                                                               NUM_FOLDS,
                                                               NUM_INNER_FOLDS,
                                                               result_file)                                           
-        if not OPT and not COMPARE_PARAM:
+        if not OPT and not COMPARE_PARAMS:
             result_file.close()
             continue
         
@@ -229,36 +258,28 @@ for dataset in DATASETS:
             result_file.write('\n')
                 
         for embedding_param in EMBEDDING_PARAMS.get(embedding_name, [None]):
-            # --------------------------------------------------------------------
-            # 2) extract features
-            # --------------------------------------------------------------------
+            # extract features using the embedding
             data_matrix, class_lbls = extract_features(graph_of_num, embedding,
                                                        embedding_param, 
                                                        result_file)
             # !!
 #            Z = data_matrix.todense()
     
-    
-            # --------------------------------------------------------------------
-            # 3) evaluate performance
-            # --------------------------------------------------------------------                                                                
-            if COMPARE_PARAM:
+                                                                    
+            if COMPARE_PARAMS:
+                # ----------------------------------------------------------------
+                # 3) evaluate the embedding's performance for each embedding
+                #    parameter
+                # ----------------------------------------------------------------          
                 for kernel in KERNELS:
-                    # initialize classifier
-                    clf = svm.SVC(kernel = kernel)
-
+                    # initialize SVM classifier
+                    clf = init_clf(LIBLINEAR, CLF_MAX_ITER, kernel)
+                    
                     result_file.write('\n%s\n' % kernel.upper())
                     
-                    for strat_kfold in STRAT_KFOLD_VALUES:            
-                        if strat_kfold:
-                            print ('%s with %s kernel and strat k-fold CV on '
-                                   '%s\n') % (embedding_name.upper(),
-                                              kernel.upper(), dataset)
-                        else:
-                            print '%s with %s kernel and k-fold CV on %s\n' %\
-                                  (embedding_name.upper(), kernel.upper(),
-                                   dataset)
-                
+                    for strat_kfold in STRAT_KFOLD_VALUES:
+                        write_eval_info(dataset, embedding_name, kernel,
+                                        strat_kfold)
                         
                         cross_validation.cross_val(clf, data_matrix, class_lbls,
                                                    NUM_ITER, NUM_FOLDS,

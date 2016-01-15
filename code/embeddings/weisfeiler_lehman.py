@@ -130,18 +130,20 @@ def extract_features(graph_of_num, h):
                     # increase number of occurrences of the feature
                     # upd_lbls_dict[graph_num][v] (== new_compr_lbl)
                     feature_counts_dict[graph_num][index] += 1
+                
+                if r < h:
+                    # next_upd_lbls_dict[graph_num][v] == compr_func[lbl]
+                    # == new_compr_lbl
+                    next_upd_lbls_dict[graph_num][v] = new_compr_lbl
         
-                # upd_lbls_dict[graph_num][v] == compr_func[lbl]
-                # == new_compr_lbl
-                next_upd_lbls_dict[graph_num][v] = new_compr_lbl
-        
-        if r > 0:
-            # prepare upd_lbls_dict for reuse
-            utils.clear_dicts_of_dict(upd_lbls_dict)
-        dict_of_cleared_dicts = upd_lbls_dict
-           
-        upd_lbls_dict = next_upd_lbls_dict
-        next_upd_lbls_dict = dict_of_cleared_dicts
+        if r < h:
+            if r > 0:
+                # prepare upd_lbls_dict for reuse
+                utils.clear_dicts_of_dict(upd_lbls_dict)
+            dict_of_cleared_dicts = upd_lbls_dict
+               
+            upd_lbls_dict = next_upd_lbls_dict
+            next_upd_lbls_dict = dict_of_cleared_dicts
     
    
 

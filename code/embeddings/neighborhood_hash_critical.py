@@ -158,7 +158,7 @@ def extract_features(graph_of_num, h):
     
     
     # iterate over all graphs in the dataset -------------------------------------
-	# !!
+    # !!
 #    for r in xrange(h + 1):
     for r in xrange(1):
         for (graph_num, (G, class_lbl)) in graph_of_num.iteritems():
@@ -166,8 +166,8 @@ def extract_features(graph_of_num, h):
                 if r == 0:
                     orig_lbl = G.node[v]['label']
                     if not orig_lbl in label_map.iterkeys():
-                        # assign a random bit label new_bit_lbl to orig_lbl
-                        new_bit_lbl = randint(1, 2**BIT_LBL_LEN - 1)
+                        # assign a bit label new_bit_lbl to orig_lbl
+                        new_bit_lbl = randint(0, 2**BIT_LBL_LEN - 1)
                         label_map[orig_lbl] = new_bit_lbl
                     else:
                         # determine bit label new_bit_lbl assigned to orig_lbl
@@ -189,63 +189,51 @@ def extract_features(graph_of_num, h):
                         neigh_lbls.sort()
                 
                     # concatenate the neighboring labels to the label of v
-                    uncompr_lbl = str(upd_lbls_dict[graph_num][v])
+                    orig_lbl = str(upd_lbls_dict[graph_num][v])
                     if len(neigh_lbls) == 1:
-                        uncompr_lbl += ',' + str(neigh_lbls[0])
+                        orig_lbl += ',' + str(neigh_lbls[0])
                     elif len(neigh_lbls) > 1:
-                        uncompr_lbl += ',' + ','.join(map(str, neigh_lbls))
+                        orig_lbl += ',' + ','.join(map(str, neigh_lbls))
                         
                 
-#                if not uncompr_lbl in label_map:
-#                    # assign a compressed label new_compr_lbl to uncompr_lbl
-#                    new_compr_lbl = next_compr_lbl
-#                    label_map[uncompr_lbl] = new_compr_lbl
-#                    next_compr_lbl += 1
-#                else:
-#                    # determine compressed label new_compr_lbl assigned to
-#                    # uncompr_lbl
-#                    new_compr_lbl = label_map[uncompr_lbl]
-                
-                if r < h:
-                    # next_upd_lbls_dict[graph_num][v] == label_map[lbl]
-                    # == new_bit_lbl
-                    next_upd_lbls_dict[graph_num][v] = new_bit_lbl
-                else:
-                    # r == h
-                    if new_bit_lbl not in index_of_lbl_dict[graph_num]:
-                        # len(feature_counts_dict[graph_num])
-                        # == len(features_dict[graph_num])
-                        index = len(feature_counts_dict[graph_num])
-            
-                        index_of_lbl_dict[graph_num][new_bit_lbl] = index
-            
-                        # features_dict[graph_num][index]
-                        # == feature upd_lbls_dict[graph_num][v] (== new_bit_lbl)
-                        features_dict[graph_num].append(new_bit_lbl)
-            
-                        # set number of occurrences of the feature
-                        # upd_lbls_dict[graph_num][v] (== new_bit_lbl) to 1
-                        feature_counts_dict[graph_num].append(1)
-                    else:
-                        # features_dict[graph_num][index]
-                        # == feature upd_lbls_dict[graph_num][v] (== new_bit_lbl)
-                        index = index_of_lbl_dict[graph_num][new_bit_lbl]
-            
-                        # increase number of occurrences of the feature
-                        # upd_lbls_dict[graph_num][v] (== new_bit_lbl)
-                        feature_counts_dict[graph_num][index] += 1
 
         
-        if r < h:
-            if r > 0:
-                # prepare upd_lbls_dict for reuse
-                utils.clear_dicts_of_dict(upd_lbls_dict)
-            dict_of_cleared_dicts = upd_lbls_dict
-               
-            upd_lbls_dict = next_upd_lbls_dict
-            next_upd_lbls_dict = dict_of_cleared_dicts
-    
-   
+#                if new_bit_lbl not in index_of_lbl_dict[graph_num]:
+#                    # len(feature_counts_dict[graph_num])
+#                    # == len(features_dict[graph_num])
+#                    index = len(feature_counts_dict[graph_num])
+#        
+#                    index_of_lbl_dict[graph_num][new_bit_lbl] = index
+#        
+#                    # features_dict[graph_num][index]
+#                    # == feature upd_lbls_dict[graph_num][v] (== new_bit_lbl)
+#                    features_dict[graph_num].append(new_bit_lbl)
+#        
+#                    # set number of occurrences of the feature
+#                    # upd_lbls_dict[graph_num][v] (== new_bit_lbl) to 1
+#                    feature_counts_dict[graph_num].append(1)
+#                else:
+#                    # features_dict[graph_num][index]
+#                    # == feature upd_lbls_dict[graph_num][v] (== new_bit_lbl)
+#                    index = index_of_lbl_dict[graph_num][new_bit_lbl]
+#        
+#                    # increase number of occurrences of the feature
+#                    # upd_lbls_dict[graph_num][v] (== new_bit_lbl)
+#                    feature_counts_dict[graph_num][index] += 1
+        
+                # next_upd_lbls_dict[graph_num][v] == label_map[lbl]
+                # == new_bit_lbl
+                next_upd_lbls_dict[graph_num][v] = new_bit_lbl
+        
+        if r > 0:
+            # prepare upd_lbls_dict for reuse
+            utils.clear_dicts_of_dict(upd_lbls_dict)
+        dict_of_cleared_dicts = upd_lbls_dict
+           
+        upd_lbls_dict = next_upd_lbls_dict
+        next_upd_lbls_dict = dict_of_cleared_dicts        
+
+
 
     # list containing the features of all graphs
     features = []
@@ -266,10 +254,9 @@ def extract_features(graph_of_num, h):
 #    del graph_num
 #    del class_lbl
 #    del v
-#    del uncompr_lbl
+#    del orig_lbl
 #    del index
-#    del new_compr_lbl
-#    del next_compr_lbl
+#    del new_bit_lbl
     
     
     for (graph_num, (G, class_lbl)) in graph_of_num.iteritems():
@@ -297,10 +284,10 @@ def extract_features(graph_of_num, h):
 #    Z = data_matrix.todense()
     
     return data_matrix, class_lbls
-    
-    
-    
-from misc import datasetloader
+
+
+
+
 DATASETS_PATH = join(script_path, '..', '..', 'datasets')
 dataset = 'MUTAG'
 graph_of_num = datasetloader.load_dataset(DATASETS_PATH, dataset)
@@ -309,8 +296,4 @@ del filename
 del script_path
 del dataset
 
-import time
-start = time.time()
-data_matrix, class_lbls = extract_features(graph_of_num, 10)
-end = time.time()
-print end-start
+data_matrix, class_lbls = extract_features(graph_of_num, 0)

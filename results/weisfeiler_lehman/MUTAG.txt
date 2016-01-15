@@ -1,5 +1,11 @@
 LIBRARY: LIBSVM
 NUM_ITER: 1
+NUM_INNER_FOLDS: 10
+CLF_MAX_ITER: -1 (unlimited)
+
+LINEAR (OPT_PARAM)
+KFold: 0.888 (+/-0.000) in 18.9 seconds
+
 -------------------------------------------------------------
 Parameter: 0 
 
@@ -31,7 +37,7 @@ KFold: 0.819 (+/-0.000) in 0.1 seconds
 -------------------------------------------------------------
 Parameter: 4 
 
-Feature extraction took 0.1 seconds.
+Feature extraction took 0.2 seconds.
 
 LINEAR
 KFold: 0.846 (+/-0.000) in 0.1 seconds
@@ -41,7 +47,7 @@ Parameter: 5
 Feature extraction took 0.2 seconds.
 
 LINEAR
-KFold: 0.856 (+/-0.000) in 0.1 seconds
+KFold: 0.856 (+/-0.000) in 0.2 seconds
 -------------------------------------------------------------
 Parameter: 6 
 
@@ -52,7 +58,7 @@ KFold: 0.851 (+/-0.000) in 0.2 seconds
 -------------------------------------------------------------
 Parameter: 7 
 
-Feature extraction took 0.2 seconds.
+Feature extraction took 0.3 seconds.
 
 LINEAR
 KFold: 0.856 (+/-0.000) in 0.2 seconds
@@ -62,11 +68,11 @@ Parameter: 8
 Feature extraction took 0.3 seconds.
 
 LINEAR
-KFold: 0.856 (+/-0.000) in 0.2 seconds
+KFold: 0.856 (+/-0.000) in 0.3 seconds
 -------------------------------------------------------------
 Parameter: 9 
 
-Feature extraction took 0.4 seconds.
+Feature extraction took 0.3 seconds.
 
 LINEAR
 KFold: 0.867 (+/-0.000) in 0.3 seconds
