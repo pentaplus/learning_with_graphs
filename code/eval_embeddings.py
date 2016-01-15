@@ -4,7 +4,7 @@
 # 2. download dataset ANDROID FCG
 #
 # by day:
-# 1. 10 iterations with LIBLINEAR on small datasets (bad extraction)
+# 
 
 # 1. implement neighborhood hash kernel
 # 2. test h = 1 in WEISFEILER_LEHMAN
@@ -68,8 +68,8 @@ DATASETS = ['MUTAG', 'PTC(MR)', 'ENZYMES']
 #DATASETS = ['NCI1']
 #DATASETS = ['NCI109']
 
-OPT_PARAM = True
-#OPT_PARAM = False
+#OPT_PARAM = True
+OPT_PARAM = False
 
 COMPARE_PARAMS = True
 #COMPARE_PARAMS = False
@@ -143,8 +143,8 @@ def init_clf(liblinear, max_iter, kernel = None):
                       decision_function_shape = 'ovr',
                       max_iter = max_iter)
 
-    return svm.LinearSVC()
-#    return clf
+#    return svm.LinearSVC() # !!
+    return clf
         
     
 def set_params(num_samples, limit_clf_max_iter_sd, limit_clf_max_iter_ld):

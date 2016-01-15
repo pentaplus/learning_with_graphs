@@ -279,7 +279,9 @@ def cross_val(clf, data_matrix, class_lbls, num_iter, num_folds, strat_kfold,
             cv = cross_validation.StratifiedKFold(class_lbls, num_folds,
                                                   shuffle = True)
         else:
-            cv = num_folds        
+#            cv = num_folds
+            cv = cross_validation.KFold(len(class_lbls), num_folds,
+                                        shuffle = True)
             
         scores = cross_validation.cross_val_score(clf, data_matrix, class_lbls,
                                                   cv = cv)

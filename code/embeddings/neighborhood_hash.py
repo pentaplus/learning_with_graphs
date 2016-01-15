@@ -110,7 +110,7 @@ from misc import datasetloader, utils
 
 
 def extract_features(graph_of_num, h):
-    BIT_LBL_LEN = 64
+    BIT_LBL_LEN = 16
     
     # rotate left
     rot_left = lambda val, r_bits: \
@@ -159,8 +159,8 @@ def extract_features(graph_of_num, h):
     
     # iterate over all graphs in the dataset -------------------------------------
 	# !!
-#    for r in xrange(h + 1):
-    for r in xrange(1):
+    for r in xrange(h + 1):
+#    for r in xrange(1):
         for (graph_num, (G, class_lbl)) in graph_of_num.iteritems():
             for v in G.nodes_iter():
                 if r == 0:
@@ -179,32 +179,16 @@ def extract_features(graph_of_num, h):
                         # node v has no neighbors
                         continue
             
-                    # determine the list of labels of the nodes adjacent to v
-                    neigh_lbls = []
+#                    # determine the list of labels of the nodes adjacent to v
+#                    neigh_lbls = []
+#                    for v_neigh in neigh_iter:
+#                        neigh_lbls.append(upd_lbls_dict[graph_num][v_neigh])
+                
+                    # apply neighborhood hash
+                    new_bit_lbl = upd_lbls_dict[graph_num][v]
                     for v_neigh in neigh_iter:
-                        neigh_lbls.append(upd_lbls_dict[graph_num][v_neigh])
-                
-                    # sort neigh_lbls in ascending order
-                    if len(neigh_lbls) > 1:
-                        neigh_lbls.sort()
-                
-                    # concatenate the neighboring labels to the label of v
-                    uncompr_lbl = str(upd_lbls_dict[graph_num][v])
-                    if len(neigh_lbls) == 1:
-                        uncompr_lbl += ',' + str(neigh_lbls[0])
-                    elif len(neigh_lbls) > 1:
-                        uncompr_lbl += ',' + ','.join(map(str, neigh_lbls))
+                        new_bit_lbl ^= upd_lbls_dict[graph_num][v_neigh]
                         
-                
-#                if not uncompr_lbl in label_map:
-#                    # assign a compressed label new_compr_lbl to uncompr_lbl
-#                    new_compr_lbl = next_compr_lbl
-#                    label_map[uncompr_lbl] = new_compr_lbl
-#                    next_compr_lbl += 1
-#                else:
-#                    # determine compressed label new_compr_lbl assigned to
-#                    # uncompr_lbl
-#                    new_compr_lbl = label_map[uncompr_lbl]
                 
                 if r < h:
                     # next_upd_lbls_dict[graph_num][v] == label_map[lbl]
@@ -290,7 +274,7 @@ def extract_features(graph_of_num, h):
     #  feature vector of the last graph]
     data_matrix = csr_matrix((array(feature_counts), array(features),
                               array(feature_ptr)),
-                              shape = (len(graph_of_num), len(label_map)),
+#                              shape = (len(graph_of_num), len(label_map)),
                               dtype = float64)
     
     # !! DEBUG
@@ -300,7 +284,6 @@ def extract_features(graph_of_num, h):
     
     
     
-from misc import datasetloader
 DATASETS_PATH = join(script_path, '..', '..', 'datasets')
 dataset = 'MUTAG'
 graph_of_num = datasetloader.load_dataset(DATASETS_PATH, dataset)
@@ -309,8 +292,26 @@ del filename
 del script_path
 del dataset
 
-import time
+# h = 0: 56900    586
+# h = 1: 55892    828
+# h = 2: 63964    947
+# h = 3: 62689   1010
+# h = 4: 65162    929
+# h = 5: 64494    979
+# h = 6: 61520    964
+# h = 7: 63481   1009
+# h = 8: 63804    970
+# h = 9: 63322   1003
+# h =10: 62836    950
+
+h = 10
 start = time.time()
-data_matrix, class_lbls = extract_features(graph_of_num, 10)
+data_matrix, class_lbls = extract_features(graph_of_num, h)
 end = time.time()
-print end-start
+print 'h = %d: %.3f' % (h, end - start)
+
+
+Z = data_matrix.todense()
+
+print data_matrix.__repr__()
+#print data_matrix.__str__()
