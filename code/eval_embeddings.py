@@ -1,6 +1,7 @@
 # planed procedure:
 # at night:
 # 1. download dataset ANDROID FCG
+# 2. test WEISFEILER_LEHMAN with LIBSVM clf and linear and rbf kernel on ENZYMES
 # 2. test old NH, old CSNH, new NH, new CSNH
 #
 # by day:
@@ -95,8 +96,8 @@ OPT = False
 # kernels for LIBSVM classifier
 #LIBSVM_KERNELS = ['linear', 'rbf', 'poly', 'sigmoid']
 #LIBSVM_KERNELS = ['linear', 'rbf', 'sigmoid']
-#LIBSVM_KERNELS = ['linear', 'rbf']
-LIBSVM_KERNELS = ['linear']
+LIBSVM_KERNELS = ['linear', 'rbf']
+#LIBSVM_KERNELS = ['linear']
 #LIBSVM_KERNELS = ['rbf']
 #LIBSVM_KERNELS = ['sigmoid']
 #LIBSVM_KERNELS = ['poly']
@@ -106,7 +107,7 @@ LIBSVM_KERNELS = ['linear']
 STRAT_KFOLD_VALUES = [False]
 #STRAT_KFOLD_VALUES = [True]
 
-NUM_ITER = 1
+NUM_ITER = 10
 
 NUM_FOLDS = 10
 
