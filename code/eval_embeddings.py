@@ -102,11 +102,11 @@ LIBSVM_KERNELS = ['linear', 'rbf']
 #LIBSVM_KERNELS = ['sigmoid']
 #LIBSVM_KERNELS = ['poly']
 
-
 #STRAT_KFOLD_VALUES = [False, True]
 STRAT_KFOLD_VALUES = [False]
 #STRAT_KFOLD_VALUES = [True]
 
+#NUM_ITER = 1
 NUM_ITER = 10
 
 NUM_FOLDS = 10

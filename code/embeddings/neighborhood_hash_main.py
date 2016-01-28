@@ -295,33 +295,33 @@ def extract_features(graph_of_num, h, count_sensitive = True, all_iter = False):
     # old
     
     # new
-#    # keys are the bit labels and the values are new compressed labels
-#    compr_func = {}
-#    
-#    # next_compr_lbl is used for assigning new compressed labels to the nodes
-#    # These build the features (= columns in data_matrix) used for the explicit
-#    # graph embedding
-#    next_compr_lbl = 0
-#    
-#    
-#    
-#    for (graph_num, (G, class_lbl)) in graph_of_num.iteritems():
-#        for bit_lbl, bit_lbl_count in itools.izip(features_dict[graph_num],
-#                                                  feature_counts_dict[graph_num]):
-#            if not bit_lbl in compr_func:
-#                compr_func[bit_lbl] = next_compr_lbl
-#                compr_lbl = next_compr_lbl
-#                next_compr_lbl += 1
-#            else:
-#                compr_lbl = compr_func[bit_lbl]
-#                
-#            features.append(compr_lbl)
-#            feature_counts.append(bit_lbl_count)
-#            
-#            
-#        feature_ptr.append(feature_ptr[-1] + len(features_dict[graph_num]))
-#    
-#        class_lbls.append(class_lbl)
+    # keys are the bit labels and the values are new compressed labels
+    compr_func = {}
+    
+    # next_compr_lbl is used for assigning new compressed labels to the nodes
+    # These build the features (= columns in data_matrix) used for the explicit
+    # graph embedding
+    next_compr_lbl = 0
+    
+    
+    
+    for (graph_num, (G, class_lbl)) in graph_of_num.iteritems():
+        for bit_lbl, bit_lbl_count in itools.izip(features_dict[graph_num],
+                                                  feature_counts_dict[graph_num]):
+            if not bit_lbl in compr_func:
+                compr_func[bit_lbl] = next_compr_lbl
+                compr_lbl = next_compr_lbl
+                next_compr_lbl += 1
+            else:
+                compr_lbl = compr_func[bit_lbl]
+                
+            features.append(compr_lbl)
+            feature_counts.append(bit_lbl_count)
+            
+            
+        feature_ptr.append(feature_ptr[-1] + len(features_dict[graph_num]))
+    
+        class_lbls.append(class_lbl)
     # new
     
     class_lbls = array(class_lbls)
