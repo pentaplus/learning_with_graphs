@@ -1,13 +1,13 @@
 # planed procedure:
 # at night:
-# 1. run large datasets with NUM_ITER = 10
-# 2. download dataset ANDROID FCG
+# 1. download dataset ANDROID FCG
+# 2. test old NH, old CSNH, new NH, new CSNH
 #
 # by day:
 # 
-
-# 1. implement neighborhood hash kernel
-# 2. test h = 1 in WEISFEILER_LEHMAN
+#
+# 1. implement graphlet kernel
+# 100. make feature vectors for NHGK unary 
 
 # CAREFUL: PERFECTIONISM!
 # 1000. make a grid search for kernels = ['linear', 'rbf'] in each optimization
@@ -42,6 +42,9 @@ DATASETS_PATH = join(SCRIPT_PATH, '..', 'datasets')
 WEISFEILER_LEHMAN = 'weisfeiler_lehman'
 NEIGHBORHOOD_HASH = 'neighborhood_hash'
 COUNT_SENSITIVE_NEIGHBORHOOD_HASH = 'count_sensitive_neighborhood_hash'
+COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER =\
+                                      'count_sensitive_neighborhood_hash_all_iter'
+GRAPHLET_KERNEL = 'graphlet_kernel'
 LABEL_COUNTER = 'label_counter'
 
 #EMBEDDING_NAMES = [LABEL_COUNTER]
@@ -49,14 +52,22 @@ LABEL_COUNTER = 'label_counter'
 EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
 #EMBEDDING_NAMES = [NEIGHBORHOOD_HASH]
 #EMBEDDING_NAMES = [COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
+#EMBEDDING_NAMES = [COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER]
+#EMBEDDING_NAMES = [NEIGHBORHOOD_HASH, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
+#EMBEDDING_NAMES = [GRAPHLET_KERNEL]
+
 
 # keys are indices of the list EMBEDDING_NAMES, values are the respective
 # parameters
 EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                     NEIGHBORHOOD_HASH : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                     COUNT_SENSITIVE_NEIGHBORHOOD_HASH :\
-                                               [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
-#EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [0, 1, 2, 3]}
+                                               [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                    COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER :\
+                                               [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+#                    GRAPHLET_KERNEL : [3, 4],
+                    GRAPHLET_KERNEL : [3]}
+
 
 #DATASET = 'ANDROID FCG' # !! change file names from hashes to numbers
 #DATASET = 'CFG' # !! change file names from hashes to numbers
@@ -64,10 +75,10 @@ EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
 # sorted by number of graphs in ascending order
 #DATASETS = ['MUTAG', 'PTC(MR)', 'ENZYMES', 'DD', 'NCI1', 'NCI109']
 #DATASETS = ['MUTAG', 'PTC(MR)', 'ENZYMES']
-DATASETS = ['DD', 'NCI1', 'NCI109']
+#DATASETS = ['DD', 'NCI1', 'NCI109']
 #DATASETS = ['MUTAG']
 #DATASETS = ['PTC(MR)']
-#DATASETS = ['ENZYMES']
+DATASETS = ['ENZYMES']
 #DATASETS = ['DD']
 #DATASETS = ['NCI1']
 #DATASETS = ['NCI109']
@@ -85,14 +96,17 @@ OPT = False
 #LIBSVM_KERNELS = ['linear', 'rbf', 'poly', 'sigmoid']
 #LIBSVM_KERNELS = ['linear', 'rbf', 'sigmoid']
 #LIBSVM_KERNELS = ['linear', 'rbf']
-#LIBSVM_KERNELS = ['rbf']
 LIBSVM_KERNELS = ['linear']
+#LIBSVM_KERNELS = ['rbf']
+#LIBSVM_KERNELS = ['sigmoid']
+#LIBSVM_KERNELS = ['poly']
+
 
 #STRAT_KFOLD_VALUES = [False, True]
 STRAT_KFOLD_VALUES = [False]
 #STRAT_KFOLD_VALUES = [True]
 
-NUM_ITER = 10
+NUM_ITER = 1
 
 NUM_FOLDS = 10
 
@@ -104,7 +118,8 @@ LIMIT_CLF_MAX_ITER_SD = False
 LIMIT_CLF_MAX_ITER_LD = False
 #LIMIT_CLF_MAX_ITER_LD = True
 
-
+# !!
+#Z = []
 
 def load_dataset(dataset, datasets_path):
     dataset_loading_start_time = time.time()
@@ -126,6 +141,8 @@ def extract_features(graph_of_num, embedding, embedding_param, result_file):
 
     data_matrix, class_lbls = embedding.extract_features(graph_of_num,
                                                          embedding_param)
+                                                         
+#    Z.append(data_matrix.todense())
 
     feat_extr_end_time = time.time()
     feat_extr_time = feat_extr_end_time - feat_extr_start_time

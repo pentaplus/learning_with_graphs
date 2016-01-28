@@ -36,7 +36,7 @@ if __name__ == '__main__':
     print 'h = %d: %.3f' % (h, end - start)
     
     
-    Z = data_matrix.todense()
+#    Z = data_matrix.todense()
     
     print data_matrix.__repr__()
     #print data_matrix.__str__()

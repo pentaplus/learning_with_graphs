@@ -16,15 +16,9 @@ sys.path.append(join(script_path, '..'))
 from misc import datasetloader, utils
 
 
-# test section -------------------------------------------------------------------
-
-
-#---------------------------------------------------------------------------------
-
 DATASETS_PATH = join(script_path, '..', '..', 'datasets')
 dataset = 'MUTAG'
 graph_of_num = datasetloader.load_dataset(DATASETS_PATH, dataset)
-
 
 
 def extract_features(graph_of_num, h):
@@ -76,26 +70,26 @@ def extract_features(graph_of_num, h):
                     uncompr_lbl = G.node[v]['label']
                 else:
                     # r > 0
-                    has_elem, neigh_iter = utils.has_elem(G.neighbors_iter(v))
+                    has_elem, nbrs_iter = utils.has_elem(G.neighbors_iter(v))
                     if not has_elem:
                         # node v has no neighbors
                         continue
             
                     # determine the list of labels of the nodes adjacent to v
-                    neigh_lbls = []
-                    for v_neigh in neigh_iter:
-                        neigh_lbls.append(upd_lbls_dict[graph_num][v_neigh])
+                    nbrs_lbls = []
+                    for v_nbr in nbrs_iter:
+                        nbrs_lbls.append(upd_lbls_dict[graph_num][v_nbr])
                 
-                    # sort neigh_lbls in ascending order
-                    if len(neigh_lbls) > 1:
-                        neigh_lbls.sort()
+                    # sort nbrs_lbls in ascending order
+                    if len(nbrs_lbls) > 1:
+                        nbrs_lbls.sort()
                 
                     # concatenate the neighboring labels to the label of v
                     uncompr_lbl = str(upd_lbls_dict[graph_num][v])
-                    if len(neigh_lbls) == 1:
-                        uncompr_lbl += ',' + str(neigh_lbls[0])
-                    elif len(neigh_lbls) > 1:
-                        uncompr_lbl += ',' + ','.join(map(str, neigh_lbls))
+                    if len(nbrs_lbls) == 1:
+                        uncompr_lbl += ',' + str(nbrs_lbls[0])
+                    elif len(nbrs_lbls) > 1:
+                        uncompr_lbl += ',' + ','.join(map(str, nbrs_lbls))
                         
                 
                 if not uncompr_lbl in compr_func:
@@ -197,18 +191,59 @@ def extract_features(graph_of_num, h):
 #    Z = data_matrix.todense()
     
     return data_matrix, class_lbls
+
+# !!
+if __name__ == '__main__':
+    from misc import datasetloader
+    DATASETS_PATH = join(script_path, '..', '..', 'datasets')
+    dataset = 'MUTAG'
+    graph_of_num = datasetloader.load_dataset(DATASETS_PATH, dataset)
     
-#from misc import datasetloader
-#DATASETS_PATH = join(script_path, '..', '..', 'datasets')
-#dataset = 'MUTAG'
-#graph_of_num = datasetloader.load_dataset(DATASETS_PATH, dataset)
-#
-#del filename
-#del script_path
-#del dataset
-#
-#import time
-#start = time.time()
-#data_matrix, class_lbls = extract_features(graph_of_num, 10)
-#end = time.time()
-#print end-start
+    del filename
+    del script_path
+    del dataset
+    
+    import time
+    start = time.time()
+    data_matrix, class_lbls = extract_features(graph_of_num, 10)
+    end = time.time()
+    print end-start
+    
+    
+    import numpy as np
+    from sklearn.svm import SVC
+    from sklearn.cross_validation import cross_val_score
+    from sklearn.metrics.pairwise import pairwise_kernels
+    
+    #X = []
+    #for i in xrange(len(graph_of_num)):
+    #    X.append([i])
+    #X = np.array(X)
+    #    
+    #
+    #data = ['aab', 'aaabb']
+    #    
+    #def my_kernel(X, Y):
+    #    '''This function is used to pre-compute the kernel matrix from data matrices;
+    #       that matrix should be an array of shape (n_samples, n_samples).'''
+    ##    print 'X', X
+    ##    print 'X type', type(X)
+    ##    print 'X size', X.shape
+    ##    print 'Y', Y
+    ##    print 'Y type', type(Y)
+    ##    print 'Y size', Y.shape
+    #    i = int(X[0,0])
+    #    j = int(Y[1,0])
+    ##    return data[i].count('a')*data[j].count('a') +\
+    ##           data[i].count('b')*data[j].count('b')
+    #    return np.array([[1, 2], [2,3]])
+               
+        
+    #clf = SVC(kernel = 'precomputed')
+    #
+    #clf.fit(pairwise_kernels(data_matrix), class_lbls)
+    #
+    #cross_val_score(clf, X, class_lbls, cv = 10)
+    
+    #for i, (num, tup) in enumerate(graph_of_num.iteritems()):
+    #    print i, num, tup

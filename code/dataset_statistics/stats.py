@@ -24,17 +24,18 @@ DATASETS_PATH = join(script_path, '..', '..', 'datasets')
 #DATASET = 'ANDROID FCG' # !! change file names from hashes to numbers
 #DATASET = 'CFG' # !! change file names from hashes to numbers
 #DATASET = 'DD'
-#DATASET = 'ENZYMES'
+DATASET = 'ENZYMES'
 #DATASET = 'MUTAG'
 #DATASET = 'NCI1'
 #DATASET = 'NCI109'
-DATASET = 'PTC(MR)'
+#DATASET = 'PTC(MR)'
 
 
-(graph_of_number, classes) = datasetloader.load_dataset(DATASETS_PATH, DATASET)
+graph_of_num = datasetloader.load_dataset(DATASETS_PATH, DATASET)
     
-graphs_of_class = datasetloader.determine_graphs_of_class_dict(graph_of_number)
+graphs_of_class = datasetloader.determine_graphs_of_class_dict(graph_of_num)
 
+classes = graphs_of_class.keys()
 
 # calculate statistics
 node_counts = []
@@ -43,7 +44,7 @@ degrees = []
 min_deg = float("inf")
 max_deg = 0
 number_of_isolated_nodes = 0
-for graph, class_number in graph_of_number.itervalues():
+for graph, class_number in graph_of_num.itervalues():
     node_counts.append(graph.number_of_nodes())
     edge_counts.append(graph.number_of_edges())
     degrees.append(mean(graph.degree().values()))
@@ -66,7 +67,7 @@ min_v = min(node_counts)
 avg_deg = mean(degrees)
 
 print 'dataset:', DATASET
-print '# graphs:', len(graph_of_number)
+print '# graphs:', len(graph_of_num)
 print '# classes:', len(classes)
 
 for class_number in graphs_of_class.iterkeys():

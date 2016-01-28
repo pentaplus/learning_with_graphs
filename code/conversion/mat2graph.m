@@ -4,9 +4,9 @@
 %GRAPHS = DD;
 
 % ENZYMES (unlabeled edges)
-%load('ENZYMES')
-%labels = lenzymes; % labels(x) in {1, 2, 3, 4, 5, 6} for all x
-%GRAPHS = ENZYMES;
+load('ENZYMES')
+labels = lenzymes; % labels(x) in {1, 2, 3, 4, 5, 6} for all x
+GRAPHS = ENZYMES;
 
 % MUTAG (labeled edges)
 %load('MUTAG')
@@ -18,11 +18,10 @@
 %labels = lnci1; % labels(x) in {0, 1} for all x
 %GRAPHS = NCI1;
 
-
 % NCI109 (labeled edges)
-load('NCI109')
-labels = lnci109; % labels(x) in {0, 1} for all x
-GRAPHS = NCI109;
+%load('NCI109')
+%labels = lnci109; % labels(x) in {0, 1} for all x
+%GRAPHS = NCI109;
 
 graphs_count = length(GRAPHS);
 

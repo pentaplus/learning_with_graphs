@@ -1,4 +1,5 @@
 import inspect
+import itertools as itools
 import sys
 
 from numpy import array, float64
@@ -105,7 +106,7 @@ from misc import utils
 #del script_path
 
 
-def extract_features(graph_of_num, h, count_sensitive = True):
+def extract_features(graph_of_num, h, count_sensitive = True, all_iter = False):
     BIT_LBL_LEN = 16
     
     # rotate left
@@ -114,9 +115,9 @@ def extract_features(graph_of_num, h, count_sensitive = True):
         ((val & (2**BIT_LBL_LEN - 1)) >> (BIT_LBL_LEN - (r_bits % BIT_LBL_LEN)))
     
     # rotate right
-    rot_right = lambda val, r_bits: \
-        ((val & (2**BIT_LBL_LEN - 1)) >> r_bits % BIT_LBL_LEN) | \
-        (val << (BIT_LBL_LEN - (r_bits%BIT_LBL_LEN)) & (2**BIT_LBL_LEN - 1))
+#    rot_right = lambda val, r_bits: \
+#        ((val & (2**BIT_LBL_LEN - 1)) >> r_bits % BIT_LBL_LEN) | \
+#        (val << (BIT_LBL_LEN - (r_bits%BIT_LBL_LEN)) & (2**BIT_LBL_LEN - 1))
     
     # the keys are graph numbers and the values are lists of features
     features_dict = {}
@@ -170,49 +171,61 @@ def extract_features(graph_of_num, h, count_sensitive = True):
                         new_bit_lbl = label_map[orig_lbl]
                 else:
                     # r > 0
-                    has_elem, neigh_iter = utils.has_elem(G.neighbors_iter(v))
+                    has_elem, nbrs_iter = utils.has_elem(G.neighbors_iter(v))
                     if not has_elem:
                         # node v has no neighbors
                         continue
             
 #                    # determine the list of labels of the nodes adjacent to v
-#                    neigh_lbls = []
-#                    for v_neigh in neigh_iter:
-#                        neigh_lbls.append(upd_lbls_dict[graph_num][v_neigh])
+#                    nbr_lbls = []
+#                    for v_nbr in nbrs_iter:
+#                        nbrs_lbls.append(upd_lbls_dict[graph_num][v_nbr])
                     
                     if not count_sensitive:
                         # apply simple neighborhood hash
-                        new_bit_lbl = upd_lbls_dict[graph_num][v]
-                        for v_neigh in neigh_iter:
-                            new_bit_lbl ^= upd_lbls_dict[graph_num][v_neigh]
+                        new_bit_lbl = rot_left(upd_lbls_dict[graph_num][v], 1)
+                        for v_nbr in nbrs_iter:
+                            new_bit_lbl ^= upd_lbls_dict[graph_num][v_nbr]
                     else:
                         # determine the list of labels of the nodes adjacent to v
-                        neigh_lbls = []
-                        for v_neigh in neigh_iter:
-                            neigh_lbls.append(upd_lbls_dict[graph_num][v_neigh])
+                        nbrs_lbls = []
+                        for v_nbr in nbrs_iter:
+                            nbrs_lbls.append(upd_lbls_dict[graph_num][v_nbr])
                             
-                        
-                        if len(neigh_lbls) == 1:
-                            pass                            
+                        # determine the number of occurences of each neighbor
+                        # label
+                        num_of_nbr_lbl = {}
+                        if len(nbrs_lbls) == 1:
+                            nbr_lbl = nbrs_lbls[0]
+                            num_of_nbr_lbl[nbr_lbl] = 1                  
                         else:
-                            # len(neigh_lbls) > 1
-                            # sort neigh_lbls in ascending order
-                            neigh_lbls.sort()
+                            # len(nbrs_lbls) > 1
+                            # sort nbrs_lbls in ascending order
+                            nbrs_lbls.sort()
                             
-                        for neigh_lbl in neigh_lbls:
-                            
+                            prev_nbr_lbl = nbrs_lbls[0]
+                            c = 1
+                            for nbr_lbl in nbrs_lbls[1:]:
+                                if nbr_lbl == prev_nbr_lbl:
+                                    c += 1
+                                else:
+                                    num_of_nbr_lbl[prev_nbr_lbl] = c
+                                    prev_nbr_lbl = nbr_lbl
+                                    c = 1
+                            num_of_nbr_lbl[nbr_lbl] = c
+  
                         
                         # apply count sensitive neighborhood hash
-                        new_bit_lbl = upd_lbls_dict[graph_num][v]
-                        for v_neigh in neigh_iter:
-                            new_bit_lbl ^= upd_lbls_dict[graph_num][v_neigh]
+                        new_bit_lbl = rot_left(upd_lbls_dict[graph_num][v], 1)
+                        for nbr_lbl, num in num_of_nbr_lbl.iteritems():
+                            new_bit_lbl ^= rot_left(nbr_lbl ^ num, num)
                 
                 if r < h:
                     # next_upd_lbls_dict[graph_num][v] == label_map[lbl]
                     # == new_bit_lbl
                     next_upd_lbls_dict[graph_num][v] = new_bit_lbl
-                else:
-                    # r == h
+                
+                if r == h or all_iter:
                     if new_bit_lbl not in index_of_lbl_dict[graph_num]:
                         # len(feature_counts_dict[graph_num])
                         # == len(features_dict[graph_num])
@@ -246,7 +259,7 @@ def extract_features(graph_of_num, h, count_sensitive = True):
             upd_lbls_dict = next_upd_lbls_dict
             next_upd_lbls_dict = dict_of_cleared_dicts
     
-   
+    
 
     # list containing the features of all graphs
     features = []
@@ -272,13 +285,44 @@ def extract_features(graph_of_num, h, count_sensitive = True):
 #    del new_compr_lbl
 #    del next_compr_lbl
     
+    # old
+#    for (graph_num, (G, class_lbl)) in graph_of_num.iteritems():
+#        features += features_dict[graph_num]
+#        feature_counts += feature_counts_dict[graph_num]
+#        feature_ptr.append(feature_ptr[-1] + len(features_dict[graph_num]))
+#    
+#        class_lbls.append(class_lbl)
+    # old
+    
+    # new
+    # keys are the bit labels and the values are new compressed labels
+    compr_func = {}
+    
+    # next_compr_lbl is used for assigning new compressed labels to the nodes
+    # These build the features (= columns in data_matrix) used for the explicit
+    # graph embedding
+    next_compr_lbl = 0
+    
+    
     
     for (graph_num, (G, class_lbl)) in graph_of_num.iteritems():
-        features += features_dict[graph_num]
-        feature_counts += feature_counts_dict[graph_num]
+        for bit_lbl, bit_lbl_count in itools.izip(features_dict[graph_num],
+                                                  feature_counts_dict[graph_num]):
+            if not bit_lbl in compr_func:
+                compr_func[bit_lbl] = next_compr_lbl
+                compr_lbl = next_compr_lbl
+                next_compr_lbl += 1
+            else:
+                compr_lbl = compr_func[bit_lbl]
+                
+            features.append(compr_lbl)
+            feature_counts.append(bit_lbl_count)
+            
+            
         feature_ptr.append(feature_ptr[-1] + len(features_dict[graph_num]))
     
         class_lbls.append(class_lbl)
+    # new
     
     class_lbls = array(class_lbls)
     
@@ -328,7 +372,8 @@ if __name__ == '__main__':
     h = 10
     start = time.time()
     data_matrix, class_lbls = extract_features(graph_of_num, h,
-                                               count_sensitive = False)
+                                               count_sensitive = True,
+                                               all_iter = True)
     end = time.time()
     print 'h = %d: %.3f' % (h, end - start)
     

@@ -49,9 +49,9 @@ def optimize_embedding_param(clf, graph_of_num, embedding, param_range,
         cvs[it] = (outer_cv, inner_cvs)
                                     
     scores = {}
-    for h in param_range:  
-        print 'extracting features (h = %d)' % h
-        data_matrix, class_lbls = embedding.extract_features(graph_of_num, h)
+    for param in param_range:  
+        print 'extracting features (param = %d)' % param
+        data_matrix, class_lbls = embedding.extract_features(graph_of_num, param)
         
         for i in xrange(num_iter):
             if not i in scores:
@@ -60,7 +60,7 @@ def optimize_embedding_param(clf, graph_of_num, embedding, param_range,
             
             for j, (train_indices, test_indices) in enumerate(outer_cv):
                 if j not in scores[i]:
-                    scores[i][j] = {'best_h' : -1, 'best_score' : 0.0}
+                    scores[i][j] = {'best_param' : -1, 'best_score' : 0.0}
                 
                 inner_cv = inner_cvs[j]
                 
@@ -69,26 +69,26 @@ def optimize_embedding_param(clf, graph_of_num, embedding, param_range,
                                                  class_lbls[train_indices],
                                                  cv = inner_cv).mean()
             
-                sys.stdout.write('h = %d, i = %d, j = %d: score = %.2f\n' %\
-                                                                 (h, i, j, score))            
+                sys.stdout.write('param = %d, i = %d, j = %d: score = %.2f\n' %\
+                                                             (param, i, j, score))            
             
                 if score > scores[i][j]['best_score']:
                     scores[i][j]['best_score'] = score
-                    scores[i][j]['best_h'] = h
+                    scores[i][j]['best_param'] = param
             
             print ''                                          
     
-    best_h_values = {}
+    best_param_values = {}
     for i in xrange(num_iter):
         for j in scores[i].iterkeys():
-            best_h = scores[i][j]['best_h']
-            if best_h not in best_h_values:
-                best_h_values[best_h] = {i:[j]}
+            best_param = scores[i][j]['best_param']
+            if best_param not in best_param_values:
+                best_param_values[best_param] = {i:[j]}
             else:
-                if i not in best_h_values[best_h].iterkeys():
-                    best_h_values[best_h][i] = [j]
+                if i not in best_param_values[best_param].iterkeys():
+                    best_param_values[best_param][i] = [j]
                 else:
-                    best_h_values[best_h][i].append(j)
+                    best_param_values[best_param][i].append(j)
     
     scores = {}
     outer_cv_lists = {}
@@ -97,18 +97,19 @@ def optimize_embedding_param(clf, graph_of_num, embedding, param_range,
         outer_cv, inner_cvs = cvs[i]
         outer_cv_lists[i] = list(outer_cv)
         
-    for best_h in best_h_values.iterkeys():
-        print '\nextracting features (h = %d)' % best_h
-        data_matrix, class_lbls = embedding.extract_features(graph_of_num, best_h)
-        for i in best_h_values[best_h].iterkeys():
-            for j in best_h_values[best_h][i]:
+    for best_param in best_param_values.iterkeys():
+        print '\nextracting features (param = %d)' % best_param
+        data_matrix, class_lbls = embedding.extract_features(graph_of_num,
+                                                             best_param)
+        for i in best_param_values[best_param].iterkeys():
+            for j in best_param_values[best_param][i]:
                 train_indices, test_indices = outer_cv_lists[i][j]
                 clf.fit(data_matrix[train_indices], class_lbls[train_indices])
                 score = clf.score(data_matrix[test_indices],
                                   class_lbls[test_indices])
                 scores[i].append(score)
-                print "i = %d, j = %d: score on test data = %.2f (for h = %d)" %\
-                                                             (i, j, score, best_h)
+                print ("i = %d, j = %d: score on test data = %.2f (for param "
+                       "= %d)") % (i, j, score, best_param)
     
     mean_scores = []            
     for i in xrange(num_iter):
@@ -164,9 +165,9 @@ def optimize_embedding_and_kernel_param(graph_of_num, embedding, param_range,
         cvs[it] = (outer_cv, inner_cvs)
                                     
     scores = {}
-    for h in param_range:  
-        print 'extracting features (h = %d)' % h
-        data_matrix, class_lbls = embedding.extract_features(graph_of_num, h)
+    for param in param_range:  
+        print 'extracting features (param = %d)' % param
+        data_matrix, class_lbls = embedding.extract_features(graph_of_num, param)
         
         for i in xrange(num_iter):
             if not i in scores:
@@ -175,7 +176,7 @@ def optimize_embedding_and_kernel_param(graph_of_num, embedding, param_range,
             
             for j, (train_indices, test_indices) in enumerate(outer_cv):
                 if j not in scores[i]:
-                    scores[i][j] = {'best_h' : -1, 'best_score' : 0.0}
+                    scores[i][j] = {'best_param' : -1, 'best_score' : 0.0}
                 
                 inner_cv = inner_cvs[j]
                 
@@ -185,26 +186,26 @@ def optimize_embedding_and_kernel_param(graph_of_num, embedding, param_range,
                                                  class_lbls[train_indices],
                                                  cv = inner_cv).mean()
             
-                sys.stdout.write('h = %d, i = %d, j = %d: score = %.2f\n' %\
-                                                                 (h, i, j, score))            
+                sys.stdout.write('param = %d, i = %d, j = %d: score = %.2f\n' %\
+                                                             (param, i, j, score))            
             
                 if score > scores[i][j]['best_score']:
                     scores[i][j]['best_score'] = score
-                    scores[i][j]['best_h'] = h
+                    scores[i][j]['best_param'] = param
             
             print ''                                          
     
-    best_h_values = {}
+    best_param_values = {}
     for i in xrange(num_iter):
         for j in scores[i].iterkeys():
-            best_h = scores[i][j]['best_h']
-            if best_h not in best_h_values:
-                best_h_values[best_h] = {i:[j]}
+            best_param = scores[i][j]['best_param']
+            if best_param not in best_param_values:
+                best_param_values[best_param] = {i:[j]}
             else:
-                if i not in best_h_values[best_h].iterkeys():
-                    best_h_values[best_h][i] = [j]
+                if i not in best_param_values[best_param].iterkeys():
+                    best_param_values[best_param][i] = [j]
                 else:
-                    best_h_values[best_h][i].append(j)
+                    best_param_values[best_param][i].append(j)
     
     scores = {}
     outer_cv_lists = {}
@@ -213,11 +214,12 @@ def optimize_embedding_and_kernel_param(graph_of_num, embedding, param_range,
         outer_cv, inner_cvs = cvs[i]
         outer_cv_lists[i] = list(outer_cv)
         
-    for best_h in best_h_values.iterkeys():
-        print '\nextracting features (h = %d)' % best_h
-        data_matrix, class_lbls = embedding.extract_features(graph_of_num, best_h)
-        for i in best_h_values[best_h].iterkeys():
-            for j in best_h_values[best_h][i]:
+    for best_param in best_param_values.iterkeys():
+        print '\nextracting features (param = %d)' % best_param
+        data_matrix, class_lbls = embedding.extract_features(graph_of_num,
+                                                             best_param)
+        for i in best_param_values[best_param].iterkeys():
+            for j in best_param_values[best_param][i]:
                 train_indices, test_indices = outer_cv_lists[i][j]
                                           
                 lin_train_score =\
@@ -245,8 +247,8 @@ def optimize_embedding_and_kernel_param(graph_of_num, embedding, param_range,
                     
                 scores[i].append(score)
                 
-                print "i = %d, j = %d: score on test data = %.2f (for h = %d)" %\
-                                                             (i, j, score, best_h)
+                print ("i = %d, j = %d: score on test data = %.2f (for param = "
+                       "%d)") % (i, j, score, best_param)
     
     mean_scores = []            
     for i in xrange(num_iter):
