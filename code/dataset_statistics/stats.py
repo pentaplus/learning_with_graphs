@@ -12,7 +12,7 @@ script_path = dirname(abspath(filename))
 # of the script's parent directory
 sys.path.append(join(script_path, '..'))
 
-from misc import datasetloader
+from misc import dataset_loader
 
 
 
@@ -31,9 +31,9 @@ DATASET = 'ENZYMES'
 #DATASET = 'PTC(MR)'
 
 
-graph_of_num = datasetloader.load_dataset(DATASETS_PATH, DATASET)
+graph_of_num = dataset_loader.load_dataset(DATASETS_PATH, DATASET)
     
-graphs_of_class = datasetloader.determine_graphs_of_class_dict(graph_of_num)
+graphs_of_class = dataset_loader.determine_graphs_of_class_dict(graph_of_num)
 
 classes = graphs_of_class.keys()
 

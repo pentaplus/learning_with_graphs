@@ -286,12 +286,12 @@ def extract_features(graph_of_num, h, count_sensitive = True, all_iter = False):
 #    del next_compr_lbl
     
     # old
-    for (graph_num, (G, class_lbl)) in graph_of_num.iteritems():
-        features += features_dict[graph_num]
-        feature_counts += feature_counts_dict[graph_num]
-        feature_ptr.append(feature_ptr[-1] + len(features_dict[graph_num]))
-    
-        class_lbls.append(class_lbl)
+#    for (graph_num, (G, class_lbl)) in graph_of_num.iteritems():
+#        features += features_dict[graph_num]
+#        feature_counts += feature_counts_dict[graph_num]
+#        feature_ptr.append(feature_ptr[-1] + len(features_dict[graph_num]))
+#    
+#        class_lbls.append(class_lbl)
     # old
     
     # new
@@ -347,11 +347,11 @@ def extract_features(graph_of_num, h, count_sensitive = True, all_iter = False):
 # !!
 if __name__ == '__main__':
     import time
-    from misc import datasetloader
+    from misc import dataset_loader
         
     DATASETS_PATH = join(script_path, '..', '..', 'datasets')
     dataset = 'MUTAG'
-    graph_of_num = datasetloader.load_dataset(DATASETS_PATH, dataset)
+    graph_of_num = dataset_loader.load_dataset(DATASETS_PATH, dataset)
     
     del filename
     del script_path

@@ -1,12 +1,16 @@
 # planed procedure:
 # at night:
-# 1. test old CSNH (10 iterations, libsvm-liblinear)
-# 2. test new CSNH (10 iterations, libsvm-liblinear)
-#
+# 1. test new CSNH all it (10 iterations, libsvm-liblinear)
+# 2. test GRAPHLET_KERNEL for param = 3 (10 iterations, libsvm-liblinear)
+# 3. test GRAPHLET_KERNEL for param = 4 (10 iterations, libsvm-liblinear)
+# 
 # by day:
 # 
 #
-# 1. implement graphlet kernel
+# 1. evaluate performance on ANDROID FCG PARTIAL
+# 2. gradually increment the number of samples of ANDROID FCG PARTIAL
+# 3. convert CFG dataset
+# 
 # 100. make feature vectors for NHGK unary 
 
 # CAREFUL: PERFECTIONISM!
@@ -31,7 +35,7 @@ SCRIPT_PATH = dirname(abspath(FILE_NAME))
 # !!
 del FILE_NAME
 
-from misc import datasetloader, utils
+from misc import dataset_loader, utils
 from performance_evaluation import cross_validation
 
 # --------------------------------------------------------------------------------
@@ -73,7 +77,7 @@ EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
 #DATASET = 'CFG' # !! change file names from hashes to numbers
 
 # sorted by number of graphs in ascending order
-DATASETS = ['MUTAG', 'PTC(MR)', 'ENZYMES', 'DD', 'NCI1', 'NCI109']
+#DATASETS = ['MUTAG', 'PTC(MR)', 'ENZYMES', 'DD', 'NCI1', 'NCI109']
 #DATASETS = ['MUTAG', 'PTC(MR)', 'ENZYMES']
 #DATASETS = ['DD', 'NCI1', 'NCI109']
 #DATASETS = ['MUTAG']
@@ -82,7 +86,7 @@ DATASETS = ['MUTAG', 'PTC(MR)', 'ENZYMES', 'DD', 'NCI1', 'NCI109']
 #DATASETS = ['DD']
 #DATASETS = ['NCI1']
 #DATASETS = ['NCI109']
-#DATASETS = ['ANDROID FCG PARTIAL']
+DATASETS = ['ANDROID FCG PARTIAL']
 
 OPT_PARAM = True
 #OPT_PARAM = False
@@ -96,8 +100,8 @@ OPT = False
 # kernels for LIBSVM classifier
 #LIBSVM_KERNELS = ['linear', 'rbf', 'poly', 'sigmoid']
 #LIBSVM_KERNELS = ['linear', 'rbf', 'sigmoid']
-LIBSVM_KERNELS = ['linear', 'rbf']
-#LIBSVM_KERNELS = ['linear']
+#LIBSVM_KERNELS = ['linear', 'rbf']
+LIBSVM_KERNELS = ['linear']
 #LIBSVM_KERNELS = ['rbf']
 #LIBSVM_KERNELS = ['sigmoid']
 #LIBSVM_KERNELS = ['poly']
@@ -125,7 +129,7 @@ LIMIT_CLF_MAX_ITER_LD = False
 def load_dataset(dataset, datasets_path):
     dataset_loading_start_time = time.time()
 
-    graph_of_num = datasetloader.load_dataset(datasets_path, dataset)
+    graph_of_num = dataset_loader.load_dataset(datasets_path, dataset)
 
     dataset_loading_end_time = time.time()
     dataset_loading_time = dataset_loading_end_time - dataset_loading_start_time
@@ -366,3 +370,6 @@ print 'The evaluation of the emedding method(s) took %.1f seconds' % total_time
 ##                                                 strat_kfold = False,
 #                                                 strat_kfold = True,
 #                                                 verbose = False)
+
+
+

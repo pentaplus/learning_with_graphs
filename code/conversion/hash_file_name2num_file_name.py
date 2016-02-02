@@ -31,21 +31,22 @@ DATASET_PATH = ANDROID_FCG_PARTIAL_PATH
 class_folders = os.listdir(DATASET_PATH)
 
 graph_num = 0
-f = open(join(DATASET_PATH, 'hash_num_map.txt'), 'w')
-regexp = '.*?(?=\.)'
-for class_folder in class_folders:
-    graph_files_path = join(DATASET_PATH, class_folder)
-    graph_file_names = os.listdir(graph_files_path)
-    
-    for graph_file_name in graph_file_names:
-        os.rename(join(graph_files_path, graph_file_name),
-                  join(graph_files_path, str(graph_num) + '.pz'))
-                  
-        hash_part = re.search(regexp, graph_file_name).group(0)
-        f.write(hash_part + ': ' + str(graph_num) + '\n')          
+with open(join(DATASET_PATH, 'hash_num_map.txt'), 'w') as f:
+    regexp = '.*?(?=\.)'
+    for class_folder in class_folders:
+        graph_files_path = join(DATASET_PATH, class_folder)
+        graph_file_names = os.listdir(graph_files_path)
         
-        graph_num += 1
-        
-f.close()
+        for graph_file_name in graph_file_names:
+            os.rename(join(graph_files_path, graph_file_name),
+                      join(graph_files_path, str(graph_num) + '.pz'))
+                      
+            hash_part = re.search(regexp, graph_file_name).group(0)
+            f.write(hash_part + ': ' + str(graph_num) + '\n')          
+            
+            graph_num += 1
+
                                 
 #os.rename(join(graph_files_path, 'bla.txt'), join(graph_files_path, 'aha.txt'))
+
+    

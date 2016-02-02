@@ -13,12 +13,8 @@ script_path = dirname(abspath(filename))
 # of the script's parent directory
 sys.path.append(join(script_path, '..'))
 
-from misc import datasetloader, utils
+from misc import utils
 
-
-DATASETS_PATH = join(script_path, '..', '..', 'datasets')
-dataset = 'MUTAG'
-graph_of_num = datasetloader.load_dataset(DATASETS_PATH, dataset)
 
 
 def extract_features(graph_of_num, h):
@@ -192,12 +188,14 @@ def extract_features(graph_of_num, h):
     
     return data_matrix, class_lbls
 
+
 # !!
 if __name__ == '__main__':
-    from misc import datasetloader
+    from misc import dataset_loader
+    
     DATASETS_PATH = join(script_path, '..', '..', 'datasets')
     dataset = 'MUTAG'
-    graph_of_num = datasetloader.load_dataset(DATASETS_PATH, dataset)
+    graph_of_num = dataset_loader.load_dataset(DATASETS_PATH, dataset)    
     
     del filename
     del script_path

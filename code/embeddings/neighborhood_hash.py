@@ -22,11 +22,11 @@ def extract_features(graph_of_num, h):
 # !!
 if __name__ == '__main__':
     import time
-    from misc import datasetloader
+    from misc import dataset_loader
     
     DATASETS_PATH = join(script_path, '..', '..', 'datasets')
     dataset = 'MUTAG'
-    graph_of_num = datasetloader.load_dataset(DATASETS_PATH, dataset)
+    graph_of_num = dataset_loader.load_dataset(DATASETS_PATH, dataset)
     
     
     h = 9

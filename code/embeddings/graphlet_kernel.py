@@ -14,17 +14,9 @@ script_path = dirname(abspath(filename))
 # of the script's parent directory
 sys.path.append(join(script_path, '..'))
 
-from misc import datasetloader, utils
+from misc import utils
 
 
-# test section -------------------------------------------------------------------
-
-
-#---------------------------------------------------------------------------------
-
-DATASETS_PATH = join(script_path, '..', '..', 'datasets')
-dataset = 'MUTAG'
-graph_of_num = datasetloader.load_dataset(DATASETS_PATH, dataset)
 
 def calc_cards(v1_nbrs, v2_nbrs, v3_nbrs):
     return np.array([len(v1_nbrs - (v2_nbrs | v3_nbrs)),
@@ -195,34 +187,37 @@ def extract_features(graph_of_num, graphlet_size = 4):
 
 
 if __name__ == '__main__':
-    # determine script path
-    filename = inspect.getframeinfo(inspect.currentframe()).filename
-    script_path = dirname(abspath(filename))
-    # modify the search path for modules in order to access modules in subfolders
-    # of the script's parent directory
-    sys.path.append(join(script_path, '..'))
+    import time
+    from misc import dataset_loader
     
-    from misc import datasetloader
     DATASETS_PATH = join(script_path, '..', '..', 'datasets')
 #    dataset = 'MUTAG'
 #    dataset = 'DD'
     dataset = 'ENZYMES'
 #    dataset = 'NCI1'
 #    dataset = 'NCI109'
-    graph_of_num = datasetloader.load_dataset(DATASETS_PATH, dataset)
+    graph_of_num = dataset_loader.load_dataset(DATASETS_PATH, dataset)
     
     del filename
     del script_path
     del dataset
     
-    import time
-    start = time.time()
+    
+#    start = time.time()
 #    data_matrix, class_lbls = extract_features(graph_of_num, 4)
+#    end = time.time()
+#    print end - start
+    
+
+
+    # test section ---------------------------------------------------------------
+    DATASET = 'ANDROID FCG PARTIAL'
+    
+    start = time.time()
+    graph_of_num = dataset_loader.load_dataset(DATASETS_PATH, DATASET)
     end = time.time()
     print end - start
     
-
-    f = open('python_edges_count_of_each_graph.csv', 'w')    
-    for graph_num, (G, class_lbl) in graph_of_num.iteritems():
-        f.write(str(graph_num) + '; ' + str(2*G.number_of_edges()) + '\n')
-    f.close()
+    
+    
+    
