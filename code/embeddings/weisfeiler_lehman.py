@@ -1,7 +1,7 @@
 import inspect
+import numpy as np
 import sys
 
-from numpy import array, float64
 from os.path import abspath, dirname, join
 from scipy.sparse import csr_matrix
 
@@ -64,16 +64,20 @@ def extract_features(graph_of_num, h):
             for v in G.nodes_iter():
                 if r == 0:
                     uncompr_lbl = G.node[v]['label']
+                    if isinstance(uncompr_lbl, np.ndarray):
+                        uncompr_lbl = utils.calc_hash_of_array(uncompr_lbl)
                 else:
                     # r > 0
                     has_elem, nbrs_iter = utils.has_elem(G.neighbors_iter(v))
                     if not has_elem:
                         # node v has no neighbors
+                        next_upd_lbls_dict[graph_num][v] =\
+                                                       upd_lbls_dict[graph_num][v]
                         continue
             
                     # determine the list of labels of the nodes adjacent to v
                     nbrs_lbls = []
-                    for v_nbr in nbrs_iter:
+                    for v_nbr in nbrs_iter:                            
                         nbrs_lbls.append(upd_lbls_dict[graph_num][v_nbr])
                 
                     # sort nbrs_lbls in ascending order
@@ -169,7 +173,7 @@ def extract_features(graph_of_num, h):
     
         class_lbls.append(class_lbl)
     
-    class_lbls = array(class_lbls)
+    class_lbls = np.array(class_lbls)
     
     
     # data_matrix is of type csr_matrix and has the following form:
@@ -178,10 +182,10 @@ def extract_features(graph_of_num, h):
     #                .
     #                .
     #  feature vector of the last graph]
-    data_matrix = csr_matrix((array(feature_counts), array(features),
-                              array(feature_ptr)),
+    data_matrix = csr_matrix((np.array(feature_counts), np.array(features),
+                              np.array(feature_ptr)),
                               shape = (len(graph_of_num), len(compr_func)),
-                              dtype = float64)
+                              dtype = np.float64)
     
     # !! DEBUG
 #    Z = data_matrix.todense()

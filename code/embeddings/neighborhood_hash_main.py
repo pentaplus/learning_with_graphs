@@ -1,8 +1,8 @@
 import inspect
 import itertools as itools
+import numpy as np
 import sys
 
-from numpy import array, float64
 from os.path import abspath, dirname, join
 from random import randint
 from scipy.sparse import csr_matrix
@@ -162,6 +162,10 @@ def extract_features(graph_of_num, h, count_sensitive = True, all_iter = False):
             for v in G.nodes_iter():
                 if r == 0:
                     orig_lbl = G.node[v]['label']
+                    
+                    if isinstance(orig_lbl, np.ndarray):
+                        orig_lbl = utils.calc_hash_of_array(orig_lbl)
+                        
                     if not orig_lbl in label_map.iterkeys():
                         # assign a random bit label new_bit_lbl to orig_lbl
                         new_bit_lbl = randint(1, 2**BIT_LBL_LEN - 1)
@@ -174,6 +178,8 @@ def extract_features(graph_of_num, h, count_sensitive = True, all_iter = False):
                     has_elem, nbrs_iter = utils.has_elem(G.neighbors_iter(v))
                     if not has_elem:
                         # node v has no neighbors
+                        next_upd_lbls_dict[graph_num][v] =\
+                                                       upd_lbls_dict[graph_num][v]
                         continue
             
 #                    # determine the list of labels of the nodes adjacent to v
@@ -324,7 +330,7 @@ def extract_features(graph_of_num, h, count_sensitive = True, all_iter = False):
         class_lbls.append(class_lbl)
     # new
     
-    class_lbls = array(class_lbls)
+    class_lbls = np.array(class_lbls)
     
     
     # data_matrix is of type csr_matrix and has the following form:
@@ -333,10 +339,10 @@ def extract_features(graph_of_num, h, count_sensitive = True, all_iter = False):
     #                .
     #                .
     #  feature vector of the last graph]
-    data_matrix = csr_matrix((array(feature_counts), array(features),
-                              array(feature_ptr)),
+    data_matrix = csr_matrix((np.array(feature_counts), np.array(features),
+                              np.array(feature_ptr)),
 #                              shape = (len(graph_of_num), len(label_map)),
-                              dtype = float64)
+                              dtype = np.float64)
     
     # !! DEBUG
 #    Z = data_matrix.todense()

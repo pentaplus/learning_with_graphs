@@ -43,6 +43,7 @@ from performance_evaluation import cross_validation
 # --------------------------------------------------------------------------------
 DATASETS_PATH = join(SCRIPT_PATH, '..', 'datasets')
 
+# embeddings
 WEISFEILER_LEHMAN = 'weisfeiler_lehman'
 NEIGHBORHOOD_HASH = 'neighborhood_hash'
 COUNT_SENSITIVE_NEIGHBORHOOD_HASH = 'count_sensitive_neighborhood_hash'
@@ -51,11 +52,21 @@ COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER =\
 GRAPHLET_KERNEL = 'graphlet_kernel'
 LABEL_COUNTER = 'label_counter'
 
+# datasets
+MUTAG = 'MUTAG'
+PTC_MR = 'PTC(MR)'
+ENZYMES = 'ENZYMES'
+DD = 'DD'
+NCI1 = 'NCI1'
+NCI109 = 'NCI109'
+ANDROID_FCG_PARTIAL = 'ANDROID FCG PARTIAL'
+
 #EMBEDDING_NAMES = [LABEL_COUNTER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, LABEL_COUNTER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
+EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
 #EMBEDDING_NAMES = [NEIGHBORHOOD_HASH]
-EMBEDDING_NAMES = [COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
+#EMBEDDING_NAMES = [COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
 #EMBEDDING_NAMES = [COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER]
 #EMBEDDING_NAMES = [NEIGHBORHOOD_HASH, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL]
@@ -77,16 +88,16 @@ EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
 #DATASET = 'CFG' # !! change file names from hashes to numbers
 
 # sorted by number of graphs in ascending order
-#DATASETS = ['MUTAG', 'PTC(MR)', 'ENZYMES', 'DD', 'NCI1', 'NCI109']
-#DATASETS = ['MUTAG', 'PTC(MR)', 'ENZYMES']
-#DATASETS = ['DD', 'NCI1', 'NCI109']
-#DATASETS = ['MUTAG']
-#DATASETS = ['PTC(MR)']
-#DATASETS = ['ENZYMES']
-#DATASETS = ['DD']
-#DATASETS = ['NCI1']
-#DATASETS = ['NCI109']
-DATASETS = ['ANDROID FCG PARTIAL']
+DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
+#DATASETS = [MUTAG, PTC_MR, ENZYMES]
+#DATASETS = [DD, NCI1, NCI109]
+#DATASETS = [MUTAG]
+#DATASETS = [PTC_MR]
+#DATASETS = [ENZYMES]
+#DATASETS = [DD]
+#DATASETS = [NCI1]
+#DATASETS = [NCI109]
+#DATASETS = [ANDROID_FCG_PARTIAL]
 
 OPT_PARAM = True
 #OPT_PARAM = False
@@ -100,8 +111,8 @@ OPT = False
 # kernels for LIBSVM classifier
 #LIBSVM_KERNELS = ['linear', 'rbf', 'poly', 'sigmoid']
 #LIBSVM_KERNELS = ['linear', 'rbf', 'sigmoid']
-#LIBSVM_KERNELS = ['linear', 'rbf']
-LIBSVM_KERNELS = ['linear']
+LIBSVM_KERNELS = ['linear', 'rbf']
+#LIBSVM_KERNELS = ['linear']
 #LIBSVM_KERNELS = ['rbf']
 #LIBSVM_KERNELS = ['sigmoid']
 #LIBSVM_KERNELS = ['poly']
@@ -116,6 +127,7 @@ NUM_ITER = 10
 NUM_FOLDS = 10
 
 NUM_INNER_FOLDS_SD = 10
+#NUM_INNER_FOLDS_SD = 4 # !!
 NUM_INNER_FOLDS_LD = 4
 
 LIMIT_CLF_MAX_ITER_SD = False
@@ -174,8 +186,9 @@ def init_clf(liblinear, max_iter, kernel = None):
 #    return svm.LinearSVC() # !!
     return clf
         
-    
-def set_params(num_samples, limit_clf_max_iter_sd, limit_clf_max_iter_ld):
+
+def set_params(num_samples, dataset, limit_clf_max_iter_sd,
+               limit_clf_max_iter_ld):
     if num_samples > 1000:
         # use library LIBLINEAR
         LIBLINEAR = True
@@ -230,7 +243,7 @@ for dataset in DATASETS:
     # set parameters depending on whether or not the number of samples within the
     # dataset is larger than 1000
     LIBLINEAR, KERNELS, NUM_INNER_FOLDS, CLF_MAX_ITER =\
-    set_params(num_samples, LIMIT_CLF_MAX_ITER_SD, LIMIT_CLF_MAX_ITER_LD)
+    set_params(num_samples, dataset, LIMIT_CLF_MAX_ITER_SD, LIMIT_CLF_MAX_ITER_LD)
         
     
     for embedding_name in EMBEDDING_NAMES:

@@ -23,7 +23,8 @@ def optimize_embedding_param(clf, graph_of_num, embedding, param_range,
                              strat_kfold, num_iter, num_outer_folds,
                              num_inner_folds, result_file):
     cross_val_start_time = time.time()                                              
-                                              
+    
+    # !! really necessary?                              
     data_matrix, class_lbls = embedding.extract_features(graph_of_num,
                                                          min(param_range))
     # precompute KFold/StratifiedKFold objects
