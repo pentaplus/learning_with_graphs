@@ -5,7 +5,7 @@ from itertools import tee
 
 def calc_hash_of_array(array):
     array.flags.writeable = False
-    return hash(array.data)   
+    return hash(array.data)
     
     
 def clear_dicts_of_dict(d):

@@ -1,6 +1,7 @@
 # planed procedure:
 # at night:
-# 1. test new CSNH all it (10 iterations, libsvm-liblinear)
+# 1. test NH and CSNH all iter (10 iterations, libsvm-liblinear)
+# 2. test CSNH on PTC(MR) on Benny-Notebook (10 iterations, libsvm-liblinear)
 # 2. test GRAPHLET_KERNEL for param = 3 (10 iterations, libsvm-liblinear)
 # 3. test GRAPHLET_KERNEL for param = 4 (10 iterations, libsvm-liblinear)
 # 
@@ -64,9 +65,9 @@ ANDROID_FCG_PARTIAL = 'ANDROID FCG PARTIAL'
 #EMBEDDING_NAMES = [LABEL_COUNTER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, LABEL_COUNTER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
-EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
+#EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
 #EMBEDDING_NAMES = [NEIGHBORHOOD_HASH]
-#EMBEDDING_NAMES = [COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
+EMBEDDING_NAMES = [COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
 #EMBEDDING_NAMES = [COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER]
 #EMBEDDING_NAMES = [NEIGHBORHOOD_HASH, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL]
@@ -74,10 +75,15 @@ EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
 
 # keys are indices of the list EMBEDDING_NAMES, values are the respective
 # parameters
-EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                    NEIGHBORHOOD_HASH : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                    COUNT_SENSITIVE_NEIGHBORHOOD_HASH :\
-                                               [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+EMBEDDING_PARAMS = {
+#                    WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+#                    WEISFEILER_LEHMAN : [10],
+                    WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5],
+#                    NEIGHBORHOOD_HASH : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                    NEIGHBORHOOD_HASH : [0, 1, 2, 3, 4, 5],
+#                    COUNT_SENSITIVE_NEIGHBORHOOD_HASH :\
+#                                               [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                    COUNT_SENSITIVE_NEIGHBORHOOD_HASH : [0, 1, 2, 3, 4, 5],
                     COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER :\
                                                [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
 #                    GRAPHLET_KERNEL : [3, 4],
@@ -88,10 +94,10 @@ EMBEDDING_PARAMS = {WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
 #DATASET = 'CFG' # !! change file names from hashes to numbers
 
 # sorted by number of graphs in ascending order
-DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
+#DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
 #DATASETS = [MUTAG, PTC_MR, ENZYMES]
 #DATASETS = [DD, NCI1, NCI109]
-#DATASETS = [MUTAG]
+DATASETS = [MUTAG]
 #DATASETS = [PTC_MR]
 #DATASETS = [ENZYMES]
 #DATASETS = [DD]
@@ -102,8 +108,8 @@ DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
 OPT_PARAM = True
 #OPT_PARAM = False
 
-COMPARE_PARAMS = True
-#COMPARE_PARAMS = False
+#COMPARE_PARAMS = True
+COMPARE_PARAMS = False
 
 #OPT = True
 OPT = False
@@ -111,8 +117,8 @@ OPT = False
 # kernels for LIBSVM classifier
 #LIBSVM_KERNELS = ['linear', 'rbf', 'poly', 'sigmoid']
 #LIBSVM_KERNELS = ['linear', 'rbf', 'sigmoid']
-LIBSVM_KERNELS = ['linear', 'rbf']
-#LIBSVM_KERNELS = ['linear']
+#LIBSVM_KERNELS = ['linear', 'rbf']
+LIBSVM_KERNELS = ['linear']
 #LIBSVM_KERNELS = ['rbf']
 #LIBSVM_KERNELS = ['sigmoid']
 #LIBSVM_KERNELS = ['poly']
@@ -121,8 +127,8 @@ LIBSVM_KERNELS = ['linear', 'rbf']
 STRAT_KFOLD_VALUES = [False]
 #STRAT_KFOLD_VALUES = [True]
 
-#NUM_ITER = 1
-NUM_ITER = 10
+NUM_ITER = 5
+#NUM_ITER = 10
 
 NUM_FOLDS = 10
 
