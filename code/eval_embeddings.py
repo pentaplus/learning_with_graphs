@@ -7,10 +7,10 @@
 # 
 # by day:
 # 
-#
-# 1. evaluate performance on ANDROID FCG PARTIAL
-# 2. gradually increment the number of samples of ANDROID FCG PARTIAL
-# 3. convert CFG dataset
+# 1. convert CFG dataset
+# 2. evaluate performance on ANDROID FCG PARTIAL
+# 3. gradually increment the number of samples of ANDROID FCG PARTIAL
+# 
 # 
 # 100. make feature vectors for NHGK unary 
 
@@ -81,9 +81,9 @@ EMBEDDING_PARAMS = {
 #                    WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5],
 #                    NEIGHBORHOOD_HASH : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                     NEIGHBORHOOD_HASH : [0, 1, 2, 3, 4, 5],
-#                    COUNT_SENSITIVE_NEIGHBORHOOD_HASH :\
-#                                               [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                    COUNT_SENSITIVE_NEIGHBORHOOD_HASH : [0, 1, 2, 3, 4, 5],
+                    COUNT_SENSITIVE_NEIGHBORHOOD_HASH :\
+                                               [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+#                    COUNT_SENSITIVE_NEIGHBORHOOD_HASH : [0, 1, 2, 3, 4, 5],
                     COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER :\
                                                [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
 #                    GRAPHLET_KERNEL : [3, 4],
@@ -98,12 +98,12 @@ EMBEDDING_PARAMS = {
 #DATASETS = [MUTAG, PTC_MR, ENZYMES]
 #DATASETS = [DD, NCI1, NCI109]
 #DATASETS = [MUTAG]
-#DATASETS = [PTC_MR]
+DATASETS = [PTC_MR]
 #DATASETS = [ENZYMES]
 #DATASETS = [DD]
 #DATASETS = [NCI1]
 #DATASETS = [NCI109]
-DATASETS = [ANDROID_FCG_PARTIAL]
+#DATASETS = [ANDROID_FCG_PARTIAL]
 
 OPT_PARAM = True
 #OPT_PARAM = False
@@ -117,8 +117,8 @@ OPT = False
 # kernels for LIBSVM classifier
 #LIBSVM_KERNELS = ['linear', 'rbf', 'poly', 'sigmoid']
 #LIBSVM_KERNELS = ['linear', 'rbf', 'sigmoid']
-#LIBSVM_KERNELS = ['linear', 'rbf']
-LIBSVM_KERNELS = ['linear']
+LIBSVM_KERNELS = ['linear', 'rbf']
+#LIBSVM_KERNELS = ['linear']
 #LIBSVM_KERNELS = ['rbf']
 #LIBSVM_KERNELS = ['sigmoid']
 #LIBSVM_KERNELS = ['poly']
@@ -127,8 +127,8 @@ LIBSVM_KERNELS = ['linear']
 STRAT_KFOLD_VALUES = [False]
 #STRAT_KFOLD_VALUES = [True]
 
-NUM_ITER = 1
-#NUM_ITER = 10
+#NUM_ITER = 1
+NUM_ITER = 10
 
 NUM_FOLDS = 10
 
