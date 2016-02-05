@@ -7,10 +7,10 @@
 # 
 # by day:
 # 
-#
-# 1. evaluate performance on ANDROID FCG PARTIAL
-# 2. gradually increment the number of samples of ANDROID FCG PARTIAL
-# 3. convert CFG dataset
+# 1. convert CFG dataset
+# 2. evaluate performance on ANDROID FCG PARTIAL
+# 3. gradually increment the number of samples of ANDROID FCG PARTIAL
+# 
 # 
 # 100. make feature vectors for NHGK unary 
 
