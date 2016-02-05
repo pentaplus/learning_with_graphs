@@ -1,12 +1,11 @@
 # planed procedure:
-# at night:
+# at Benny-Notebook:
+# 0. test WL on ANDROID FCG PARTIAL (10 iterations, LIBSVM)
 # 1. test NH and CSNH all iter (10 iterations, libsvm-liblinear)
-# 2. test CSNH on PTC(MR) on Benny-Notebook (10 iterations, libsvm-liblinear)
 # 2. test GRAPHLET_KERNEL for param = 3 (10 iterations, libsvm-liblinear)
 # 3. test GRAPHLET_KERNEL for param = 4 (10 iterations, libsvm-liblinear)
 # 
-# by day:
-# 
+# at Ben-PC:
 # 1. convert CFG dataset
 # 2. evaluate performance on ANDROID FCG PARTIAL
 # 3. gradually increment the number of samples of ANDROID FCG PARTIAL
@@ -98,18 +97,18 @@ EMBEDDING_PARAMS = {
 #DATASETS = [MUTAG, PTC_MR, ENZYMES]
 #DATASETS = [DD, NCI1, NCI109]
 #DATASETS = [MUTAG]
-DATASETS = [PTC_MR]
+#DATASETS = [PTC_MR]
 #DATASETS = [ENZYMES]
 #DATASETS = [DD]
 #DATASETS = [NCI1]
 #DATASETS = [NCI109]
-#DATASETS = [ANDROID_FCG_PARTIAL]
+DATASETS = [ANDROID_FCG_PARTIAL]
 
 OPT_PARAM = True
 #OPT_PARAM = False
 
-COMPARE_PARAMS = True
-#COMPARE_PARAMS = False
+#COMPARE_PARAMS = True
+COMPARE_PARAMS = False
 
 #OPT = True
 OPT = False
@@ -117,8 +116,8 @@ OPT = False
 # kernels for LIBSVM classifier
 #LIBSVM_KERNELS = ['linear', 'rbf', 'poly', 'sigmoid']
 #LIBSVM_KERNELS = ['linear', 'rbf', 'sigmoid']
-LIBSVM_KERNELS = ['linear', 'rbf']
-#LIBSVM_KERNELS = ['linear']
+#LIBSVM_KERNELS = ['linear', 'rbf']
+LIBSVM_KERNELS = ['linear']
 #LIBSVM_KERNELS = ['rbf']
 #LIBSVM_KERNELS = ['sigmoid']
 #LIBSVM_KERNELS = ['poly']
@@ -127,8 +126,8 @@ LIBSVM_KERNELS = ['linear', 'rbf']
 STRAT_KFOLD_VALUES = [False]
 #STRAT_KFOLD_VALUES = [True]
 
-#NUM_ITER = 1
-NUM_ITER = 10
+NUM_ITER = 1
+#NUM_ITER = 10
 
 NUM_FOLDS = 10
 
@@ -177,20 +176,21 @@ def extract_features(graph_of_num, embedding, embedding_param, result_file):
     
     
 def init_clf(liblinear, max_iter, kernel = None):
+    # !!
+    return svm.SVC(kernel = kernel, decision_function_shape = 'ovr',
+                   max_iter = max_iter)     
+#    return svm.LinearSVC(max_iter = max_iter) # !!
+    
     if LIBLINEAR:
         # library LIBLINEAR is used
         # for multiclass classification the One-Versus-Rest scheme is applied,
         # i.e., in case of N different classes N classifiers are trained in total
-        clf = svm.LinearSVC(max_iter = max_iter)
+        return svm.LinearSVC(max_iter = max_iter)
     else:
         # library LIBSVM is used
         # for multiclass classification also the One-Versus-Rest scheme is applied
-        clf = svm.SVC(kernel = kernel,
-                      decision_function_shape = 'ovr',
-                      max_iter = max_iter)
-
-#    return svm.LinearSVC() # !!
-    return clf
+        return svm.SVC(kernel = kernel, decision_function_shape = 'ovr',
+                       max_iter = max_iter)
         
 
 def set_params(num_samples, dataset, limit_clf_max_iter_sd,
