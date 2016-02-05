@@ -1,0 +1,10 @@
+LIBRARY: LIBSVM
+NUM_ITER: 10
+NUM_INNER_FOLDS: 10
+CLF_MAX_ITER: -1 (unlimited)
+
+LINEAR (OPT_PARAM)
+KFold: 0.535 (+/-0.016) in 257.3 seconds
+
+RBF (OPT_PARAM)
+KFold: 0.558 (+/-0.017) in 143.1 seconds
