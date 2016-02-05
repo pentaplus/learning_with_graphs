@@ -62,8 +62,8 @@ def extract_features(graph_of_num, h):
     for r in xrange(h + 1):
         for (graph_num, (G, class_lbl)) in graph_of_num.iteritems():
             # !!        
-#            if graph_num % 100 == 0:
-#                print 'r = ' + str(r) + ', graph_num = ' + str(graph_num)
+            if graph_num % 100 == 0:
+                print 'r = ' + str(r) + ', graph_num = ' + str(graph_num)
                 
             for v in G.nodes_iter():
                 if r == 0:
