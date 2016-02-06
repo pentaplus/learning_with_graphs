@@ -177,8 +177,8 @@ def extract_features(graph_of_num, embedding, embedding_param, result_file):
     
 def init_clf(liblinear, max_iter, kernel = None):
     # !!
-    return svm.SVC(kernel = kernel, decision_function_shape = 'ovr',
-                   max_iter = max_iter)     
+#    return svm.SVC(kernel = kernel, decision_function_shape = 'ovr',
+#                   max_iter = max_iter)     
 #    return svm.LinearSVC(max_iter = max_iter) # !!
     
     if LIBLINEAR:
