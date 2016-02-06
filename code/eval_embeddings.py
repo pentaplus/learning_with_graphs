@@ -1,5 +1,6 @@
 # planed procedure:
 # at Benny-Notebook:
+# 0. test WL on first 6 datasets (param range = {0,...5})
 # 0. test WL on ANDROID FCG PARTIAL (10 iterations, LIBSVM)
 # 1. test NH and CSNH all iter (10 iterations, libsvm-liblinear)
 # 2. test GRAPHLET_KERNEL for param = 3 (10 iterations, libsvm-liblinear)
@@ -75,9 +76,9 @@ EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
 # keys are indices of the list EMBEDDING_NAMES, values are the respective
 # parameters
 EMBEDDING_PARAMS = {
-                    WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+#                    WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
 #                    WEISFEILER_LEHMAN : [10],
-#                    WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5],
+                    WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5],
 #                    NEIGHBORHOOD_HASH : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                     NEIGHBORHOOD_HASH : [0, 1, 2, 3, 4, 5],
                     COUNT_SENSITIVE_NEIGHBORHOOD_HASH :\
@@ -93,7 +94,7 @@ EMBEDDING_PARAMS = {
 #DATASET = 'CFG' # !! change file names from hashes to numbers
 
 # sorted by number of graphs in ascending order
-#DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
+DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
 #DATASETS = [MUTAG, PTC_MR, ENZYMES]
 #DATASETS = [DD, NCI1, NCI109]
 #DATASETS = [MUTAG]
@@ -102,13 +103,13 @@ EMBEDDING_PARAMS = {
 #DATASETS = [DD]
 #DATASETS = [NCI1]
 #DATASETS = [NCI109]
-DATASETS = [ANDROID_FCG_PARTIAL]
+#DATASETS = [ANDROID_FCG_PARTIAL]
 
 OPT_PARAM = True
 #OPT_PARAM = False
 
-#COMPARE_PARAMS = True
-COMPARE_PARAMS = False
+COMPARE_PARAMS = True
+#COMPARE_PARAMS = False
 
 #OPT = True
 OPT = False
@@ -116,8 +117,8 @@ OPT = False
 # kernels for LIBSVM classifier
 #LIBSVM_KERNELS = ['linear', 'rbf', 'poly', 'sigmoid']
 #LIBSVM_KERNELS = ['linear', 'rbf', 'sigmoid']
-#LIBSVM_KERNELS = ['linear', 'rbf']
-LIBSVM_KERNELS = ['linear']
+LIBSVM_KERNELS = ['linear', 'rbf']
+#LIBSVM_KERNELS = ['linear']
 #LIBSVM_KERNELS = ['rbf']
 #LIBSVM_KERNELS = ['sigmoid']
 #LIBSVM_KERNELS = ['poly']
@@ -126,8 +127,8 @@ LIBSVM_KERNELS = ['linear']
 STRAT_KFOLD_VALUES = [False]
 #STRAT_KFOLD_VALUES = [True]
 
-NUM_ITER = 1
-#NUM_ITER = 10
+#NUM_ITER = 1
+NUM_ITER = 10
 
 NUM_FOLDS = 10
 

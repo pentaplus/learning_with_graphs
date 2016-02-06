@@ -4,4 +4,4 @@ NUM_INNER_FOLDS: 4
 CLF_MAX_ITER: 1000
 
 LINEAR (OPT_PARAM)
-KFold: 0.660 (+/-0.000) in 12184.9 seconds
+KFold: 0.855 (+/-0.000) in 11307.8 seconds
