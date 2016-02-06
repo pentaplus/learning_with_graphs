@@ -1,13 +1,17 @@
+import inspect
 import pz
 import re
 import sys
+
 from collections import OrderedDict
 from os import listdir
-from os.path import isfile, join
+from os.path import abspath, dirname, join
 
+# determine script path
+FILE_NAME = inspect.getframeinfo(inspect.currentframe()).filename
+SCRIPT_PATH = dirname(abspath(FILE_NAME))
 
-def list_files(path):
-    return [f for f in listdir(path) if isfile(join(path, f))]
+from misc import utils
 
 
 def determine_folder_of_dataset_dict(datasets_path):
@@ -48,7 +52,7 @@ def determine_graph_of_num_dict(classes_path, folder_of_class):
     for class_lbl, folder in folder_of_class.iteritems():
         path_to_graphs_of_cur_class = join(classes_path, folder)    
         
-        for graph_file in list_files(path_to_graphs_of_cur_class):
+        for graph_file in utils.list_files(path_to_graphs_of_cur_class):
             m = re.match('\d+(?=.pz)', graph_file)
             if not m:
                 continue

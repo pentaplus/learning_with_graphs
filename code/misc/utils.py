@@ -1,6 +1,11 @@
 import os
+import shutil
 import sys
+import time
+
 from itertools import tee
+from os import listdir
+from os.path import isdir, isfile, join
 
 
 def calc_hash_of_array(array):
@@ -8,9 +13,35 @@ def calc_hash_of_array(array):
     return hash(array.data)
     
     
+def check_for_pz_folder():
+    if isdir('pz'):
+        user_input = raw_input(('The directory \'pz\' already exists. '
+                                'Do you want to delete it (y/n)? ')).strip()
+        while True:
+            if user_input == 'y':
+                shutil.rmtree('pz')
+                time.sleep(1)
+                break
+            if user_input == 'n':
+                sys.exit(1)
+            
+            user_input = raw_input(('Invalid input! The directory \'pz\' already '
+                                    'exists. Do you want to delete it '
+                                    '(y/n)? ')).strip()
+    
+    
 def clear_dicts_of_dict(d):
     for k in d.iterkeys():
         d[k].clear()
+        
+
+def fatal_error(msg, fid = None):
+    print('Fatal error: ' + msg)
+    
+    if fid != None:
+        fid.close()
+    
+    sys.exit(1)
 
 
 def has_elem(it): 
@@ -20,6 +51,10 @@ def has_elem(it):
         return True, it
     except StopIteration:
         return False, iter
+
+        
+def list_files(path):
+    return [f for f in listdir(path) if isfile(join(path, f))]
 
 
 def makedir(path):

@@ -17,7 +17,7 @@ sys.path.append(join(script_path, '..'))
 DATASETS_PATH = join(script_path, '..', '..', 'datasets')
 
 ANDROID_FCG_PARTIAL_PATH = join(DATASETS_PATH, ('ANDROID FCG PARTIAL (2 '
-                                'classes, 26 directed graphs, unlabeled edges)'),
+                                'classes, x directed graphs, unlabeled edges)'),
                                 'pz')
                                 
 # !! pz missing
@@ -46,7 +46,5 @@ with open(join(DATASET_PATH, 'hash_num_map.txt'), 'w') as f:
             
             graph_num += 1
 
-                                
-#os.rename(join(graph_files_path, 'bla.txt'), join(graph_files_path, 'aha.txt'))
 
     
