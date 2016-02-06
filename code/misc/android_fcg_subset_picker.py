@@ -48,8 +48,7 @@ for class_lbl, folder in folder_of_class.iteritems():
     
     # copy graph files of the chosen subset to destination folder
     for graph_file_name in graph_file_names_subset:
-        m = re.match('.*?(?=\.)', graph_file_name)
-        graph_file_base_name = m.group(0)
+        graph_file_base_name = re.match('.*?(?=\.)', graph_file_name).group(0)
         
         shutil.copyfile(join(source_class_path, graph_file_name),
                         join(target_class_path, graph_file_base_name + '.pz'))

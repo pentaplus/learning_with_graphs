@@ -32,7 +32,6 @@ class_folders = os.listdir(DATASET_PATH)
 
 graph_num = 0
 with open(join(DATASET_PATH, 'hash_num_map.txt'), 'w') as f:
-    regexp = '.*?(?=\.)'
     for class_folder in class_folders:
         graph_files_path = join(DATASET_PATH, class_folder)
         graph_file_names = os.listdir(graph_files_path)
@@ -41,7 +40,7 @@ with open(join(DATASET_PATH, 'hash_num_map.txt'), 'w') as f:
             os.rename(join(graph_files_path, graph_file_name),
                       join(graph_files_path, str(graph_num) + '.pz'))
                       
-            hash_part = re.search(regexp, graph_file_name).group(0)
+            hash_part = re.search('.*?(?=\.)', graph_file_name).group(0)
             f.write(hash_part + ': ' + str(graph_num) + '\n')          
             
             graph_num += 1
