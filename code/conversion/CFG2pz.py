@@ -168,4 +168,21 @@ for folder in folder_of_class.itervalues():
             
             pz.save(G, join(target_class_path, base_file_name + '.pz'))
             
-        
+
+TEST = True 
+#TEST = False
+if TEST:
+    file_names = os.listdir('.')
+    file_name = file_names[1]
+    G = pz.load(file_name)
+    
+    problematic_nodes = []
+    counter = 0
+    for node_num, label_dict in G.node.iteritems():
+        label = label_dict['label']
+        if label not in ['b', 'c', 'f', 'r']:
+            problematic_nodes.append(node_num)
+        else:
+            counter += 1
+            
+    
