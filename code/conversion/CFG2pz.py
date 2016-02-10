@@ -114,75 +114,115 @@ def parse_ref(line, G, id_to_num_mapper, line_num):
     
     
 
-SOURCE_CLASSES_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets', ('CFG (2 '
-                           'classes, 3193 directed graphs, unlabeled edges)'),
-                           'plain')
-                    
-folder_of_class =\
-                dataset_loader.determine_folder_of_class_dict(SOURCE_CLASSES_PATH)
+#SOURCE_CLASSES_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets', ('CFG (2 '
+#                           'classes, 3097 directed graphs, unlabeled edges)'),
+#                           'plain')
+#                    
+#folder_of_class =\
+#                dataset_loader.determine_folder_of_class_dict(SOURCE_CLASSES_PATH)
+#
+#
+#utils.check_for_pz_folder()
+#
+#
+#for folder in folder_of_class.itervalues():
+#    source_class_path = join(SOURCE_CLASSES_PATH, folder)
+#    target_class_path = join('pz', folder)
+#    os.makedirs(target_class_path)
+#    
+#    for file_num, file_name in enumerate(utils.list_files(source_class_path)):
+#        base_file_name, file_extension = splitext(file_name)
+#        
+#        if not file_extension == '.cfg':
+#            continue
+#        
+#        with open(join(source_class_path, file_name)) as f:
+#            print '\n' + str(file_num) + ': ' + basename(f.name) + ':'
+#            # --------------------------------------------------------------------
+#            # parse graph file and create a corresponding directed networkx graph
+#            # --------------------------------------------------------------------
+#            G = nx.DiGraph()
+#            
+#            id_to_num_mapper = Id_to_num_mapper()
+#        
+#            for line_num, line in enumerate(f):
+#                if (line_num + 1) % 1000 == 0:
+#                    print line_num + 1
+#                
+#                line = line.rstrip()
+#                
+##                if basename(f.name).startswith('000c6b') and line_num + 1 == 87:
+##                    x = 0
+#                
+#                if line.startswith('block'):
+#                    parse_block(line, G, id_to_num_mapper, line_num + 1)
+#                elif line.startswith('cond'):
+#                    parse_cond(line, G, id_to_num_mapper, line_num + 1)
+#                elif line.startswith('fct'):
+#                    parse_func(line, G, id_to_num_mapper, line_num + 1)
+#                elif line.startswith('ref'):
+#                    parse_ref(line, G, id_to_num_mapper, line_num + 1)
+#                    
+#                
+#            pz.save(G, join(target_class_path, base_file_name + '.pz'))
+#            
+#
+#
+#TEST = True 
+##TEST = False
+#if TEST:
+#    sys.path.append(join(SCRIPT_FOLDER_PATH, '..', '..'))
+#    from misc import dataset_loader, pz, utils
+#    
+#    file_names = os.listdir('.')
+#    file_name = file_names[0]
+#    G = pz.load(file_name)
+#    
+#    problematic_nodes = []
+#    counter = 0
+#    for node_num, label_dict in G.node.iteritems():
+#        label = label_dict['label']
+#        if label not in ['b', 'c', 'f', 'r']:
+#            problematic_nodes.append(node_num)
+#        else:
+#            counter += 1
+#    
+#    if len(G.node) == counter:
+#        print 'It holds: len(G.node) == counter'
+#        
 
 
-utils.check_for_pz_folder()
+#
+#class Id_to_num_mapper():
+#    id_to_num_map = {}
+#    next_num = 0
+#    
+#    def map_id_to_num(self, id_to_map):
+#        if id_to_map in self.id_to_num_map.iterkeys():
+#            id_num = self.id_to_num_map[id_to_map]
+#        else:
+#            id_num = self.next_num
+#            self.id_to_num_map[id_to_map] = self.next_num
+#            self.next_num += 1
+#        
+#        return id_num
 
-
-for folder in folder_of_class.itervalues():
-    source_class_path = join(SOURCE_CLASSES_PATH, folder)
-    target_class_path = join('pz', folder)
-    os.makedirs(target_class_path)
+mapper_list = []    
+for y in xrange(10**6):
+    if y % 1000 == 0:
+        print 'y = ' + str(y)
     
-    for file_num, file_name in enumerate(utils.list_files(source_class_path)):
-        base_file_name, file_extension = splitext(file_name)
-        
-        if not file_extension == '.cfg':
-            continue
-        
-        with open(join(source_class_path, file_name)) as f:
-            print '\n' + str(file_num) + ': ' + basename(f.name) + ':'
-            # --------------------------------------------------------------------
-            # parse graph file and create a corresponding directed networkx graph
-            # --------------------------------------------------------------------
-            G = nx.DiGraph()
-            
-            id_to_num_mapper = Id_to_num_mapper()
-        
-            for line_num, line in enumerate(f):
-                if (line_num + 1) % 1000 == 0:
-                    print line_num + 1
-                
-                line = line.rstrip()
-                
-#                if basename(f.name).startswith('000c6b') and line_num + 1 == 87:
-#                    x = 0
-                
-                if line.startswith('block'):
-                    parse_block(line, G, id_to_num_mapper, line_num + 1)
-                elif line.startswith('cond'):
-                    parse_cond(line, G, id_to_num_mapper, line_num + 1)
-                elif line.startswith('fct'):
-                    parse_func(line, G, id_to_num_mapper, line_num + 1)
-                elif line.startswith('ref'):
-                    parse_ref(line, G, id_to_num_mapper, line_num + 1)
-                    
-                
-            
-            
-            pz.save(G, join(target_class_path, base_file_name + '.pz'))
-            
-
-TEST = True 
-#TEST = False
-if TEST:
-    file_names = os.listdir('.')
-    file_name = file_names[1]
-    G = pz.load(file_name)
+    mapper = Id_to_num_mapper()
+    mapper_list.append(mapper)
     
-    problematic_nodes = []
-    counter = 0
-    for node_num, label_dict in G.node.iteritems():
-        label = label_dict['label']
-        if label not in ['b', 'c', 'f', 'r']:
-            problematic_nodes.append(node_num)
-        else:
-            counter += 1
-            
+    last_mapper = mapper_list[-1]
+    
+    if y % 1000 == 0:
+        print 'val before mapping: ' + str(last_mapper.next_num)
+    for x in xrange(100):
+        mapper.map_id_to_num(x)
+        
+    if y % 1000 == 0:
+        print 'val after mapping: ' + str(last_mapper.next_num)
+        
     
