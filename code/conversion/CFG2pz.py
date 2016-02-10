@@ -130,14 +130,14 @@ for folder in folder_of_class.itervalues():
     target_class_path = join('pz', folder)
     os.makedirs(target_class_path)
     
-    for file_name in utils.list_files(source_class_path):
+    for file_num, file_name in enumerate(utils.list_files(source_class_path)):
         base_file_name, file_extension = splitext(file_name)
         
         if not file_extension == '.cfg':
             continue
         
         with open(join(source_class_path, file_name)) as f:
-            print '\n' + basename(f.name)
+            print '\n' + str(file_num) + ': ' + basename(f.name) + ':'
             # --------------------------------------------------------------------
             # parse graph file and create a corresponding directed networkx graph
             # --------------------------------------------------------------------
