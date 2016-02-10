@@ -15,6 +15,9 @@ def calc_hash_of_array(array):
     
 def check_for_pz_folder():
     if isdir('pz'):
+        shutil.rmtree('pz') # !!
+        return        
+        
         user_input = raw_input(('The directory \'pz\' already exists. '
                                 'Do you want to delete it (y/n)? ')).strip()
         while True:

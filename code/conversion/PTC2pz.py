@@ -2,17 +2,16 @@ import inspect
 import networkx as nx
 import os
 import pz
-import shutil
 import sys
 
-from os.path import abspath, dirname, isdir, join
+from os.path import abspath, dirname, join
 
 # determine script path
-FILE_NAME = inspect.getframeinfo(inspect.currentframe()).filename
-SCRIPT_PATH = dirname(abspath(FILE_NAME))
+SCRIPT_PATH = inspect.getframeinfo(inspect.currentframe()).filename
+SCRIPT_FOLDER_PATH = dirname(abspath(SCRIPT_PATH))
 # modify the search path for modules in order to access modules in subfolders
 # of the script's parent directory
-sys.path.append(join(SCRIPT_PATH, '..'))
+sys.path.append(join(SCRIPT_FOLDER_PATH, '..'))
 
 from misc import utils
     

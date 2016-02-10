@@ -30,11 +30,11 @@ from sklearn import svm
 
 
 # determine script path
-FILE_NAME = inspect.getframeinfo(inspect.currentframe()).filename
-SCRIPT_PATH = dirname(abspath(FILE_NAME))
+SCRIPT_PATH = inspect.getframeinfo(inspect.currentframe()).filename
+SCRIPT_FOLDER_PATH = dirname(abspath(SCRIPT_PATH))
 
 # !!
-del FILE_NAME
+del SCRIPT_PATH
 
 from misc import dataset_loader, utils
 from performance_evaluation import cross_validation
@@ -42,7 +42,7 @@ from performance_evaluation import cross_validation
 # --------------------------------------------------------------------------------
 # parameter definitions
 # --------------------------------------------------------------------------------
-DATASETS_PATH = join(SCRIPT_PATH, '..', 'datasets')
+DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', 'datasets')
 
 # embeddings
 WEISFEILER_LEHMAN = 'weisfeiler_lehman'
@@ -254,7 +254,7 @@ for dataset in DATASETS:
         
     
     for embedding_name in EMBEDDING_NAMES:
-        result_path = join(SCRIPT_PATH, '..', 'results', embedding_name)
+        result_path = join(SCRIPT_FOLDER_PATH, '..', 'results', embedding_name)
         utils.makedir(result_path)
         result_file = open(join(result_path, dataset + '.txt'), 'w')
         

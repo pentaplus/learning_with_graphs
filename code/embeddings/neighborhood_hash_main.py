@@ -9,11 +9,11 @@ from scipy.sparse import csr_matrix
 
 
 # determine script path
-filename = inspect.getframeinfo(inspect.currentframe()).filename
-script_path = dirname(abspath(filename))
+SCRIPT_PATH = inspect.getframeinfo(inspect.currentframe()).filename
+SCRIPT_FOLDER_PATH = dirname(abspath(SCRIPT_PATH))
 # modify the search path for modules in order to access modules in subfolders
 # of the script's parent directory
-sys.path.append(join(script_path, '..'))
+sys.path.append(join(SCRIPT_FOLDER_PATH, '..'))
 
 from misc import utils
 
@@ -102,8 +102,8 @@ from misc import utils
 #    print "{0:064b} {1:04b} {2:064b}".format(value, i, newval)
 
 #---------------------------------------------------------------------------------
-#del filename
-#del script_path
+#del SCRIPT_PATH
+#del SCRIPT_FOLDER_PATH
 
 
 def extract_features(graph_of_num, h, count_sensitive = True, all_iter = False):
@@ -355,12 +355,12 @@ if __name__ == '__main__':
     import time
     from misc import dataset_loader
         
-    DATASETS_PATH = join(script_path, '..', '..', 'datasets')
+    DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
     dataset = 'MUTAG'
     graph_of_num = dataset_loader.load_dataset(DATASETS_PATH, dataset)
     
-    del filename
-    del script_path
+    del SCRIPT_PATH
+    del SCRIPT_FOLDER_PATH
     del dataset
     
     # h = 0: 56900    586

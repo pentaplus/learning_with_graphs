@@ -4,16 +4,16 @@ import sys
 from os.path import abspath, dirname, join
 
 # determine script path
-filename = inspect.getframeinfo(inspect.currentframe()).filename
-script_path = dirname(abspath(filename))
+SCRIPT_PATH = inspect.getframeinfo(inspect.currentframe()).filename
+SCRIPT_FOLDER_PATH = dirname(abspath(SCRIPT_PATH))
 # modify the search path for modules in order to access modules in subfolders
 # of the script's parent directory
-sys.path.append(join(script_path, '..', '..'))
+sys.path.append(join(SCRIPT_FOLDER_PATH, '..', '..'))
 
 from misc import datasetloader
 
 
-DATASETS_PATH = join(script_path, '..', '..', '..', 'datasets')
+DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', '..', 'datasets')
 # dataset = 'MUTAG'
 # dataset = 'DD'
 dataset = 'ENZYMES'
