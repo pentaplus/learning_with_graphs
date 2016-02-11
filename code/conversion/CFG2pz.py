@@ -166,9 +166,9 @@ for folder in folder_of_class.itervalues():
                     
                 
             pz.save(G, join(target_class_path, base_file_name + '.pz'))
-#            
-#
-#
+
+
+
 #TEST = True 
 ##TEST = False
 #if TEST:
@@ -191,54 +191,3 @@ for folder in folder_of_class.itervalues():
 #    if len(G.node) == counter:
 #        print 'It holds: len(G.node) == counter'
 #        
-
-
-#
-class Id_to_num_mapper():
-    def __init__(self):
-        self.id_to_num_map = {}
-        self.next_num = 0
-    
-    def map_id_to_num(self, id_to_map):
-        if id_to_map in self.id_to_num_map.iterkeys():
-            id_num = self.id_to_num_map[id_to_map]
-        else:
-            id_num = self.next_num
-            self.id_to_num_map[id_to_map] = self.next_num
-            self.next_num += 1
-        
-        return id_num
-#
-mapper_list = []    
-for y in xrange(10**6):
-    if y % 10000 == 0:
-        print 'y = ' + str(y)
-    
-    mapper = Id_to_num_mapper()
-    
-    if y % 10000 == 0:
-        print 'val before mapping: ' + str(mapper.next_num)
-        for x in xrange(100):
-            mapper.map_id_to_num(x)
-            print mapper.id_to_num_map
-            print 'val while mapping: ' + str(mapper.next_num)
-    else:    
-        for x in xrange(100):
-            mapper.map_id_to_num(x)
-        
-    if y % 10000 == 0:
-        print 'val after mapping: ' + str(mapper.next_num)
-#        
-#        
-#class A():
-#    d = {}
-
-#class B():
-#    A = 0
-#    @classmethod
-#    def foo(cls):
-#        return cls, cls.A
-#        
-#a, b = B(), B()
-        
-    

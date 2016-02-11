@@ -20,13 +20,12 @@ ANDROID_FCG_PARTIAL_PATH = join(DATASETS_PATH, ('ANDROID FCG PARTIAL (2 '
                                 'classes, x directed graphs, unlabeled edges)'),
                                 'pz')
                                 
-# !! pz missing
-CFG_PATH = join(DATASETS_PATH, ('CFG (2 classes, x directed graphs, unlabeled '
-                                'edges)'))
+CFG_PATH = join(DATASETS_PATH, ('CFG (2 classes, 3097 directed graphs, unlabeled '
+                                'edges)'), 'pz')
                                 
 
-DATASET_PATH = ANDROID_FCG_PARTIAL_PATH
-#DATASET_PATH = CFG_PATH
+#DATASET_PATH = ANDROID_FCG_PARTIAL_PATH
+DATASET_PATH = CFG_PATH
 
 class_folders = os.listdir(DATASET_PATH)
 
