@@ -110,8 +110,8 @@ DATASETS = [MUTAG]
 #DATASETS = [ANDROID_FCG_PARTIAL]
 #DATASETS = [CFG]
 
-OPT_PARAM = True
-#OPT_PARAM = False
+#OPT_PARAM = True
+OPT_PARAM = False
 
 COMPARE_PARAMS = True
 #COMPARE_PARAMS = False
@@ -308,9 +308,14 @@ for dataset in DATASETS:
                 
         for embedding_param in EMBEDDING_PARAMS.get(embedding_name, [None]):
             # extract features using the embedding
-            data_matrix, class_lbls = extract_features(graph_of_num, embedding,
-                                                       embedding_param, 
-                                                       result_file)
+            # !!
+            max_embedding_param = 5
+            data_matrices, class_lbls = extract_features(graph_of_num, embedding,
+#                                                         embedding_param,
+                                                         max_embedding_param,
+                                                         result_file)
+                                                       
+            
             # !!
 #            Z = data_matrix.todense()
     
@@ -397,4 +402,8 @@ print 'The evaluation of the emedding method(s) took %.1f seconds' % total_time
 #                                                 verbose = False)
 
 
-
+#import numpy as np
+#np.savetxt('P6.txt', data_matrices[5].todense())
+#
+#import numpy as np
+#np.savetxt('N6.txt', data_matrix.todense())

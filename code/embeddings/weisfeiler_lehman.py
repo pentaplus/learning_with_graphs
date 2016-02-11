@@ -17,7 +17,8 @@ from misc import utils
 
 
 
-def extract_features(graph_of_num, h):
+def extract_features(graph_of_num, max_h):
+    data_matrices = []
     # the keys are graph numbers and the values are lists of features   
     features_dict = {}
     
@@ -59,11 +60,11 @@ def extract_features(graph_of_num, h):
     
     
     # iterate over all graphs in the dataset -------------------------------------
-    for r in xrange(h + 1):
+    for r in xrange(max_h + 1):
         for (graph_num, (G, class_lbl)) in graph_of_num.iteritems():
             # !!        
-            if graph_num % 100 == 0:
-                print 'r = ' + str(r) + ', graph_num = ' + str(graph_num)
+#            if graph_num % 100 == 0:
+#                print 'r = ' + str(r) + ', graph_num = ' + str(graph_num)
                 
             for v in G.nodes_iter():
                 if r == 0:
@@ -129,12 +130,63 @@ def extract_features(graph_of_num, h):
                     # upd_lbls_dict[graph_num][v] (== new_compr_lbl)
                     feature_counts_dict[graph_num][index] += 1
                 
-                if r < h:
+                if r < max_h:
                     # next_upd_lbls_dict[graph_num][v] == compr_func[lbl]
                     # == new_compr_lbl
                     next_upd_lbls_dict[graph_num][v] = new_compr_lbl
         
-        if r < h:
+        # list containing the features of all graphs
+        features = []
+        
+        # list containing the corresponding features counts of all graphs
+        feature_counts = []
+        
+        # list indicating to which graph (= row in data_matrix) the features in
+        # the list features belong. The difference feature_ptr[i+1] - feature_ptr[i]
+        # equals the number of specified entries for row i. Consequently, the number
+        # of rows of data_matrix equals len(feature_ptr) - 1.
+        feature_ptr = [0]
+        
+        # list containing the class labels of all graphs
+        class_lbls = []
+        
+        # !!
+    #    del graph_num
+    #    del class_lbl
+    #    del v
+    #    del uncompr_lbl
+    #    del index
+    #    del new_compr_lbl
+    #    del next_compr_lbl
+        
+        
+        for (graph_num, (G, class_lbl)) in graph_of_num.iteritems():
+            features += features_dict[graph_num]
+            feature_counts += feature_counts_dict[graph_num]
+            feature_ptr.append(feature_ptr[-1] + len(features_dict[graph_num]))
+        
+            class_lbls.append(class_lbl)
+        
+        class_lbls = np.array(class_lbls)
+        
+        
+        # data_matrix is of type csr_matrix and has the following form:
+        # [feature vector of the first graph,
+        #  feature vector of the second graph,
+        #                .
+        #                .
+        #  feature vector of the last graph]
+        data_matrix = csr_matrix((np.array(feature_counts), np.array(features),
+                                  np.array(feature_ptr)),
+                                  shape = (len(graph_of_num), len(compr_func)),
+                                  dtype = np.float64)
+        data_matrices.append(data_matrix)
+    
+    # !! DEBUG
+#    Z = data_matrix.todense()
+    
+  
+        if r < max_h:
             if r > 0:
                 # prepare upd_lbls_dict for reuse
                 utils.clear_dicts_of_dict(upd_lbls_dict)
@@ -144,57 +196,8 @@ def extract_features(graph_of_num, h):
             next_upd_lbls_dict = dict_of_cleared_dicts
     
    
+    return data_matrices, class_lbls      
 
-    # list containing the features of all graphs
-    features = []
-    
-    # list containing the corresponding features counts of all graphs
-    feature_counts = []
-    
-    # list indicating to which graph (= row in data_matrix) the features in
-    # the list features belong. The difference feature_ptr[i+1] - feature_ptr[i]
-    # equals the number of specified entries for row i. Consequently, the number
-    # of rows of data_matrix equals len(feature_ptr) - 1.
-    feature_ptr = [0]
-    
-    # list containing the class labels of all graphs
-    class_lbls = []
-    
-    # !!
-#    del graph_num
-#    del class_lbl
-#    del v
-#    del uncompr_lbl
-#    del index
-#    del new_compr_lbl
-#    del next_compr_lbl
-    
-    
-    for (graph_num, (G, class_lbl)) in graph_of_num.iteritems():
-        features += features_dict[graph_num]
-        feature_counts += feature_counts_dict[graph_num]
-        feature_ptr.append(feature_ptr[-1] + len(features_dict[graph_num]))
-    
-        class_lbls.append(class_lbl)
-    
-    class_lbls = np.array(class_lbls)
-    
-    
-    # data_matrix is of type csr_matrix and has the following form:
-    # [feature vector of the first graph,
-    #  feature vector of the second graph,
-    #                .
-    #                .
-    #  feature vector of the last graph]
-    data_matrix = csr_matrix((np.array(feature_counts), np.array(features),
-                              np.array(feature_ptr)),
-                              shape = (len(graph_of_num), len(compr_func)),
-                              dtype = np.float64)
-    
-    # !! DEBUG
-#    Z = data_matrix.todense()
-    
-    return data_matrix, class_lbls
 
 
 # !!
