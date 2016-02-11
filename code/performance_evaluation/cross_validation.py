@@ -16,7 +16,7 @@ SCRIPT_FOLDER_PATH = dirname(abspath(SCRIPT_PATH))
 # of the script's parent directory
 sys.path.append(join(SCRIPT_FOLDER_PATH, '..'))
 
-from misc import utils
+from misc import utils, dataset_loader
 
 
 def optimize_embedding_param(clf, graph_of_num, embedding, param_range,
@@ -24,9 +24,8 @@ def optimize_embedding_param(clf, graph_of_num, embedding, param_range,
                              num_inner_folds, result_file):
     cross_val_start_time = time.time()                                              
     
-    # !! really necessary?                              
-    data_matrix, class_lbls = embedding.extract_features(graph_of_num,
-                                                         min(param_range))
+    class_lbls = np.array(dataset_loader.get_class_lbls(graph_of_num))
+
     # precompute KFold/StratifiedKFold objects
     cvs = {}
     for it in xrange(num_iter):

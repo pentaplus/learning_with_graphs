@@ -7,9 +7,12 @@
 # 3. test GRAPHLET_KERNEL for param = 4 (10 iterations, libsvm-liblinear)
 # 
 # at Ben-PC:
-# 1. convert CFG dataset
-# 2. evaluate performance on ANDROID FCG PARTIAL
-# 3. gradually increment the number of samples of ANDROID FCG PARTIAL
+# 1. optimize fucntion optimize_embedding_param by a large factor
+# 2. compress FCGs
+# 
+#
+# 4. evaluate performance on ANDROID FCG PARTIAL
+# 5. gradually increment the number of samples of ANDROID FCG PARTIAL
 # 
 # 
 # 100. make feature vectors for NHGK unary 
@@ -98,14 +101,14 @@ EMBEDDING_PARAMS = {
 #DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
 #DATASETS = [MUTAG, PTC_MR, ENZYMES]
 #DATASETS = [DD, NCI1, NCI109]
-#DATASETS = [MUTAG]
+DATASETS = [MUTAG]
 #DATASETS = [PTC_MR]
 #DATASETS = [ENZYMES]
 #DATASETS = [DD]
 #DATASETS = [NCI1]
 #DATASETS = [NCI109]
 #DATASETS = [ANDROID_FCG_PARTIAL]
-DATASETS = [CFG]
+#DATASETS = [CFG]
 
 OPT_PARAM = True
 #OPT_PARAM = False
@@ -126,11 +129,11 @@ LIBSVM_KERNELS = ['linear']
 #LIBSVM_KERNELS = ['poly']
 
 #STRAT_KFOLD_VALUES = [False, True]
-STRAT_KFOLD_VALUES = [False]
-#STRAT_KFOLD_VALUES = [True]
+#STRAT_KFOLD_VALUES = [False]
+STRAT_KFOLD_VALUES = [True]
 
-#NUM_ITER = 1
-NUM_ITER = 10
+NUM_ITER = 1
+#NUM_ITER = 10
 
 NUM_FOLDS = 10
 

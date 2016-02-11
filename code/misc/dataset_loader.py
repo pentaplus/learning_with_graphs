@@ -77,6 +77,14 @@ def determine_graphs_of_class_dict(graph_of_num):
     return graphs_of_class
     
     
+def get_class_lbls(graph_of_num):
+    class_lbls = []
+    for graph, class_lbl in graph_of_num.itervalues():
+        class_lbls.append(class_lbl)
+        
+    return class_lbls
+    
+    
 def load_dataset(datasets_path, dataset):
     folder_of_dataset = determine_folder_of_dataset_dict(datasets_path)
     
