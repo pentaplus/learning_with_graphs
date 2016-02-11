@@ -55,6 +55,10 @@ def has_elem(it):
     except StopIteration:
         return False, iter
 
+
+def list_sub_dirs(path):
+    return [d for d in listdir(path) if isdir(join(path, d))]
+
         
 def list_files(path):
     return [f for f in listdir(path) if isfile(join(path, f))]
@@ -64,7 +68,7 @@ def makedir(path):
     try: 
         os.makedirs(path)
     except OSError:
-        if not os.path.isdir(path):
+        if not isdir(path):
             raise
 
   

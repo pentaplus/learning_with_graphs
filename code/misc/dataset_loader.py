@@ -16,14 +16,14 @@ from misc import utils
 
 def determine_folder_of_dataset_dict(datasets_path):
     folder_of_dataset = {}
-    dataset_folders = listdir(datasets_path)
-    for dataset_folder in dataset_folders:
-        m = re.match('.*(?= \()', dataset_folder)
+    folders = utils.list_sub_dirs(datasets_path)
+    for folder in folders:
+        m = re.match('.*(?= \()', folder)
         if not m:
             continue
         
         dataset_name = m.group(0)
-        folder_of_dataset[dataset_name] = dataset_folder
+        folder_of_dataset[dataset_name] = folder
         
     return folder_of_dataset
     
