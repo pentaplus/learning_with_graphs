@@ -1,4 +1,5 @@
 import inspect
+import numpy as np
 import pz
 import re
 import sys
@@ -44,10 +45,12 @@ def determine_folder_of_class_dict(classes_path):
     return folder_of_class
     
     
-def determine_graph_of_num_dict(classes_path, folder_of_class):
+def determine_graph_of_num_dict_and_class_lbls(classes_path, folder_of_class):
     # The values of graph_of_num are pairs of the form
     # (nx.Graph/nx.DiGraph, class_lbl)
     graph_of_num = {}
+    
+    class_lbls = []
     
     for class_lbl, folder in folder_of_class.iteritems():
         path_to_graphs_of_cur_class = join(classes_path, folder)    
@@ -59,10 +62,12 @@ def determine_graph_of_num_dict(classes_path, folder_of_class):
             
             graph_num = int(m.group(0))
             # load graph with number graph_num
-            cur_graph = pz.load(join(path_to_graphs_of_cur_class, graph_file))
-            graph_of_num[graph_num] = (cur_graph, class_lbl)
+            graph = pz.load(join(path_to_graphs_of_cur_class, graph_file))
+            graph_of_num[graph_num] = (graph, class_lbl)
             
-    return OrderedDict(sorted(graph_of_num.iteritems()))
+            class_lbls.append(class_lbl)
+            
+    return OrderedDict(sorted(graph_of_num.iteritems())), np.array(class_lbls)
     
     
 def determine_graphs_of_class_dict(graph_of_num):
@@ -77,14 +82,6 @@ def determine_graphs_of_class_dict(graph_of_num):
     return graphs_of_class
     
     
-def get_class_lbls(graph_of_num):
-    class_lbls = []
-    for graph, class_lbl in graph_of_num.itervalues():
-        class_lbls.append(class_lbl)
-        
-    return class_lbls
-    
-    
 def load_dataset(datasets_path, dataset):
     folder_of_dataset = determine_folder_of_dataset_dict(datasets_path)
     
@@ -97,4 +94,5 @@ def load_dataset(datasets_path, dataset):
 
     folder_of_class = determine_folder_of_class_dict(classes_path)
 
-    return determine_graph_of_num_dict(classes_path, folder_of_class)
+    return determine_graph_of_num_dict_and_class_lbls(classes_path,
+                                                      folder_of_class)

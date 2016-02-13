@@ -7,7 +7,7 @@ CLF_MAX_ITER: -1 (unlimited)
 Total feature extraction took 0.2 seconds.
 
 LINEAR (OPT_PARAM)
-KFold: 0.916 (+/-0.000) in 3.6 seconds
+KFold: 0.852 (+/-0.000) in 4.9 seconds
 
 ------------------------------------------
 Parameter: 0

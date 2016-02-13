@@ -31,11 +31,6 @@ def check_for_pz_folder():
             user_input = raw_input(('Invalid input! The directory \'pz\' already '
                                     'exists. Do you want to delete it '
                                     '(y/n)? ')).strip()
-    
-    
-def clear_dicts_of_dict(d):
-    for k in d.iterkeys():
-        d[k].clear()
         
 
 def fatal_error(msg, fid = None):

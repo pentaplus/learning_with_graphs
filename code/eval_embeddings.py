@@ -7,8 +7,9 @@
 # 3. test GRAPHLET_KERNEL for param = 4 (10 iterations, libsvm-liblinear)
 # 
 # at Ben-PC:
-# 1. optimize fucntion optimize_embedding_param by a large factor
-# 2. compress FCGs
+# 1. optimize function optimize_embedding_param by a large factor
+# 2. implement an implicit embedding method
+# 4. compress FCGs
 # 
 #
 # 4. evaluate performance on ANDROID FCG PARTIAL
@@ -24,6 +25,7 @@
 
 import importlib
 import inspect
+import sys
 import time
 
 from os.path import abspath, dirname, join
@@ -36,8 +38,6 @@ from sklearn import svm
 SCRIPT_PATH = inspect.getframeinfo(inspect.currentframe()).filename
 SCRIPT_FOLDER_PATH = dirname(abspath(SCRIPT_PATH))
 
-# !!
-del SCRIPT_PATH
 
 from misc import dataset_loader, utils
 from performance_evaluation import cross_validation
@@ -53,8 +53,10 @@ NEIGHBORHOOD_HASH = 'neighborhood_hash'
 COUNT_SENSITIVE_NEIGHBORHOOD_HASH = 'count_sensitive_neighborhood_hash'
 COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER =\
                                       'count_sensitive_neighborhood_hash_all_iter'
-GRAPHLET_KERNEL = 'graphlet_kernel'
+GRAPHLET_KERNEL_3 = 'graphlet_kernel_3'
+GRAPHLET_KERNEL_4 = 'graphlet_kernel_4'
 LABEL_COUNTER = 'label_counter'
+RANDOM_WALK_KERNEL = 'random_walk_kernel'
 
 # datasets
 MUTAG = 'MUTAG'
@@ -68,40 +70,39 @@ CFG = 'CFG'
 
 #EMBEDDING_NAMES = [LABEL_COUNTER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, LABEL_COUNTER]
-EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
-#EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
-#EMBEDDING_NAMES = [NEIGHBORHOOD_HASH]
+#EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
+EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
+#EMBEDDING_NAMES = [WEISFEILER_LEHMAN, NEIGHBORHOOD_HASH]
 #EMBEDDING_NAMES = [COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
 #EMBEDDING_NAMES = [COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER]
 #EMBEDDING_NAMES = [NEIGHBORHOOD_HASH, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
-#EMBEDDING_NAMES = [GRAPHLET_KERNEL]
+#EMBEDDING_NAMES = [GRAPHLET_KERNEL_3]
+#EMBEDDING_NAMES = [GRAPHLET_KERNEL_4]
 
 
 # keys are indices of the list EMBEDDING_NAMES, values are the respective
 # parameters
-EMBEDDING_PARAMS = {
-#                    WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-#                    WEISFEILER_LEHMAN : [10],
-                    WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5],
-#                    NEIGHBORHOOD_HASH : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                    NEIGHBORHOOD_HASH : [0, 1, 2, 3, 4, 5],
-                    COUNT_SENSITIVE_NEIGHBORHOOD_HASH :\
-                                               [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-#                    COUNT_SENSITIVE_NEIGHBORHOOD_HASH : [0, 1, 2, 3, 4, 5],
-                    COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER :\
-                                               [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-#                    GRAPHLET_KERNEL : [3, 4],
-                    GRAPHLET_KERNEL : [3]}
+EMBEDDING_PARAM_RANGES = {
+#                         WEISFEILER_LEHMAN : [10],
+                          WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5],
+                          NEIGHBORHOOD_HASH : [0, 1, 2, 3, 4, 5],
+                          COUNT_SENSITIVE_NEIGHBORHOOD_HASH : [0, 1, 2, 3, 4, 5],
+                          COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER :\
+                                                               [0, 1, 2, 3, 4, 5],
+                          GRAPHLET_KERNEL_3 : [3],
+                          GRAPHLET_KERNEL_4 : [4],
+                          RANDOM_WALK_KERNEL: [None]
+                         }
 
 
 #DATASET = 'ANDROID FCG' # !! change file names from hashes to numbers
 #DATASET = 'CFG' # !! change file names from hashes to numbers
 
 # sorted by number of graphs in ascending order
-#DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
+DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
 #DATASETS = [MUTAG, PTC_MR, ENZYMES]
 #DATASETS = [DD, NCI1, NCI109]
-DATASETS = [MUTAG]
+#DATASETS = [MUTAG]
 #DATASETS = [PTC_MR]
 #DATASETS = [ENZYMES]
 #DATASETS = [DD]
@@ -110,8 +111,8 @@ DATASETS = [MUTAG]
 #DATASETS = [ANDROID_FCG_PARTIAL]
 #DATASETS = [CFG]
 
-#OPT_PARAM = True
-OPT_PARAM = False
+OPT_PARAM = True
+#OPT_PARAM = False
 
 COMPARE_PARAMS = True
 #COMPARE_PARAMS = False
@@ -122,18 +123,18 @@ OPT = False
 # kernels for LIBSVM classifier
 #LIBSVM_KERNELS = ['linear', 'rbf', 'poly', 'sigmoid']
 #LIBSVM_KERNELS = ['linear', 'rbf', 'sigmoid']
-#LIBSVM_KERNELS = ['linear', 'rbf']
-LIBSVM_KERNELS = ['linear']
+LIBSVM_KERNELS = ['linear', 'rbf']
+#LIBSVM_KERNELS = ['linear']
 #LIBSVM_KERNELS = ['rbf']
 #LIBSVM_KERNELS = ['sigmoid']
 #LIBSVM_KERNELS = ['poly']
 
 #STRAT_KFOLD_VALUES = [False, True]
-#STRAT_KFOLD_VALUES = [False]
-STRAT_KFOLD_VALUES = [True]
+STRAT_KFOLD_VALUES = [False]
+#STRAT_KFOLD_VALUES = [True]
 
-NUM_ITER = 1
-#NUM_ITER = 10
+#NUM_ITER = 1
+NUM_ITER = 10
 
 NUM_FOLDS = 10
 
@@ -146,39 +147,37 @@ LIMIT_CLF_MAX_ITER_SD = False
 LIMIT_CLF_MAX_ITER_LD = False
 #LIMIT_CLF_MAX_ITER_LD = True
 
-# !!
-#Z = []
+
 
 def load_dataset(dataset, datasets_path):
     dataset_loading_start_time = time.time()
 
-    graph_of_num = dataset_loader.load_dataset(datasets_path, dataset)
+    graph_of_num, class_lbls = dataset_loader.load_dataset(datasets_path, dataset)
 
     dataset_loading_end_time = time.time()
     dataset_loading_time = dataset_loading_end_time - dataset_loading_start_time
     print 'Loading the dataset %s took %.1f seconds.\n' % (dataset,
                                                            dataset_loading_time)
-    return graph_of_num
+    return graph_of_num, class_lbls
+    
 
+def extract_features(graph_of_num, embedding, param_range, result_file):
+    sys.stdout.write(('----------------------------------------------------------'
+                      '---\n\n'))
+    result_file.write('------------------------------------------\n\n')
 
-def extract_features(graph_of_num, embedding, embedding_param, result_file):
-    utils.write('-------------------------------------------------------------\n',
-                result_file)
-    utils.write('Parameter: %d \n\n' % embedding_param, result_file)
     feat_extr_start_time = time.time()
 
-    data_matrix, class_lbls = embedding.extract_features(graph_of_num,
-                                                         embedding_param)
-                                                         
-#    Z.append(data_matrix.todense())
+    data_mat_of_param, extr_time_of_param =\
+                             embedding.extract_features(graph_of_num, param_range)
 
     feat_extr_end_time = time.time()
     feat_extr_time = feat_extr_end_time - feat_extr_start_time
-    utils.write('Feature extraction took %.1f seconds.\n' % feat_extr_time,
+    utils.write('Total feature extraction took %.1f seconds.\n' % feat_extr_time,
                 result_file)
     print ''
 
-    return data_matrix, class_lbls
+    return data_mat_of_param, extr_time_of_param
     
     
 def init_clf(liblinear, max_iter, kernel = None):
@@ -240,15 +239,25 @@ def write_eval_info(dataset, embedding_name, kernel, strat_kfold, mode = None):
     print ('%s with %s kernel%s and %s CV on %s\n') %\
           (embedding_name.upper(), kernel.upper(), mode_str.upper(), kfold_str,
            dataset)
+           
+
+def write_extr_time_for_param(param, extr_time_of_param, result_file):
+    sys.stdout.write(('----------------------------------------------------------'
+                      '---\n'))
+    result_file.write('------------------------------------------\n')
+    utils.write('Parameter: %d\n\n' % param, result_file)
+    utils.write('Feature extraction took %.1f seconds.\n' %\
+                extr_time_of_param[param], result_file)
+    sys.stdout.write('\n')
     
 
-start_time = time.time()
+script_exec_start_time = time.time()
 
 for dataset in DATASETS:
     # ----------------------------------------------------------------------------
     # 1) load dataset
     # ----------------------------------------------------------------------------
-    graph_of_num = load_dataset(dataset, DATASETS_PATH)
+    graph_of_num, class_lbls = load_dataset(dataset, DATASETS_PATH)
     
     num_samples = len(graph_of_num)
     
@@ -268,14 +277,26 @@ for dataset in DATASETS:
         
         embedding = importlib.import_module('embeddings.' + embedding_name)
         
+        param_range = EMBEDDING_PARAM_RANGES[embedding_name]
+        
+        #-------------------------------------------------------------------------
+        # 2) extract features
+        # ------------------------------------------------------------------------
+        data_mat_of_param, extr_time_of_param =\
+               extract_features(graph_of_num, embedding, param_range, result_file)
         
         if OPT_PARAM:
             #---------------------------------------------------------------------
-            # 2) evaluate the embedding's performance with optimized embedding
+            # 3) evaluate the embedding's performance with optimized embedding
             #    parameter
             # --------------------------------------------------------------------
+            if len(param_range) == 1:
+                print ('The embedding ' + embedding_name + ' has only one '
+                       'parameter. Therefore, its evaluation with optimized '
+                       'embedding parameter is skipped.')
+                continue
+        
             mode = 'opt_param'
-            param_range = EMBEDDING_PARAMS[embedding_name]
             
             for kernel in KERNELS:
                 result_file.write('\n%s (%s)\n' % (kernel.upper(), mode.upper()))
@@ -287,12 +308,9 @@ for dataset in DATASETS:
                     write_eval_info(dataset, embedding_name, kernel, strat_kfold,
                                     mode)
                     
-                    cross_validation.optimize_embedding_param(clf, graph_of_num,
-# !!
-#                    cross_validation.optimize_embedding_and_kernel_param(
-#                                                              graph_of_num,
-                                                              embedding,
-                                                              param_range,
+                    cross_validation.optimize_embedding_param(clf,
+                                                              data_mat_of_param,
+                                                              class_lbls,
                                                               strat_kfold,
                                                               NUM_ITER,
                                                               NUM_FOLDS,
@@ -306,25 +324,15 @@ for dataset in DATASETS:
         if OPT_PARAM:
             result_file.write('\n')
                 
-        for embedding_param in EMBEDDING_PARAMS.get(embedding_name, [None]):
-            # extract features using the embedding
-            # !!
-            max_embedding_param = 5
-            data_matrices, class_lbls = extract_features(graph_of_num, embedding,
-#                                                         embedding_param,
-                                                         max_embedding_param,
-                                                         result_file)
-                                                       
-            
-            # !!
-#            Z = data_matrix.todense()
-    
-                                                                    
-            if COMPARE_PARAMS:
-                # ----------------------------------------------------------------
-                # 3) evaluate the embedding's performance for each embedding
-                #    parameter
-                # ----------------------------------------------------------------          
+                                                                
+        if COMPARE_PARAMS:
+            # --------------------------------------------------------------------
+            # 4) evaluate the embedding's performance for each embedding
+            #    parameter
+            # --------------------------------------------------------------------
+            for param, data_mat in data_mat_of_param.iteritems():
+                write_extr_time_for_param(param, extr_time_of_param, result_file)                
+                
                 for kernel in KERNELS:
                     # initialize SVM classifier
                     clf = init_clf(LIBLINEAR, CLF_MAX_ITER, kernel)
@@ -332,10 +340,12 @@ for dataset in DATASETS:
                     result_file.write('\n%s\n' % kernel.upper())
                     
                     for strat_kfold in STRAT_KFOLD_VALUES:
+                        
+                
                         write_eval_info(dataset, embedding_name, kernel,
                                         strat_kfold)
                         
-                        cross_validation.cross_val(clf, data_matrix, class_lbls,
+                        cross_validation.cross_val(clf, data_mat, class_lbls,
                                                    NUM_ITER, NUM_FOLDS,
                                                    strat_kfold, result_file)
 # !!                                               
@@ -348,7 +358,7 @@ for dataset in DATASETS:
 #                        print ('%s with LINEAR/RBF kernel and k-fold CV on '
 #                               '%s\n') % (embedding_name.upper(), dataset)
 #                              
-#                    cross_validation.optimize_gen_params(data_matrix, class_lbls,
+#                    cross_validation.optimize_gen_params(data_mat, class_lbls,
 #                                                         num_iter = NUM_ITER,
 #                                                         ref_clf = None,
 #                                                         strat_kfold =\
@@ -359,10 +369,11 @@ for dataset in DATASETS:
             
         result_file.close()
 
-end_time = time.time()
-total_time = end_time - start_time
+script_exec_end_time = time.time()
+script_exec_time = script_exec_end_time - script_exec_start_time
 
-print 'The evaluation of the emedding method(s) took %.1f seconds' % total_time
+print '\nThe evaluation of the emedding method(s) took %.1f seconds.' %\
+                                                                  script_exec_time
 
 
 #result_file = open('test', 'w')
@@ -371,7 +382,7 @@ print 'The evaluation of the emedding method(s) took %.1f seconds' % total_time
 #    # --------------------------------------------------------------------
 #    # 2) extract features
 #    # --------------------------------------------------------------------
-#    data_matrix, class_lbls = extract_features(graph_of_num, embedding,
+#    data_mat, class_lbls = extract_features(graph_of_num, embedding,
 #                                               embedding_param, 
 #                                               result_file)
 
@@ -383,7 +394,7 @@ print 'The evaluation of the emedding method(s) took %.1f seconds' % total_time
 #    #        ref_clf = svm.SVC(kernel = 'poly')
 #    #        ref_clf = svm.SVC(kernel = 'rbf') # default
 #    #        ref_clf = svm.SVC(kernel = 'sigmoid')
-#             # only 0.83 score on MUTAG, needs dense data_matrix and parameter
+#             # only 0.83 score on MUTAG, needs dense data_mat and parameter
 #             # with_mean set to True
 #    #        ref_clf = make_pipeline(StandardScaler(with_mean = True), svm.SVC())
 #
@@ -391,7 +402,7 @@ print 'The evaluation of the emedding method(s) took %.1f seconds' % total_time
 #    #        param_grid = [{'C': [1, 10, 100], 'kernel' : ['rbf']}]
 #
 #            lin_clf_scores, opt_clf_scores, cross_val_time =\
-#            cross_validation.optimize_gen_params(data_matrix,
+#            cross_validation.optimize_gen_params(data_mat,
 #                                                 class_lbls,
 #                                                 num_iter = 1,
 ##                                                 param_grid = param_grid,
@@ -406,4 +417,4 @@ print 'The evaluation of the emedding method(s) took %.1f seconds' % total_time
 #np.savetxt('P6.txt', data_matrices[5].todense())
 #
 #import numpy as np
-#np.savetxt('N6.txt', data_matrix.todense())
+#np.savetxt('N6.txt', data_mat.todense())
