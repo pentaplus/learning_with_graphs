@@ -1,6 +1,6 @@
 # planed procedure:
 # at Benny-Notebook:
-# 0. test WL on first 6 datasets (param range = {0,...5})
+# 0. test WL on first 6 datasets (param range = {0,...,10})
 # 0. test WL on ANDROID FCG PARTIAL (10 iterations, LIBSVM)
 # 1. test NH and CSNH all iter (10 iterations, libsvm-liblinear)
 # 2. test GRAPHLET_KERNEL for param = 3 (10 iterations, libsvm-liblinear)
@@ -84,11 +84,12 @@ EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
 # parameters
 EMBEDDING_PARAM_RANGES = {
 #                         WEISFEILER_LEHMAN : [10],
-                          WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5],
-                          NEIGHBORHOOD_HASH : [0, 1, 2, 3, 4, 5],
-                          COUNT_SENSITIVE_NEIGHBORHOOD_HASH : [0, 1, 2, 3, 4, 5],
+                          WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                          NEIGHBORHOOD_HASH : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                          COUNT_SENSITIVE_NEIGHBORHOOD_HASH :\
+                                               [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                           COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER :\
-                                                               [0, 1, 2, 3, 4, 5],
+                                               [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],                                   
                           GRAPHLET_KERNEL_3 : [3],
                           GRAPHLET_KERNEL_4 : [4],
                           RANDOM_WALK_KERNEL: [None]
