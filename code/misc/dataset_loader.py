@@ -50,8 +50,6 @@ def determine_graph_of_num_dict_and_class_lbls(classes_path, folder_of_class):
     # (nx.Graph/nx.DiGraph, class_lbl)
     graph_of_num = {}
     
-    class_lbls = []
-    
     for class_lbl, folder in folder_of_class.iteritems():
         path_to_graphs_of_cur_class = join(classes_path, folder)    
         
@@ -65,9 +63,7 @@ def determine_graph_of_num_dict_and_class_lbls(classes_path, folder_of_class):
             graph = pz.load(join(path_to_graphs_of_cur_class, graph_file))
             graph_of_num[graph_num] = (graph, class_lbl)
             
-            class_lbls.append(class_lbl)
-            
-    return OrderedDict(sorted(graph_of_num.iteritems())), np.array(class_lbls)
+    return OrderedDict(sorted(graph_of_num.iteritems()))
     
     
 def determine_graphs_of_class_dict(graph_of_num):
@@ -82,6 +78,14 @@ def determine_graphs_of_class_dict(graph_of_num):
     return graphs_of_class
     
     
+def get_class_lbls(graph_of_num):
+    class_lbls = []
+    for graph, class_lbl in graph_of_num.itervalues():
+        class_lbls.append(class_lbl)
+        
+    return np.array(class_lbls)
+    
+    
 def load_dataset(datasets_path, dataset):
     folder_of_dataset = determine_folder_of_dataset_dict(datasets_path)
     
@@ -93,6 +97,10 @@ def load_dataset(datasets_path, dataset):
     classes_path = join(datasets_path, folder_of_dataset[dataset], 'pz')
 
     folder_of_class = determine_folder_of_class_dict(classes_path)
+    
+    graph_of_num = determine_graph_of_num_dict_and_class_lbls(classes_path,
+                                                              folder_of_class)
+                                                              
+    class_lbls = get_class_lbls(graph_of_num)
 
-    return determine_graph_of_num_dict_and_class_lbls(classes_path,
-                                                      folder_of_class)
+    return graph_of_num, class_lbls

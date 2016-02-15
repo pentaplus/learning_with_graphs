@@ -2,81 +2,81 @@ LIBRARY: LIBLINEAR
 NUM_ITER: 1
 ------------------------------------------
 
-Total feature extraction took 14.3 seconds.
+Total feature extraction took 13.9 seconds.
 ------------------------------------------
 Parameter: 0
 
 Feature extraction took 0.2 seconds.
 
 LINEAR
-KFold: 0.579 (+/-0.000) in 2.8 seconds
+KFold: 0.600 (+/-0.000) in 2.8 seconds
 ------------------------------------------
 Parameter: 1
 
-Feature extraction took 1.4 seconds.
+Feature extraction took 1.3 seconds.
 
 LINEAR
-KFold: 0.619 (+/-0.000) in 4.5 seconds
+KFold: 0.684 (+/-0.000) in 4.3 seconds
 ------------------------------------------
 Parameter: 2
 
-Feature extraction took 2.6 seconds.
+Feature extraction took 2.5 seconds.
 
 LINEAR
-KFold: 0.709 (+/-0.000) in 6.5 seconds
+KFold: 0.808 (+/-0.000) in 5.4 seconds
 ------------------------------------------
 Parameter: 3
 
-Feature extraction took 3.8 seconds.
+Feature extraction took 3.7 seconds.
 
 LINEAR
-KFold: 0.724 (+/-0.000) in 9.0 seconds
+KFold: 0.828 (+/-0.000) in 7.0 seconds
 ------------------------------------------
 Parameter: 4
 
-Feature extraction took 5.2 seconds.
+Feature extraction took 5.0 seconds.
 
 LINEAR
-KFold: 0.733 (+/-0.000) in 13.8 seconds
+KFold: 0.847 (+/-0.000) in 10.4 seconds
 ------------------------------------------
 Parameter: 5
 
-Feature extraction took 6.5 seconds.
+Feature extraction took 6.3 seconds.
 
 LINEAR
-KFold: 0.749 (+/-0.000) in 21.6 seconds
+KFold: 0.853 (+/-0.000) in 17.3 seconds
 ------------------------------------------
 Parameter: 6
 
-Feature extraction took 7.9 seconds.
+Feature extraction took 7.7 seconds.
 
 LINEAR
-KFold: 0.752 (+/-0.000) in 33.1 seconds
+KFold: 0.857 (+/-0.000) in 24.6 seconds
 ------------------------------------------
 Parameter: 7
 
-Feature extraction took 9.2 seconds.
+Feature extraction took 9.0 seconds.
 
 LINEAR
-KFold: 0.756 (+/-0.000) in 45.5 seconds
+KFold: 0.858 (+/-0.000) in 34.9 seconds
 ------------------------------------------
 Parameter: 8
 
-Feature extraction took 10.6 seconds.
+Feature extraction took 10.4 seconds.
 
 LINEAR
-KFold: 0.755 (+/-0.000) in 58.5 seconds
+KFold: 0.857 (+/-0.000) in 43.5 seconds
 ------------------------------------------
 Parameter: 9
 
-Feature extraction took 12.0 seconds.
+Feature extraction took 11.7 seconds.
 
 LINEAR
-KFold: 0.758 (+/-0.000) in 77.9 seconds
+KFold: 0.857 (+/-0.000) in 54.2 seconds
 ------------------------------------------
 Parameter: 10
 
-Feature extraction took 13.3 seconds.
+Feature extraction took 12.9 seconds.
 
 LINEAR
-KFold: 0.754 (+/-0.000) in 86.0 seconds
+KFold: 0.859 (+/-0.000) in 64.7 seconds
