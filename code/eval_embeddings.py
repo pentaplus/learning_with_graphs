@@ -81,10 +81,10 @@ EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
 # keys are indices of the list EMBEDDING_NAMES, values are the respective
 # parameters
 EMBEDDING_PARAM_RANGES = {
-                          WEISFEILER_LEHMAN : range(11),
-                          NEIGHBORHOOD_HASH : range(11),
-                          COUNT_SENSITIVE_NEIGHBORHOOD_HASH : range(11),
-                          COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER : range(11),                                   
+                          WEISFEILER_LEHMAN : range(6),
+                          NEIGHBORHOOD_HASH : range(6),
+                          COUNT_SENSITIVE_NEIGHBORHOOD_HASH : range(6),
+                          COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER : range(6),                                   
                           GRAPHLET_KERNEL : [3],
 #                          GRAPHLET_KERNEL : [4],
                           RANDOM_WALK_KERNEL: [None]
