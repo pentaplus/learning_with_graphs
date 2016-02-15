@@ -24,14 +24,14 @@ DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
 #DATASET = 'ANDROID FCG' # !! change file names from hashes to numbers
 #DATASET = 'CFG' # !! change file names from hashes to numbers
 #DATASET = 'DD'
-DATASET = 'ENZYMES'
+#DATASET = 'ENZYMES'
 #DATASET = 'MUTAG'
 #DATASET = 'NCI1'
 #DATASET = 'NCI109'
-#DATASET = 'PTC(MR)'
+DATASET = 'PTC(MR)'
 
 
-graph_of_num = dataset_loader.load_dataset(DATASETS_PATH, DATASET)
+graph_of_num, class_lbls = dataset_loader.load_dataset(DATASETS_PATH, DATASET)
     
 graphs_of_class = dataset_loader.determine_graphs_of_class_dict(graph_of_num)
 

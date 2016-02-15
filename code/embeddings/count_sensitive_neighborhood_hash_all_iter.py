@@ -23,23 +23,21 @@ def extract_features(graph_of_num, h):
 # !!
 if __name__ == '__main__':
     import time
-    from misc import datasetloader
+    from misc import dataset_loader
     
     DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
     dataset = 'MUTAG'
-    graph_of_num = datasetloader.load_dataset(DATASETS_PATH, dataset)
+    graph_of_num, class_lbls = dataset_loader.load_dataset(DATASETS_PATH, dataset)
     
     
-    h = 9
+    h_range = range(6)
+
     start = time.time()
-    data_matrix, class_lbls = extract_features(graph_of_num, h)
+    data_mat_of_param, extr_time_of_param = extract_features(graph_of_num,
+                                                             h_range)
     
     end = time.time()
-    print 'h = %d: %.3f' % (h, end - start)
+    print 'h = %s: %.3f' % (h_range, end - start)
     
     
-#    Z = data_matrix.todense()
-    
-    print data_matrix.__repr__()
-    #print data_matrix.__str__()
-        
+ 

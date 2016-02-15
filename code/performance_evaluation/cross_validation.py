@@ -3,9 +3,8 @@ import numpy as np
 import sys
 import time
 
-from collections import defaultdict
 from os.path import abspath, dirname, join
-from sklearn import cross_validation
+from sklearn.cross_validation import cross_val_score, KFold, StratifiedKFold
 from sklearn import svm
 from sklearn.grid_search import GridSearchCV
 from sklearn.metrics.pairwise import pairwise_kernels
@@ -23,18 +22,14 @@ from misc import utils
 def construct_outer_cv_and_inner_cvs(class_lbls, strat_kfold, num_outer_folds,
                                      num_inner_folds):
     if strat_kfold:
-        outer_cv = cross_validation.StratifiedKFold(class_lbls,
-                                                    num_outer_folds,
-                                                    shuffle = True)
+        outer_cv = StratifiedKFold(class_lbls, num_outer_folds, shuffle = True)
     else:
-        outer_cv = cross_validation.KFold(len(class_lbls), num_outer_folds,
-                                          shuffle = True)
+        outer_cv = KFold(len(class_lbls), num_outer_folds, shuffle = True)
     inner_cvs = []
     for outer_train_indices, outer_test_indices in outer_cv:
         if strat_kfold:
-            inner_cv =\
-            cross_validation.StratifiedKFold(class_lbls[outer_train_indices],
-                                             num_inner_folds, shuffle = True)                                 
+            inner_cv = StratifiedKFold(class_lbls[outer_train_indices],
+                                       num_inner_folds, shuffle = True)                                 
         else:
             inner_cv = num_inner_folds
         inner_cvs.append(inner_cv)
@@ -63,9 +58,9 @@ def optimize_embedding_param(clf, data_mat_of_param, class_lbls, strat_kfold,
             
             for param, data_mat in data_mat_of_param.iteritems():
                 score_on_train_data =\
-                    cross_validation.cross_val_score(clf, data_mat[train_indices],
-                                                     class_lbls[train_indices],
-                                                     cv = inner_cv).mean()
+                    cross_val_score(clf, data_mat[train_indices],
+                                    class_lbls[train_indices],
+                                    cv = inner_cv).mean()
             
                 sys.stdout.write('param = %d, i = %d, j = %d: score = %.2f\n' %\
                                                (param, i, j, score_on_train_data))
@@ -203,23 +198,20 @@ def optimize_embedding_and_kernel_param(graph_of_num, embedding, param_range,
     rbf_clf = svm.SVC(kernel = 'rbf')
                                               
     data_mat, class_lbls = embedding.extract_features(graph_of_num,
-                                                         min(param_range))
+                                                      min(param_range))
     # precompute KFold/StratifiedKFold objects
     cvs = {}
     for it in xrange(num_iter):
         if strat_kfold:
-            outer_cv = cross_validation.StratifiedKFold(class_lbls,
-                                                        num_outer_folds,
-                                                        shuffle = True)
+            outer_cv = StratifiedKFold(class_lbls, num_outer_folds,
+                                       shuffle = True)
         else:
-            outer_cv = cross_validation.KFold(len(class_lbls), num_outer_folds,
-                                              shuffle = True)
+            outer_cv = KFold(len(class_lbls), num_outer_folds, shuffle = True)
         inner_cvs = []
         for outer_train_indices, outer_test_indices in outer_cv:
             if strat_kfold:
-                inner_cv =\
-                cross_validation.StratifiedKFold(class_lbls[outer_train_indices],
-                                                 num_inner_folds, shuffle = True)                                 
+                inner_cv = StratifiedKFold(class_lbls[outer_train_indices],
+                                           num_inner_folds, shuffle = True)                                 
             else:
                 inner_cv = num_inner_folds
             inner_cvs.append(inner_cv)
@@ -238,15 +230,14 @@ def optimize_embedding_and_kernel_param(graph_of_num, embedding, param_range,
             
             for j, (train_indices, test_indices) in enumerate(outer_cv):
                 if j not in scores[i]:
-                    scores[i][j] = {'best_param_on_train_data' : -1, 'best_score' : 0.0}
+                    scores[i][j] = {'best_param_on_train_data' : -1,
+                                    'best_score' : 0.0}
                 
                 inner_cv = inner_cvs[j]
                 
-                score =\
-                cross_validation.cross_val_score(lin_clf,
-                                                 data_mat[train_indices],
-                                                 class_lbls[train_indices],
-                                                 cv = inner_cv).mean()
+                score = cross_val_score(lin_clf, data_mat[train_indices],
+                                        class_lbls[train_indices],
+                                        cv = inner_cv).mean()
             
                 sys.stdout.write('param = %d, i = %d, j = %d: score = %.2f\n' %\
                                                              (param, i, j, score))            
@@ -284,17 +275,15 @@ def optimize_embedding_and_kernel_param(graph_of_num, embedding, param_range,
             for j in best_param_on_train_data_values[best_param_on_train_data][i]:
                 train_indices, test_indices = outer_cv_lists[i][j]
                                           
-                lin_train_score =\
-                cross_validation.cross_val_score(lin_clf,
-                                                 data_mat[train_indices],
-                                                 class_lbls[train_indices],
-                                                 cv = 3).mean()
+                lin_train_score = cross_val_score(lin_clf,
+                                                  data_mat[train_indices],
+                                                  class_lbls[train_indices],
+                                                  cv = 3).mean()
                                                  
-                rbf_train_score =\
-                cross_validation.cross_val_score(rbf_clf,
-                                                 data_mat[train_indices],
-                                                 class_lbls[train_indices],
-                                                 cv = 3).mean()
+                rbf_train_score = cross_val_score(rbf_clf,
+                                                  data_mat[train_indices],
+                                                  class_lbls[train_indices],
+                                                  cv = 3).mean()
                                                  
                 if lin_train_score > rbf_train_score:
                     lin_clf.fit(data_mat[train_indices], 
@@ -333,21 +322,18 @@ def optimize_embedding_and_kernel_param(graph_of_num, embedding, param_range,
     print '\n'
 
 
-def cross_val(clf, data_mat, class_lbls, num_iter, num_folds, strat_kfold,
-              result_file):
+def cross_val(clf, data_or_kernel_mat, class_lbls, num_iter, num_folds,
+              strat_kfold, result_file):
     cross_val_start_time = time.time()
 
     mean_scores = []
     for i in xrange(num_iter):
         if strat_kfold:
-            cv = cross_validation.StratifiedKFold(class_lbls, num_folds,
-                                                  shuffle = True)
+            cv = StratifiedKFold(class_lbls, num_folds, shuffle = True)
         else:
-            cv = cross_validation.KFold(len(class_lbls), num_folds,
-                                        shuffle = True)
+            cv = KFold(len(class_lbls), num_folds, shuffle = True)
             
-        scores = cross_validation.cross_val_score(clf, data_mat, class_lbls,
-                                                  cv = cv)
+        scores = cross_val_score(clf, data_or_kernel_mat, class_lbls, cv = cv)
         
         print '%d) score: %.2f' % (i, scores.mean())
         
@@ -378,8 +364,7 @@ def optimize_gen_params(data_mat, class_lbls, num_iter, param_grid, num_folds,
     
     for i in xrange(num_iter):
         if strat_kfold:
-            cv = cross_validation.StratifiedKFold(class_lbls, num_folds,
-                                                  shuffle = True)
+            cv = StratifiedKFold(class_lbls, num_folds, shuffle = True)
         else:
             cv = num_folds
         

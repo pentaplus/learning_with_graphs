@@ -109,11 +109,11 @@ from misc import utils
 
 def extract_features(graph_of_num, h_range, count_sensitive = True,
                      all_iter = False):
-    extraction_start_time = time.time()
+    extr_start_time = time.time()
     
     data_mat_of_param = {}
-    extraction_time_of_param = {}
-    mat_construction_times = []
+    extr_time_of_param = {}
+    mat_constr_times = []
     
     h_max = max(h_range)                         
                         
@@ -249,7 +249,7 @@ def extract_features(graph_of_num, h_range, count_sensitive = True,
         # 2) compress bit labels and construct data matrix whose i-th row equals
         #    the i-th feature vector
         # ------------------------------------------------------------------------
-        mat_construction_start_time = time.time()
+        mat_constr_start_time = time.time()
         
         # list containing the features of all graphs
         features = []
@@ -302,17 +302,15 @@ def extract_features(graph_of_num, h_range, count_sensitive = True,
         data_mat_of_param[r] = data_mat
         
         
-        extraction_end_time = time.time()
-        extraction_time = extraction_end_time - extraction_start_time -\
-                          sum(mat_construction_times)
+        extr_end_time = time.time()
+        extr_time = extr_end_time - extr_start_time - sum(mat_constr_times)
         
-        mat_construction_end_time = time.time()
-        mat_construction_time =\
-                           mat_construction_end_time - mat_construction_start_time
-        mat_construction_times.append(mat_construction_time)
+        mat_constr_end_time = time.time()
+        mat_constr_time = mat_constr_end_time - mat_constr_start_time
+        mat_constr_times.append(mat_constr_time)
         
-        extraction_time += mat_construction_time
-        extraction_time_of_param[r] = extraction_time
+        extr_time += mat_constr_time
+        extr_time_of_param[r] = extr_time
 		  
 		  
         if r < h_max:
@@ -324,7 +322,7 @@ def extract_features(graph_of_num, h_range, count_sensitive = True,
                 feature_counts_dict = defaultdict(list)
                 index_of_lbl_dict = defaultdict(dict)
 
-    return data_mat_of_param, extraction_time_of_param
+    return data_mat_of_param, extr_time_of_param
     
 
 # !!
@@ -350,7 +348,7 @@ if __name__ == '__main__':
     
     h_range = range(6)
     start = time.time()
-    data_mat_of_param, extraction_time_of_param =\
+    data_mat_of_param, extr_time_of_param =\
                    extract_features(graph_of_num, h_range, count_sensitive = True,
                                     all_iter = True)
     end = time.time()

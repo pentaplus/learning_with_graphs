@@ -19,11 +19,11 @@ from misc import utils
 
 
 def extract_features(graph_of_num, h_range):
-    extraction_start_time = time.time()
+    extr_start_time = time.time()
     
     data_mat_of_param = {}
-    extraction_time_of_param = {}
-    mat_construction_times = []
+    extr_time_of_param = {}
+    mat_constr_times = []
     
     h_max = max(h_range)
     
@@ -139,7 +139,7 @@ def extract_features(graph_of_num, h_range):
         # 2) construct data matrix whose i-th row equals the i-th feature vector,
         #    which comprises the features of the first r iterations
         # ------------------------------------------------------------------------
-        mat_construction_start_time = time.time()        
+        mat_constr_start_time = time.time()        
         
         # list containing the features of all graphs
         features = []
@@ -172,81 +172,91 @@ def extract_features(graph_of_num, h_range):
                                len(compr_func)), dtype = np.float64)
         data_mat_of_param[r] = data_mat
         
-        extraction_end_time = time.time()
-        extraction_time = extraction_end_time - extraction_start_time -\
-                          sum(mat_construction_times)
+        extr_end_time = time.time()
+        extr_time = extr_end_time - extr_start_time - sum(mat_constr_times)
         
-        mat_construction_end_time = time.time()
-        mat_construction_time =\
-                           mat_construction_end_time - mat_construction_start_time
-        mat_construction_times.append(mat_construction_time)
+        mat_constr_end_time = time.time()
+        mat_constr_time = mat_constr_end_time - mat_constr_start_time
+        mat_constr_times.append(mat_constr_time)
         
-        extraction_time += mat_construction_time
-        extraction_time_of_param[r] = extraction_time
+        extr_time += mat_constr_time
+        extr_time_of_param[r] = extr_time
   
         if r < h_max:
             upd_lbls_dict = next_upd_lbls_dict
             next_upd_lbls_dict = defaultdict(dict)
     
    
-    return data_mat_of_param, extraction_time_of_param
+    return data_mat_of_param, extr_time_of_param
 
 
 
 # !!
 if __name__ == '__main__':
     from misc import dataset_loader
+    from performance_evaluation import cross_validation
+    
+#    from sklearn.cross_validation import KFold
+    from sklearn.svm import SVC
+#    from sklearn.cross_validation import cross_val_score
+    from sklearn.metrics.pairwise import pairwise_kernels
     
     DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
     dataset = 'MUTAG'
-    graph_of_num, class_lbls = dataset_loader.load_dataset(DATASETS_PATH, dataset)    
+#    dataset = 'PTC(MR)'
     
-    del SCRIPT_PATH
-    del SCRIPT_FOLDER_PATH
-    del dataset
+    graph_of_num, class_lbls = dataset_loader.load_dataset(DATASETS_PATH, dataset)    
     
     h_range = range(6)
     
-    start = time.time()
-    data_mat_of_param, extraction_time_of_param = extract_features(graph_of_num,
-                                                                   h_range)
-    end = time.time()
-    print end - start
+    data_mat_of_param, extr_time_of_param = extract_features(graph_of_num,
+                                                             h_range)
+    data_mat = data_mat_of_param[1]                                                                
+                                                                   
+
+
+    clf = SVC(kernel = 'precomputed')
+
+    # kernel_mat == data_mat.dot(data_mat.T)
+    kernel_mat = pairwise_kernels(data_mat)
     
     
-    from sklearn.svm import SVC
-    from sklearn.cross_validation import cross_val_score
-    from sklearn.metrics.pairwise import pairwise_kernels
+#    clf.fit(pairwise_kernels(data_mat), class_lbls)
+#    clf.fit(data_mat.dot(data_mat.T), class_lbls)
     
-    #X = []
-    #for i in xrange(len(graph_of_num)):
-    #    X.append([i])
-    #X = np.array(X)
-    #    
-    #
-    #data = ['aab', 'aaabb']
-    #    
-    #def my_kernel(X, Y):
-    #    '''This function is used to pre-compute the kernel matrix from data matrices;
-    #       that matrix should be an array of shape (n_samples, n_samples).'''
-    ##    print 'X', X
-    ##    print 'X type', type(X)
-    ##    print 'X size', X.shape
-    ##    print 'Y', Y
-    ##    print 'Y type', type(Y)
-    ##    print 'Y size', Y.shape
-    #    i = int(X[0,0])
-    #    j = int(Y[1,0])
-    ##    return data[i].count('a')*data[j].count('a') +\
-    ##           data[i].count('b')*data[j].count('b')
-    #    return np.array([[1, 2], [2,3]])
-               
-        
-    #clf = SVC(kernel = 'precomputed')
-    #
-    #clf.fit(pairwise_kernels(data_mat), class_lbls)
-    #
-    #cross_val_score(clf, X, class_lbls, cv = 10)
+#    cv = KFold(len(class_lbls), 10, shuffle = True)    
     
-    #for i, (num, tup) in enumerate(graph_of_num.iteritems()):
-    #    print i, num, tup
+#    cross_val_score(clf, pairwise_kernels(data_mat), class_lbls, cv = 10)
+#    scores = cross_val_score(clf, data_mat.dot(data_mat.T), class_lbls, cv = cv)
+#    print np.average(scores)
+    
+    
+    cross_validation.cross_val(clf, kernel_mat, class_lbls, 10, 10, False,
+                               open('bla.txt', 'w'))   
+
+
+    
+    
+    
+#    X = []
+#    for i in xrange(len(graph_of_num)):
+#        X.append([i])
+#    X = np.array(X)
+#        
+#    
+#    data = ['aab', 'aaabb']
+#        
+#    def my_kernel(X, Y):
+#        '''This function is used to pre-compute the kernel matrix from data matrices;
+#           that matrix should be an array of shape (n_samples, n_samples).'''
+#    #    print 'X', X
+#    #    print 'X type', type(X)
+#    #    print 'X size', X.shape
+#    #    print 'Y', Y
+#    #    print 'Y type', type(Y)
+#    #    print 'Y size', Y.shape
+#        i = int(X[0,0])
+#        j = int(Y[1,0])
+#    #    return data[i].count('a')*data[j].count('a') +\
+#    #           data[i].count('b')*data[j].count('b')
+#        return np.array([[1, 2], [2,3]])

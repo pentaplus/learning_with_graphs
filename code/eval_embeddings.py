@@ -1,19 +1,18 @@
 # planed procedure:
 # at Benny-Notebook:
 # 0. test WL on first 6 datasets (param range = {0,...,10})
-# 0. test WL on ANDROID FCG PARTIAL (10 iterations, LIBSVM)
 # 1. test NH and CSNH all iter (10 iterations, libsvm-liblinear)
 # 2. test GRAPHLET_KERNEL for param = 3 (10 iterations, libsvm-liblinear)
 # 3. test GRAPHLET_KERNEL for param = 4 (10 iterations, libsvm-liblinear)
+# 4. test WL on ANDROID FCG PARTIAL (10 iterations, LIBSVM)
 # 
 # at Ben-PC:
-# 1. optimize function optimize_embedding_param by a large factor
-# 2. implement an implicit embedding method
-# 4. compress FCGs
+# 1. implement an implicit embedding method
+# 10. compress FCGs
 # 
 #
-# 4. evaluate performance on ANDROID FCG PARTIAL
-# 5. gradually increment the number of samples of ANDROID FCG PARTIAL
+# 11. evaluate performance on ANDROID FCG PARTIAL
+# 12. gradually increment the number of samples of ANDROID FCG PARTIAL
 # 
 # 
 # 100. make feature vectors for NHGK unary 
@@ -30,6 +29,7 @@ import time
 
 from os.path import abspath, dirname, join
 from sklearn import svm
+#from sklearn.metrics.pairwise import pairwise_kernels
 #from sklearn.pipeline import make_pipeline
 #from sklearn.preprocessing import StandardScaler
 
@@ -53,8 +53,7 @@ NEIGHBORHOOD_HASH = 'neighborhood_hash'
 COUNT_SENSITIVE_NEIGHBORHOOD_HASH = 'count_sensitive_neighborhood_hash'
 COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER =\
                                       'count_sensitive_neighborhood_hash_all_iter'
-GRAPHLET_KERNEL_3 = 'graphlet_kernel_3'
-GRAPHLET_KERNEL_4 = 'graphlet_kernel_4'
+GRAPHLET_KERNEL = 'graphlet_kernel'
 LABEL_COUNTER = 'label_counter'
 RANDOM_WALK_KERNEL = 'random_walk_kernel'
 
@@ -70,28 +69,25 @@ CFG = 'CFG'
 
 #EMBEDDING_NAMES = [LABEL_COUNTER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, LABEL_COUNTER]
-#EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
-EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
+EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
+#EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, NEIGHBORHOOD_HASH]
 #EMBEDDING_NAMES = [COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
 #EMBEDDING_NAMES = [COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER]
 #EMBEDDING_NAMES = [NEIGHBORHOOD_HASH, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
-#EMBEDDING_NAMES = [GRAPHLET_KERNEL_3]
-#EMBEDDING_NAMES = [GRAPHLET_KERNEL_4]
+#EMBEDDING_NAMES = [GRAPHLET_KERNEL]
 
 
 # keys are indices of the list EMBEDDING_NAMES, values are the respective
 # parameters
 EMBEDDING_PARAM_RANGES = {
 #                         WEISFEILER_LEHMAN : [10],
-                          WEISFEILER_LEHMAN : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                          NEIGHBORHOOD_HASH : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                          COUNT_SENSITIVE_NEIGHBORHOOD_HASH :\
-                                               [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                          COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER :\
-                                               [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],                                   
-                          GRAPHLET_KERNEL_3 : [3],
-                          GRAPHLET_KERNEL_4 : [4],
+                          WEISFEILER_LEHMAN : range(11),
+                          NEIGHBORHOOD_HASH : range(11),
+                          COUNT_SENSITIVE_NEIGHBORHOOD_HASH : range(11),
+                          COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER : range(11),                                   
+                          GRAPHLET_KERNEL : [3],
+#                          GRAPHLET_KERNEL : [4],
                           RANDOM_WALK_KERNEL: [None]
                          }
 
@@ -100,20 +96,20 @@ EMBEDDING_PARAM_RANGES = {
 #DATASET = 'CFG' # !! change file names from hashes to numbers
 
 # sorted by number of graphs in ascending order
-DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
+#DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
 #DATASETS = [MUTAG, PTC_MR, ENZYMES]
 #DATASETS = [DD, NCI1, NCI109]
 #DATASETS = [MUTAG]
 #DATASETS = [PTC_MR]
 #DATASETS = [ENZYMES]
 #DATASETS = [DD]
-#DATASETS = [NCI1]
+DATASETS = [NCI1]
 #DATASETS = [NCI109]
 #DATASETS = [ANDROID_FCG_PARTIAL]
 #DATASETS = [CFG]
 
-OPT_PARAM = True
-#OPT_PARAM = False
+#OPT_PARAM = True
+OPT_PARAM = False
 
 COMPARE_PARAMS = True
 #COMPARE_PARAMS = False
@@ -124,8 +120,8 @@ OPT = False
 # kernels for LIBSVM classifier
 #LIBSVM_KERNELS = ['linear', 'rbf', 'poly', 'sigmoid']
 #LIBSVM_KERNELS = ['linear', 'rbf', 'sigmoid']
-LIBSVM_KERNELS = ['linear', 'rbf']
-#LIBSVM_KERNELS = ['linear']
+#LIBSVM_KERNELS = ['linear', 'rbf']
+LIBSVM_KERNELS = ['linear']
 #LIBSVM_KERNELS = ['rbf']
 #LIBSVM_KERNELS = ['sigmoid']
 #LIBSVM_KERNELS = ['poly']
@@ -134,8 +130,8 @@ LIBSVM_KERNELS = ['linear', 'rbf']
 STRAT_KFOLD_VALUES = [False]
 #STRAT_KFOLD_VALUES = [True]
 
-#NUM_ITER = 1
-NUM_ITER = 10
+NUM_ITER = 1
+#NUM_ITER = 10
 
 NUM_FOLDS = 10
 
@@ -181,11 +177,32 @@ def extract_features(graph_of_num, embedding, param_range, result_file):
     return data_mat_of_param, extr_time_of_param
     
     
-def init_clf(liblinear, max_iter, kernel = None):
+def compute_kernel_matrix(graph_of_num, embedding, param_range, result_file):
+    sys.stdout.write(('----------------------------------------------------------'
+                      '---\n\n'))
+    result_file.write('------------------------------------------\n\n')
+
+    kernel_mat_comp_start_time = time.time()
+
+    kernel_mat_of_param, kernel_mat_comp_time_of_param =\
+                           embedding.compute_kernel_mat(graph_of_num, param_range)
+
+    kernel_mat_comp_end_time = time.time()
+    kernel_mat_comp_time = kernel_mat_comp_end_time - kernel_mat_comp_start_time
+    utils.write('The computation of the kernel matrix took %.1f seconds.\n' %\
+                                                kernel_mat_comp_time, result_file)
+    print ''
+
+    return kernel_mat_of_param, kernel_mat_comp_time_of_param
+    
+  
+def init_clf(liblinear, max_iter, kernel = None, embedding_is_implicit = False):
     # !!
 #    return svm.SVC(kernel = kernel, decision_function_shape = 'ovr',
 #                   max_iter = max_iter)     
 #    return svm.LinearSVC(max_iter = max_iter) # !!
+    if embedding_is_implicit:
+        return svm.SVC(kernel = 'precomputed')
     
     if LIBLINEAR:
         # library LIBLINEAR is used
@@ -215,6 +232,13 @@ def set_params(num_samples, dataset, limit_clf_max_iter_sd,
         CLF_MAX_ITER = 100 if LIMIT_CLF_MAX_ITER_SD else -1
         
     return LIBLINEAR, KERNELS, NUM_INNER_FOLDS, CLF_MAX_ITER
+    
+
+def is_embedding_implicit(embedding_name):
+    if embedding_name in [RANDOM_WALK_KERNEL]:
+        return True
+    else:
+        return False
     
 
 def write_param_info(liblinear, num_iter, opt_param, num_inner_folds,
@@ -251,6 +275,18 @@ def write_extr_time_for_param(param, extr_time_of_param, result_file):
                 extr_time_of_param[param], result_file)
     sys.stdout.write('\n')
     
+    
+def write_kernel_comp_for_param(param, kernel_mat_comp_time_of_param,
+                                result_file):
+    sys.stdout.write(('----------------------------------------------------------'
+                      '---\n'))
+    result_file.write('------------------------------------------\n')
+    utils.write('Parameter: %d\n\n' % param, result_file)
+    utils.write('The computation of the kernel matrix took %.1f seconds.\n' %\
+                kernel_mat_comp_time_of_param[param], result_file)
+    sys.stdout.write('\n')
+    
+    
 
 script_exec_start_time = time.time()
 
@@ -277,26 +313,27 @@ for dataset in DATASETS:
                          CLF_MAX_ITER, result_file)
         
         embedding = importlib.import_module('embeddings.' + embedding_name)
+        embedding_is_implicit = is_embedding_implicit(embedding_name)
         
         param_range = EMBEDDING_PARAM_RANGES[embedding_name]
         
         #-------------------------------------------------------------------------
-        # 2) extract features
+        # 2) extract features if embedding is an explicit embedding, else compute
+        #    the kernel matrix
         # ------------------------------------------------------------------------
-        data_mat_of_param, extr_time_of_param =\
+        if not embedding_is_implicit:
+            data_mat_of_param, extr_time_of_param =\
                extract_features(graph_of_num, embedding, param_range, result_file)
+        else:
+            kernel_mat_of_param, kernel_mat_comp_time_of_param =\
+                       compute_kernel_matrix(graph_of_num, embedding, param_range,
+                                             result_file)
         
-        if OPT_PARAM:
+        if OPT_PARAM and len(param_range) > 1:
             #---------------------------------------------------------------------
             # 3) evaluate the embedding's performance with optimized embedding
-            #    parameter
+            #    parameter (this is only done for explicit embeddings)
             # --------------------------------------------------------------------
-            if len(param_range) == 1:
-                print ('The embedding ' + embedding_name + ' has only one '
-                       'parameter. Therefore, its evaluation with optimized '
-                       'embedding parameter is skipped.')
-                continue
-        
             mode = 'opt_param'
             
             for kernel in KERNELS:
@@ -331,24 +368,41 @@ for dataset in DATASETS:
             # 4) evaluate the embedding's performance for each embedding
             #    parameter
             # --------------------------------------------------------------------
-            for param, data_mat in data_mat_of_param.iteritems():
-                write_extr_time_for_param(param, extr_time_of_param, result_file)                
+        
+#            for param, data_mat in data_mat_of_param.iteritems():
+            for param in param_range:
+                if not embedding_is_implicit:
+                    write_extr_time_for_param(param, extr_time_of_param,
+                                              result_file)
+                else:
+                    write_kernel_comp_for_param(param,
+                                                kernel_mat_comp_time_of_param,
+                                                result_file)
                 
                 for kernel in KERNELS:
                     # initialize SVM classifier
-                    clf = init_clf(LIBLINEAR, CLF_MAX_ITER, kernel)
+                    clf = init_clf(LIBLINEAR, CLF_MAX_ITER, kernel,
+                                   embedding_is_implicit)
                     
                     result_file.write('\n%s\n' % kernel.upper())
                     
                     for strat_kfold in STRAT_KFOLD_VALUES:
-                        
-                
                         write_eval_info(dataset, embedding_name, kernel,
                                         strat_kfold)
                         
-                        cross_validation.cross_val(clf, data_mat, class_lbls,
-                                                   NUM_ITER, NUM_FOLDS,
-                                                   strat_kfold, result_file)
+                        if not embedding_is_implicit:
+                            data_mat = data_mat_of_param[param]
+                            cross_validation.cross_val(clf, data_mat, class_lbls,
+                                                       NUM_ITER, NUM_FOLDS,
+                                                       strat_kfold, result_file)
+                        else:
+#                            kernel_mat == data_mat.dot(data_mat.T) # !!
+#                            kernel_mat = pairwise_kernels(data_mat)
+                            kernel_mat = kernel_mat_of_param[param]
+                            cross_validation.cross_val(clf, kernel_mat,
+                                                       class_lbls, NUM_ITER,
+                                                       NUM_FOLDS, strat_kfold,
+                                                       result_file)
 # !!                                               
 #            if OPT:
 #                for strat_kfold in STRAT_KFOLD_VALUES:

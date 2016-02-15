@@ -2,7 +2,6 @@ import inspect
 import sys
 
 import numpy as np
-#from numpy import array, float64
 from os.path import abspath, dirname, join
 from scipy.misc import comb
 
@@ -17,7 +16,6 @@ sys.path.append(join(SCRIPT_FOLDER_PATH, '..'))
 from misc import utils
 
 
-
 def calc_cards(v1_nbrs, v2_nbrs, v3_nbrs):
     return np.array([len(v1_nbrs - (v2_nbrs | v3_nbrs)),
                      len(v2_nbrs - (v1_nbrs | v3_nbrs)),
@@ -29,6 +27,12 @@ def calc_cards(v1_nbrs, v2_nbrs, v3_nbrs):
     
 
 def extract_features(graph_of_num, graphlet_size = 4):
+    extr_start_time = time.time()
+    
+    data_mat_of_param = {}
+    extr_time_of_param = {}    
+    
+    
     graphlets_count = 0    
     if graphlet_size == 3:
         graphlets_count = 4
@@ -41,8 +45,6 @@ def extract_features(graph_of_num, graphlet_size = 4):
     graphs_count = len(graph_of_num)
     data_matrix = np.zeros((graphs_count, graphlets_count), dtype = np.float64)
     
-    # list containing the class labels of all graphs
-    class_lbls = []
     
     # iterate over all graphs in the dataset -------------------------------------
     for i, (graph_num, (G, class_lbl)) in enumerate(graph_of_num.iteritems()):
@@ -178,12 +180,12 @@ def extract_features(graph_of_num, graphlet_size = 4):
             
             data_matrix[i] = counts
     
-        class_lbls.append(class_lbl)
+    data_mat_of_param[graphlet_size] = data_matrix
+    
+    extr_end_time = time.time()
+    extr_time_of_param[graphlet_size] = extr_end_time - extr_start_time
 
-    
-    class_lbls = np.array(class_lbls)
-    
-    return data_matrix, class_lbls
+    return data_mat_of_param, extr_time_of_param
 
 
 if __name__ == '__main__':
@@ -191,33 +193,17 @@ if __name__ == '__main__':
     from misc import dataset_loader
     
     DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
-#    dataset = 'MUTAG'
+    dataset = 'MUTAG'
 #    dataset = 'DD'
-    dataset = 'ENZYMES'
+#    dataset = 'ENZYMES'
 #    dataset = 'NCI1'
 #    dataset = 'NCI109'
-    graph_of_num = dataset_loader.load_dataset(DATASETS_PATH, dataset)
+    graph_of_num, class_lbls = dataset_loader.load_dataset(DATASETS_PATH, dataset)
     
-    del SCRIPT_PATH
-    del SCRIPT_FOLDER_PATH
-    del dataset
-    
-    
-#    start = time.time()
-#    data_matrix, class_lbls = extract_features(graph_of_num, 4)
-#    end = time.time()
-#    print end - start
-    
-
-
-    # test section ---------------------------------------------------------------
-    DATASET = 'ANDROID FCG PARTIAL'
     
     start = time.time()
-    graph_of_num = dataset_loader.load_dataset(DATASETS_PATH, DATASET)
+    data_mat_of_param, extr_time_of_param = extract_features(graph_of_num, 4)
     end = time.time()
     print end - start
     
-    
-    
-    
+
