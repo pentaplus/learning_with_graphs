@@ -18,16 +18,6 @@ sys.path.append(join(SCRIPT_FOLDER_PATH, '..'))
 
 from misc import utils
 
-# !!
-#def construct_outer_cv_and_inner_cvs(class_lbls, num_outer_folds,
-#                                     num_inner_folds):
-#    outer_cv = KFold(len(class_lbls), num_outer_folds, shuffle = True)
-#    inner_cvs = []
-#    for outer_train_indices, outer_test_indices in outer_cv:
-#        inner_cvs.append(num_inner_folds)
-#    
-#    return outer_cv, inner_cvs
-
 
 def optimize_embedding_param(clf, data_mat_of_param, class_lbls,
                              num_iter, num_outer_folds, num_inner_folds,
@@ -45,9 +35,6 @@ def optimize_embedding_param(clf, data_mat_of_param, class_lbls,
             opt_clf = None
 
             for param, data_mat in data_mat_of_param.iteritems():
-#                svm_param_grid = {'kernel' : ['linear', 'rbf']}
-##                svm_param_grid = {'kernel' : ('linear', 'rbf'), 'C' : [1, 10]}
-#                grid_clf = GridSearchCV(svm.SVC(), svm_param_grid, cv = 3)
                 if isinstance(clf, GridSearchCV):
                     clf.fit(data_mat[train_indices], class_lbls[train_indices])
                     
@@ -105,23 +92,38 @@ def optimize_embedding_param(clf, data_mat_of_param, class_lbls,
 
 
     
-
-
-
-
-def cross_val(clf, data_or_kernel_mat, class_lbls, num_iter, num_folds,
+def cross_val(clf, data_or_kernel_mat, class_lbls, num_iter, num_outer_folds,
               result_file):
     cross_val_start_time = time.time()
 
-    mean_scores = []
+    mean_scores_on_test_data = []   
     for i in xrange(num_iter):
-        cv = KFold(len(class_lbls), num_folds, shuffle = True)
+        scores_on_test_data = []
+        outer_cv = KFold(len(class_lbls), num_outer_folds, shuffle = True)
+        
+        if isinstance(clf, GridSearchCV):
+            data_mat = data_or_kernel_mat
+                                            
+            for j, (train_indices, test_indices) in enumerate(outer_cv):
+                clf.fit(data_mat[train_indices], class_lbls[train_indices])
+                    
+                opt_clf = clf.best_estimator_
+                    
+                print 'i = %d, j = %d: params = %s' % (i, j, clf.best_params_)
+                                                 
+                score_on_test_data = opt_clf.score(data_mat[test_indices],
+                                                   class_lbls[test_indices])
             
-        scores = cross_val_score(clf, data_or_kernel_mat, class_lbls, cv = cv)
-        
-        print '%d) score: %.2f' % (i, scores.mean())
-        
-        mean_scores.append(scores.mean())    
+                scores_on_test_data.append(score_on_test_data)
+        else:
+            # clf is an instance of LinearSVC or an instance of SVC with
+            # precomputed kernel
+            scores_on_test_data = cross_val_score(clf, data_or_kernel_mat,
+                                                  class_lbls, cv = outer_cv)
+                                                  
+        mean_score_on_test_data = np.mean(scores_on_test_data) 
+        mean_scores_on_test_data.append(mean_score_on_test_data)
+        print '%d) score: %.2f' % (i, mean_score_on_test_data)  
     print ''
       
     cross_val_end_time = time.time()
@@ -129,61 +131,12 @@ def cross_val(clf, data_or_kernel_mat, class_lbls, num_iter, num_folds,
           
     sys.stdout.write('RESULT: ')
     utils.write('%.3f (+/-%.3f) in %.1f seconds\n' %\
-                (np.mean(mean_scores), np.std(mean_scores), cross_val_time),
-                 result_file)
+                               (np.mean(mean_scores_on_test_data),
+                                np.std(mean_scores_on_test_data), cross_val_time),
+                                result_file)
     sys.stdout.write('\n')
     
     
-def optimize_gen_params(data_mat, class_lbls, num_iter, param_grid, num_folds,
-                        verbose, result_file):
-    cross_val_start_time = time.time()
-    
-    grid_clf = GridSearchCV(svm.SVC(), param_grid, cv = 3)
-    
-    mean_scores = []            
-    
-    for i in xrange(num_iter):
-        cv = KFold(len(class_lbls), num_folds, shuffle = True)
-        
-        scores = []
-        for j, (train_indices, test_indices) in enumerate(cv):
-            # print("TRAIN:", train_indices, "TEST:", test_indices)
-        
-            grid_clf.fit(data_mat[train_indices], class_lbls[train_indices])
-            
-            #for params, mean_score, scores in clf.grid_scores_:
-            #    print params, mean_score
-            #print clf.best_param_on_train_datas_
-            
-            opt_clf = grid_clf.best_estimator_
-            score = opt_clf.score(data_mat[test_indices],
-                                  class_lbls[test_indices])
-            scores.append(score)
-            
-            if verbose:
-                print '%d.%d) score: %.2f' % (i, j, score)
-        
-        print '%d) score: %.2f' % (i, np.mean(scores))
-        
-        if verbose:
-            print ''
-
-        mean_scores.append(np.mean(scores)) 
-
-    if not verbose:
-        print ''
-                                            
-    cross_val_end_time = time.time()
-    cross_val_time = cross_val_end_time - cross_val_start_time
-    
-    if param_grid == [{'kernel': ['linear', 'rbf']}]:
-        result_file.write('OPT (LINEAR/RBF)\n')
-
-    sys.stdout.write('RESULT: ')
-    utils.write('%.3f (+/-%.3f) in %.1f seconds\n' %\
-                (np.mean(mean_scores), np.std(mean_scores), cross_val_time),
-                result_file)
-    print '\n'
 	
 
 # !!
@@ -228,8 +181,4 @@ def compute_kernel_matrix(data_mat):
     
     
     
-    
-#data_mat = data_mat_of_param[0]
-#
-#optimize_gen_params(data_mat, class_lbls, 10, {'kernel' : ['linear', 'rbf']}, 10,
-#                    False, False, open('bla.txt', 'w'))
+

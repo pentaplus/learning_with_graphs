@@ -1,9 +1,9 @@
 LIBRARY: LIBSVM
-NUM_ITER: 1
+NUM_ITER: 10
 NUM_INNER_FOLDS: 10
 ------------------------------------------
 
-Total feature extraction took 0.5 seconds.
+Total feature extraction took 1.3 seconds.
 
 LINEAR/RBF (OPT_PARAM)
-0.674 (+/-0.000) in 57.1 seconds
+0.565 (+/-0.010) in 794.7 seconds

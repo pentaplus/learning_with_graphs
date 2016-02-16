@@ -95,11 +95,11 @@ EMBEDDING_PARAM_RANGES = {
 #DATASET = 'CFG' # !! change file names from hashes to numbers
 
 # sorted by number of graphs in ascending order
-DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
+#DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
 #DATASETS = [MUTAG, PTC_MR, ENZYMES]
 #DATASETS = [DD, NCI1, NCI109]
 #DATASETS = [MUTAG]
-#DATASETS = [PTC_MR]
+DATASETS = [PTC_MR]
 #DATASETS = [ENZYMES]
 #DATASETS = [DD]
 #DATASETS = [NCI1]
@@ -110,10 +110,10 @@ DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
 OPT_PARAM = True
 #OPT_PARAM = False
 
-COMPARE_PARAMS = True
-#COMPARE_PARAMS = False
+#COMPARE_PARAMS = True
+COMPARE_PARAMS = False
 
-NUM_ITER = 10
+NUM_ITER = 1
 #NUM_ITER = 1
 
 NUM_FOLDS = 10
@@ -192,11 +192,8 @@ def init_clf(liblinear, embedding_is_implicit = False):
 #        svm_param_grid = {'kernel' : ['linear', 'rbf']}
         svm_param_grid = {'kernel' : ('linear', 'rbf'), 'C' : [1, 10]}
         grid_clf = GridSearchCV(svm.SVC(decision_function_shape = 'ovr'),
-                                svm_param_grid, cv = 3)
-                                
-#        grid_clf = GridSearchCV(svm.SVC(decision_function_shape = 'ovr'),
-#                                svm_param_grid, cv = 3, n_jobs = 4,
-#                                pre_dispatch = '2*n_jobs')
+                                svm_param_grid, cv = 3, n_jobs = 2,
+                                pre_dispatch = '2*n_jobs')
                                 
         return grid_clf
         
