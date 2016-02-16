@@ -54,7 +54,7 @@ def optimize_embedding_param(clf, data_mat_of_param, class_lbls,
                     sub_clf = clf.best_estimator_
                     
                     print 'param = %d, i = %d, j = %d: params = %s' %\
-                                                  (param, i, j, clf.best_params_))
+                                                   (param, i, j, clf.best_params_)
                                                  
                     score_on_train_data = sub_clf.score(data_mat[test_indices],
                                                         class_lbls[test_indices])
@@ -68,7 +68,7 @@ def optimize_embedding_param(clf, data_mat_of_param, class_lbls,
                                                      cv = num_inner_folds).mean()
             
                 print 'param = %d, i = %d, j = %d: score = %.2f' %\
-                                               (param, i, j, score_on_train_data))
+                                                (param, i, j, score_on_train_data)
                                                              
                 if score_on_train_data > best_score_on_train_data:
                     best_score_on_train_data = score_on_train_data
