@@ -29,6 +29,7 @@ import time
 
 from os.path import abspath, dirname, join
 from sklearn import svm
+from sklearn.grid_search import GridSearchCV
 #from sklearn.metrics.pairwise import pairwise_kernels
 #from sklearn.pipeline import make_pipeline
 #from sklearn.preprocessing import StandardScaler
@@ -69,8 +70,8 @@ CFG = 'CFG'
 
 #EMBEDDING_NAMES = [LABEL_COUNTER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, LABEL_COUNTER]
-#EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
-EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
+EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
+#EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, NEIGHBORHOOD_HASH]
 #EMBEDDING_NAMES = [COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
 #EMBEDDING_NAMES = [COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER]
@@ -95,8 +96,8 @@ EMBEDDING_PARAM_RANGES = {
 #DATASET = 'CFG' # !! change file names from hashes to numbers
 
 # sorted by number of graphs in ascending order
-DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
-#DATASETS = [MUTAG, PTC_MR, ENZYMES]
+#DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
+DATASETS = [MUTAG, PTC_MR, ENZYMES]
 #DATASETS = [DD, NCI1, NCI109]
 #DATASETS = [MUTAG]
 #DATASETS = [PTC_MR]
@@ -110,8 +111,8 @@ DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
 OPT_PARAM = True
 #OPT_PARAM = False
 
-COMPARE_PARAMS = True
-#COMPARE_PARAMS = False
+#COMPARE_PARAMS = True
+COMPARE_PARAMS = False
 
 #OPT = True
 OPT = False
@@ -119,18 +120,15 @@ OPT = False
 # kernels for LIBSVM classifier
 #LIBSVM_KERNELS = ['linear', 'rbf', 'poly', 'sigmoid']
 #LIBSVM_KERNELS = ['linear', 'rbf', 'sigmoid']
-LIBSVM_KERNELS = ['linear', 'rbf']
+#LIBSVM_KERNELS = ['linear', 'rbf']
 #LIBSVM_KERNELS = ['linear']
 #LIBSVM_KERNELS = ['rbf']
 #LIBSVM_KERNELS = ['sigmoid']
 #LIBSVM_KERNELS = ['poly']
 
-#STRAT_KFOLD_VALUES = [False, True]
-STRAT_KFOLD_VALUES = [False]
-#STRAT_KFOLD_VALUES = [True]
 
-#NUM_ITER = 1
 NUM_ITER = 10
+#NUM_ITER = 10
 
 NUM_FOLDS = 10
 
@@ -138,10 +136,6 @@ NUM_INNER_FOLDS_SD = 10
 #NUM_INNER_FOLDS_SD = 4 # !!
 NUM_INNER_FOLDS_LD = 4
 
-LIMIT_CLF_MAX_ITER_SD = False
-#LIMIT_CLF_MAX_ITER_SD = True
-LIMIT_CLF_MAX_ITER_LD = False
-#LIMIT_CLF_MAX_ITER_LD = True
 
 
 
@@ -158,8 +152,7 @@ def load_dataset(dataset, datasets_path):
     
 
 def extract_features(graph_of_num, embedding, param_range, result_file):
-    sys.stdout.write(('----------------------------------------------------------'
-                      '---\n\n'))
+    print '-------------------------------------------------------------\n'
     result_file.write('------------------------------------------\n\n')
 
     feat_extr_start_time = time.time()
@@ -177,8 +170,7 @@ def extract_features(graph_of_num, embedding, param_range, result_file):
     
     
 def compute_kernel_matrix(graph_of_num, embedding, param_range, result_file):
-    sys.stdout.write(('----------------------------------------------------------'
-                      '---\n\n'))
+    print '-------------------------------------------------------------\n'
     result_file.write('------------------------------------------\n\n')
 
     kernel_mat_comp_start_time = time.time()
@@ -195,11 +187,10 @@ def compute_kernel_matrix(graph_of_num, embedding, param_range, result_file):
     return kernel_mat_of_param, kernel_mat_comp_time_of_param
     
   
-def init_clf(liblinear, max_iter, kernel = None, embedding_is_implicit = False):
+def init_clf(liblinear, embedding_is_implicit = False):
     # !!
-#    return svm.SVC(kernel = kernel, decision_function_shape = 'ovr',
-#                   max_iter = max_iter)     
-#    return svm.LinearSVC(max_iter = max_iter) # !!
+#    return svm.SVC(kernel = kernel, decision_function_shape = 'ovr')     
+#    return svm.LinearSVC() # !!
     if embedding_is_implicit:
         return svm.SVC(kernel = 'precomputed')
     
@@ -207,30 +198,33 @@ def init_clf(liblinear, max_iter, kernel = None, embedding_is_implicit = False):
         # library LIBLINEAR is used
         # for multiclass classification the One-Versus-Rest scheme is applied,
         # i.e., in case of N different classes N classifiers are trained in total
-        return svm.LinearSVC(max_iter = max_iter)
+        return svm.LinearSVC()
     else:
         # library LIBSVM is used
         # for multiclass classification also the One-Versus-Rest scheme is applied
-        return svm.SVC(kernel = kernel, decision_function_shape = 'ovr',
-                       max_iter = max_iter)
+#        return svm.SVC(kernel = kernel, decision_function_shape = 'ovr')
+        
+        svm_param_grid = {'kernel' : ['linear', 'rbf']}
+#                svm_param_grid = {'kernel' : ('linear', 'rbf'), 'C' : [1, 10]}
+        grid_clf = GridSearchCV(svm.SVC(decision_function_shape = 'ovr'),
+                                svm_param_grid, cv = 3)
+                                
+        return grid_clf
         
 
-def set_params(num_samples, dataset, limit_clf_max_iter_sd,
-               limit_clf_max_iter_ld):
+def set_params(num_samples, dataset):
     if num_samples > 1000:
         # use library LIBLINEAR
         LIBLINEAR = True
-        KERNELS = ['linear']
+        KERNEL = 'linear'
         NUM_INNER_FOLDS = NUM_INNER_FOLDS_LD
-        CLF_MAX_ITER = 100 if LIMIT_CLF_MAX_ITER_LD else 1000
     else:
         # use library LIBSVM
         LIBLINEAR = False
-        KERNELS = LIBSVM_KERNELS
+        KERNEL = 'linear/rbf'
         NUM_INNER_FOLDS = NUM_INNER_FOLDS_SD
-        CLF_MAX_ITER = 100 if LIMIT_CLF_MAX_ITER_SD else -1
         
-    return LIBLINEAR, KERNELS, NUM_INNER_FOLDS, CLF_MAX_ITER
+    return LIBLINEAR, KERNEL, NUM_INNER_FOLDS
     
 
 def is_embedding_implicit(embedding_name):
@@ -241,7 +235,7 @@ def is_embedding_implicit(embedding_name):
     
 
 def write_param_info(liblinear, num_iter, opt_param, num_inner_folds,
-                     clf_max_iter, result_file):
+                     result_file):
     if liblinear:
         utils.write('LIBRARY: LIBLINEAR\n', result_file)
     else:
@@ -249,25 +243,18 @@ def write_param_info(liblinear, num_iter, opt_param, num_inner_folds,
     utils.write('NUM_ITER: %d\n' % num_iter, result_file)
     if opt_param:
         utils.write('NUM_INNER_FOLDS: %d\n' % num_inner_folds, result_file)
-        if clf_max_iter == -1:
-            utils.write('CLF_MAX_ITER: -1 (unlimited)\n', result_file)
-        else:
-            utils.write('CLF_MAX_ITER: %d\n' % clf_max_iter, result_file)
-    print ''
+    sys.stdout.write('\n')
     
     
-def write_eval_info(dataset, embedding_name, kernel, strat_kfold, mode = None):
+def write_eval_info(dataset, embedding_name, kernel, mode = None):
     mode_str = ' (' + mode + ')' if mode else ''
-    kfold_str = 'strat k-fold' if strat_kfold else 'k-fold'
     
-    print ('%s with %s kernel%s and %s CV on %s\n') %\
-          (embedding_name.upper(), kernel.upper(), mode_str.upper(), kfold_str,
-           dataset)
+    print ('%s with %s kernel%s on %s\n') %\
+               (embedding_name.upper(), kernel.upper(), mode_str.upper(), dataset)
            
 
 def write_extr_time_for_param(param, extr_time_of_param, result_file):
-    sys.stdout.write(('----------------------------------------------------------'
-                      '---\n'))
+    print '-------------------------------------------------------------'
     result_file.write('------------------------------------------\n')
     utils.write('Parameter: %d\n\n' % param, result_file)
     utils.write('Feature extraction took %.1f seconds.\n' %\
@@ -277,8 +264,7 @@ def write_extr_time_for_param(param, extr_time_of_param, result_file):
     
 def write_kernel_comp_for_param(param, kernel_mat_comp_time_of_param,
                                 result_file):
-    sys.stdout.write(('----------------------------------------------------------'
-                      '---\n'))
+    print '-------------------------------------------------------------'
     result_file.write('------------------------------------------\n')
     utils.write('Parameter: %d\n\n' % param, result_file)
     utils.write('The computation of the kernel matrix took %.1f seconds.\n' %\
@@ -299,8 +285,7 @@ for dataset in DATASETS:
     
     # set parameters depending on whether or not the number of samples within the
     # dataset is larger than 1000
-    LIBLINEAR, KERNELS, NUM_INNER_FOLDS, CLF_MAX_ITER =\
-    set_params(num_samples, dataset, LIMIT_CLF_MAX_ITER_SD, LIMIT_CLF_MAX_ITER_LD)
+    LIBLINEAR, KERNEL, NUM_INNER_FOLDS = set_params(num_samples, dataset)
         
     
     for embedding_name in EMBEDDING_NAMES:
@@ -309,7 +294,7 @@ for dataset in DATASETS:
         result_file = open(join(result_path, dataset + '.txt'), 'w')
         
         write_param_info(LIBLINEAR, NUM_ITER, OPT_PARAM, NUM_INNER_FOLDS,
-                         CLF_MAX_ITER, result_file)
+                         result_file)
         
         embedding = importlib.import_module('embeddings.' + embedding_name)
         embedding_is_implicit = is_embedding_implicit(embedding_name)
@@ -335,24 +320,18 @@ for dataset in DATASETS:
             # --------------------------------------------------------------------
             mode = 'opt_param'
             
-            for kernel in KERNELS:
-                result_file.write('\n%s (%s)\n' % (kernel.upper(), mode.upper()))
-                
-                # initialize SVM classifier
-                clf = init_clf(LIBLINEAR, CLF_MAX_ITER, kernel)
-                
-                for strat_kfold in STRAT_KFOLD_VALUES:
-                    write_eval_info(dataset, embedding_name, kernel, strat_kfold,
-                                    mode)
-                    
-                    cross_validation.optimize_embedding_param(clf,
-                                                              data_mat_of_param,
-                                                              class_lbls,
-                                                              strat_kfold,
-                                                              NUM_ITER,
-                                                              NUM_FOLDS,
-                                                              NUM_INNER_FOLDS,
-                                                              result_file)                                           
+            
+            result_file.write('\n%s (%s)\n' % (KERNEL.upper(), mode.upper()))
+            
+            # initialize SVM classifier
+            clf = init_clf(LIBLINEAR)
+            
+            write_eval_info(dataset, embedding_name, mode)
+            
+            cross_validation.optimize_embedding_param(clf, data_mat_of_param,
+                                                      class_lbls, NUM_ITER,
+                                                      NUM_FOLDS, NUM_INNER_FOLDS,
+                                                      result_file)                                           
         if not OPT and not COMPARE_PARAMS:
             result_file.close()
             continue
@@ -378,48 +357,25 @@ for dataset in DATASETS:
                                                 kernel_mat_comp_time_of_param,
                                                 result_file)
                 
-                for kernel in KERNELS:
-                    # initialize SVM classifier
-                    clf = init_clf(LIBLINEAR, CLF_MAX_ITER, kernel,
-                                   embedding_is_implicit)
-                    
-                    result_file.write('\n%s\n' % kernel.upper())
-                    
-                    for strat_kfold in STRAT_KFOLD_VALUES:
-                        write_eval_info(dataset, embedding_name, kernel,
-                                        strat_kfold)
-                        
-                        if not embedding_is_implicit:
-                            data_mat = data_mat_of_param[param]
-                            cross_validation.cross_val(clf, data_mat, class_lbls,
-                                                       NUM_ITER, NUM_FOLDS,
-                                                       strat_kfold, result_file)
-                        else:
-#                            kernel_mat == data_mat.dot(data_mat.T) # !!
-#                            kernel_mat = pairwise_kernels(data_mat)
-                            kernel_mat = kernel_mat_of_param[param]
-                            cross_validation.cross_val(clf, kernel_mat,
-                                                       class_lbls, NUM_ITER,
-                                                       NUM_FOLDS, strat_kfold,
-                                                       result_file)
-# !!                                               
-#            if OPT:
-#                for strat_kfold in STRAT_KFOLD_VALUES:
-#                    if strat_kfold:
-#                        print ('%s with LINEAR/RBF kernel and strat k-fold CV '
-#                               'on '%s\n') % (embedding_name.upper(), dataset)
-#                    else:
-#                        print ('%s with LINEAR/RBF kernel and k-fold CV on '
-#                               '%s\n') % (embedding_name.upper(), dataset)
-#                              
-#                    cross_validation.optimize_gen_params(data_mat, class_lbls,
-#                                                         num_iter = NUM_ITER,
-#                                                         ref_clf = None,
-#                                                         strat_kfold =\
-#                                                                     strat_kfold,
-#                                                         verbose = False,
-#                                                         result_file =\
-#                                                                     result_file)
+                
+                # initialize SVM classifier
+                clf = init_clf(LIBLINEAR, embedding_is_implicit)
+                
+                result_file.write('\n%s\n' % KERNEL.upper())
+                
+                write_eval_info(dataset, embedding_name, KERNEL)
+                
+                if not embedding_is_implicit:
+                    data_mat = data_mat_of_param[param]
+                    cross_validation.cross_val(clf, data_mat, class_lbls,
+                                               NUM_ITER, NUM_FOLDS, result_file)
+                else:
+#                    kernel_mat == data_mat.dot(data_mat.T) # !!
+#                    kernel_mat = pairwise_kernels(data_mat)
+                    kernel_mat = kernel_mat_of_param[param]
+                    cross_validation.cross_val(clf, kernel_mat, class_lbls,
+                                               NUM_ITER, NUM_FOLDS, result_file)
+
             
         result_file.close()
 
