@@ -24,6 +24,7 @@
 
 import importlib
 import inspect
+import numpy as np
 import sys
 import time
 
@@ -99,28 +100,28 @@ EMBEDDING_PARAM_RANGES = {
 #DATASETS = [MUTAG, PTC_MR, ENZYMES]
 #DATASETS = [DD, NCI1, NCI109]
 #DATASETS = [MUTAG]
-#DATASETS = [PTC_MR]
+DATASETS = [PTC_MR]
 #DATASETS = [ENZYMES]
 #DATASETS = [DD]
 #DATASETS = [NCI1]
 #DATASETS = [NCI109]
 #DATASETS = [ANDROID_FCG_PARTIAL]
-DATASETS = [CFG]
+#DATASETS = [CFG]
 
 OPT_PARAM = True
 #OPT_PARAM = False
 
-COMPARE_PARAMS = True
-#COMPARE_PARAMS = False
+#COMPARE_PARAMS = True
+COMPARE_PARAMS = False
 
 #NUM_ITER = 10
-NUM_ITER = 1
+NUM_ITER = 5
 
-NUM_FOLDS = 10
+NUM_OUTER_FOLDS = 10
 
-NUM_INNER_FOLDS_SD = 10
+NUM_INNER_FOLDS_SD = 3
 
-NUM_INNER_FOLDS_LD = 4
+NUM_INNER_FOLDS_LD = 2
 
 
 
@@ -185,9 +186,9 @@ def init_clf(liblinear, embedding_is_implicit = False):
         # for multiclass classification the One-Versus-Rest scheme is applied,
         # i.e., in case of N different classes N classifiers are trained in total
 
-        svm_param_grid = {'C' : [1, 10**3, 10**6, 10**9]}
+        svm_param_grid = {'C' : (0.01, 0.1, 1)}
         grid_clf = GridSearchCV(svm.LinearSVC(),
-                                svm_param_grid, cv = 3)
+                                svm_param_grid, cv = NUM_INNER_FOLDS_LD)
         return grid_clf
     
 #        svm_param_grid = {'C' : [1, 10]}
@@ -201,9 +202,9 @@ def init_clf(liblinear, embedding_is_implicit = False):
         # for multiclass classification also the One-Versus-Rest scheme is applied
         
 #        svm_param_grid = {'kernel' : ['linear', 'rbf']}
-        svm_param_grid = {'kernel' : ('linear', 'rbf'), 'C' : [1, 10]}
+        svm_param_grid = {'kernel' : ('linear', 'rbf'), 'C' : (1, 10)}
         grid_clf = GridSearchCV(svm.SVC(decision_function_shape = 'ovr'),
-                                svm_param_grid, cv = 3)
+                                svm_param_grid, cv = NUM_INNER_FOLDS_SD)
                                 
 #        grid_clf = GridSearchCV(svm.SVC(decision_function_shape = 'ovr'),
 #                                svm_param_grid, cv = 3, n_jobs = 4,
@@ -341,7 +342,8 @@ for dataset in DATASETS:
             
             cross_validation.optimize_embedding_param(clf, data_mat_of_param,
                                                       class_lbls, NUM_ITER,
-                                                      NUM_FOLDS, num_inner_folds,
+                                                      NUM_OUTER_FOLDS,
+                                                      num_inner_folds,
                                                       result_file)                                           
         if not COMPARE_PARAMS:
             result_file.close()
@@ -379,13 +381,15 @@ for dataset in DATASETS:
                 if not embedding_is_implicit:
                     data_mat = data_mat_of_param[param]
                     cross_validation.cross_val(clf, data_mat, class_lbls,
-                                               NUM_ITER, NUM_FOLDS, result_file)
+                                               NUM_ITER, NUM_OUTER_FOLDS,
+                                               result_file)
                 else:
 #                    kernel_mat == data_mat.dot(data_mat.T) # !!
 #                    kernel_mat = pairwise_kernels(data_mat)
                     kernel_mat = kernel_mat_of_param[param]
                     cross_validation.cross_val(clf, kernel_mat, class_lbls,
-                                               NUM_ITER, NUM_FOLDS, result_file)
+                                               NUM_ITER, NUM_OUTER_FOLDS,
+                                               result_file)
 
             
         result_file.close()

@@ -116,7 +116,7 @@ def parse_ref(line, G, id_to_num_mapper, line_num):
     
 
 SOURCE_CLASSES_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets', ('CFG (2 '
-                           'classes, 3097 directed graphs, unlabeled edges)'),
+                           'classes, 1715 directed graphs, unlabeled edges)'),
                            'plain')
                     
 folder_of_class =\

@@ -8,6 +8,22 @@ from os import listdir
 from os.path import isdir, isfile, join
 
 
+class Id_to_num_mapper():
+    def __init__(self):
+        self.id_to_num_map = {}
+        self.next_num = 0
+    
+    def map_id_to_num(self, id_to_map):
+        if id_to_map in self.id_to_num_map.iterkeys():
+            id_num = self.id_to_num_map[id_to_map]
+        else:
+            id_num = self.next_num
+            self.id_to_num_map[id_to_map] = self.next_num
+            self.next_num += 1
+        
+        return id_num
+        
+
 def calc_hash_of_array(array):
     array.flags.writeable = False
     return hash(array.data)

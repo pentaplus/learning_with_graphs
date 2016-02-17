@@ -9,11 +9,11 @@ from random import shuffle
 
 
 # determine script path
-FILE_NAME = inspect.getframeinfo(inspect.currentframe()).filename
-SCRIPT_PATH = dirname(abspath(FILE_NAME))
+SCRIPT_PATH = inspect.getframeinfo(inspect.currentframe()).filename
+SCRIPT_FOLDER_PATH = dirname(abspath(SCRIPT_PATH))
 # modify the search path for modules in order to access modules in subfolders
 # of the script's parent directory
-sys.path.append(join(SCRIPT_PATH, '..'))
+sys.path.append(join(SCRIPT_FOLDER_PATH, '..'))
 
 from misc import dataset_loader, utils
 
@@ -32,9 +32,9 @@ folder_of_class =\
                 dataset_loader.determine_folder_of_class_dict(SOURCE_CLASSES_PATH)
                 
 
-for class_lbl, folder in folder_of_class.iteritems():
-    source_class_path = join(SOURCE_CLASSES_PATH, folder)
-    target_class_path = join('pz', folder)
+for class_lbl, class_folder in folder_of_class.iteritems():
+    source_class_path = join(SOURCE_CLASSES_PATH, class_folder)
+    target_class_path = join('pz', class_folder)
     os.makedirs(target_class_path)
     
     graph_file_names = utils.list_files(source_class_path)
