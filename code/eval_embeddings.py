@@ -95,13 +95,13 @@ EMBEDDING_PARAM_RANGES = {
 #DATASET = 'CFG' # !! change file names from hashes to numbers
 
 # sorted by number of graphs in ascending order
-DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
+#DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
 #DATASETS = [MUTAG, PTC_MR, ENZYMES]
 #DATASETS = [DD, NCI1, NCI109]
 #DATASETS = [MUTAG]
 #DATASETS = [PTC_MR]
 #DATASETS = [ENZYMES]
-#DATASETS = [DD]
+DATASETS = [DD]
 #DATASETS = [NCI1]
 #DATASETS = [NCI109]
 #DATASETS = [ANDROID_FCG_PARTIAL]
@@ -113,8 +113,8 @@ OPT_PARAM = True
 COMPARE_PARAMS = True
 #COMPARE_PARAMS = False
 
-NUM_ITER = 10
-#NUM_ITER = 1
+#NUM_ITER = 10
+NUM_ITER = 1
 
 NUM_FOLDS = 10
 
@@ -184,7 +184,18 @@ def init_clf(liblinear, embedding_is_implicit = False):
         # library LIBLINEAR is used
         # for multiclass classification the One-Versus-Rest scheme is applied,
         # i.e., in case of N different classes N classifiers are trained in total
-        return svm.LinearSVC()
+
+#        svm_param_grid = {'kernel' : ('linear', 'rbf'), 'C' : [1, 10]}
+#        grid_clf = GridSearchCV(svm.SVC(decision_function_shape = 'ovr'),
+#                                svm_param_grid, cv = 3)
+#        return grid_clf
+    
+        svm_param_grid = {'C' : [1, 10]}
+        grid_clf = GridSearchCV(svm.LinearSVC(), svm_param_grid, cv = 3)
+        return grid_clf
+        
+        
+#        return svm.LinearSVC()
     else:
         # library LIBSVM is used
         # for multiclass classification also the One-Versus-Rest scheme is applied
