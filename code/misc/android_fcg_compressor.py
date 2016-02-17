@@ -1,4 +1,6 @@
 import inspect
+import networkx as nx
+import numpy as np
 import os
 import re
 import sys
@@ -15,6 +17,13 @@ SCRIPT_FOLDER_PATH = dirname(abspath(SCRIPT_PATH))
 sys.path.append(join(SCRIPT_FOLDER_PATH, '..'))
 
 from misc import pz, utils
+
+def bin_array_to_num(array):
+    array_str = ''
+    for i in xrange(array.shape[0]):
+        array_str += str(array[i])
+        
+    return int(array_str, 2)
 
 
 DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
@@ -40,6 +49,16 @@ with open(join(SOURCE_CLASSES_PATH, 'hash_num_map.txt'), 'w') as f:
         
         for graph_file_name in graph_file_names:
             id_to_num_mapper = utils.Id_to_num_mapper()
-            G = pz.load(join(source_class_path, graph_file_name)
-            x = 0
-        
+            G_uncompr = pz.load(join(source_class_path, graph_file_name))
+            G_compr = nx.DiGraph()
+            
+            id_to_num_mapper = utils.Id_to_num_mapper()
+            
+            for node_id_tuple, lbl_array in G_uncompr.node.iteritems():
+                node_id = '\n'.join(node_id_tuple)
+                node_num = id_to_num_mapper.map_id_to_num(node_id)
+                lbl_num = bin_array_to_num(lbl_array)
+                
+                G_compr[node_num] = lbl_num
+            
+                

@@ -1,14 +1,9 @@
 LIBRARY: LIBSVM
-NUM_ITER: 1
-NUM_INNER_FOLDS: 10
-CLF_MAX_ITER: -1 (unlimited)
+NUM_ITER: 5
+NUM_INNER_FOLDS: 3
 ------------------------------------------
 
 Total feature extraction took 0.2 seconds.
 
-LINEAR (OPT_PARAM)
-KFold: 0.916 (+/-0.000) in 3.6 seconds
-
-------------------------------------------
-Parameter: 0
-
+LINEAR/RBF (OPT_PARAM)
+0.913 (+/-0.007) in 27.2 seconds

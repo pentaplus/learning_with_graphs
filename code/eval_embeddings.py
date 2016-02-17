@@ -71,8 +71,8 @@ CFG = 'CFG'
 
 #EMBEDDING_NAMES = [LABEL_COUNTER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, LABEL_COUNTER]
-EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
-#EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
+#EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
+EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, NEIGHBORHOOD_HASH]
 #EMBEDDING_NAMES = [COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
 #EMBEDDING_NAMES = [COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER]
@@ -96,11 +96,11 @@ EMBEDDING_PARAM_RANGES = {
 #DATASET = 'CFG' # !! change file names from hashes to numbers
 
 # sorted by number of graphs in ascending order
-#DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
+DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
 #DATASETS = [MUTAG, PTC_MR, ENZYMES]
 #DATASETS = [DD, NCI1, NCI109]
 #DATASETS = [MUTAG]
-DATASETS = [PTC_MR]
+#DATASETS = [PTC_MR]
 #DATASETS = [ENZYMES]
 #DATASETS = [DD]
 #DATASETS = [NCI1]
@@ -116,6 +116,7 @@ COMPARE_PARAMS = False
 
 #NUM_ITER = 10
 NUM_ITER = 5
+#NUM_ITER = 1
 
 NUM_OUTER_FOLDS = 10
 
@@ -201,8 +202,11 @@ def init_clf(liblinear, embedding_is_implicit = False):
         # library LIBSVM is used
         # for multiclass classification also the One-Versus-Rest scheme is applied
         
-#        svm_param_grid = {'kernel' : ['linear', 'rbf']}
-        svm_param_grid = {'kernel' : ('linear', 'rbf'), 'C' : (1, 10)}
+#        svm_param_grid = {'kernel' : ('linear', 'rbf'),
+#                          'C' : np.logspace(-2, 1, 4)}        
+        
+        svm_param_grid = {'kernel' : ('linear', 'rbf'), 'C' : (0.1, 10)}
+        
         grid_clf = GridSearchCV(svm.SVC(decision_function_shape = 'ovr'),
                                 svm_param_grid, cv = NUM_INNER_FOLDS_SD)
                                 
