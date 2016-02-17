@@ -1,0 +1,8 @@
+LIBRARY: LIBLINEAR
+NUM_ITER: 1
+NUM_INNER_FOLDS: 4
+------------------------------------------
+
+Total feature extraction took 25.7 seconds.
+
+LINEAR (OPT_PARAM)

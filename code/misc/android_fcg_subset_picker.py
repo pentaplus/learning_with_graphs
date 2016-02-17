@@ -4,7 +4,7 @@ import re
 import shutil
 import sys
 
-from os.path import abspath, dirname, join, splitext
+from os.path import abspath, dirname, join
 from random import shuffle
 
 

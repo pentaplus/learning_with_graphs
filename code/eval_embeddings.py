@@ -101,11 +101,11 @@ EMBEDDING_PARAM_RANGES = {
 #DATASETS = [MUTAG]
 #DATASETS = [PTC_MR]
 #DATASETS = [ENZYMES]
-DATASETS = [DD]
+#DATASETS = [DD]
 #DATASETS = [NCI1]
 #DATASETS = [NCI109]
 #DATASETS = [ANDROID_FCG_PARTIAL]
-#DATASETS = [CFG]
+DATASETS = [CFG]
 
 OPT_PARAM = True
 #OPT_PARAM = False
@@ -185,14 +185,14 @@ def init_clf(liblinear, embedding_is_implicit = False):
         # for multiclass classification the One-Versus-Rest scheme is applied,
         # i.e., in case of N different classes N classifiers are trained in total
 
-#        svm_param_grid = {'kernel' : ('linear', 'rbf'), 'C' : [1, 10]}
-#        grid_clf = GridSearchCV(svm.SVC(decision_function_shape = 'ovr'),
-#                                svm_param_grid, cv = 3)
-#        return grid_clf
-    
-        svm_param_grid = {'C' : [1, 10]}
-        grid_clf = GridSearchCV(svm.LinearSVC(), svm_param_grid, cv = 3)
+        svm_param_grid = {'C' : [1, 10**3, 10**6, 10**9]}
+        grid_clf = GridSearchCV(svm.LinearSVC(),
+                                svm_param_grid, cv = 3)
         return grid_clf
+    
+#        svm_param_grid = {'C' : [1, 10]}
+#        grid_clf = GridSearchCV(svm.LinearSVC(), svm_param_grid, cv = 3)
+#        return grid_clf
         
         
 #        return svm.LinearSVC()
