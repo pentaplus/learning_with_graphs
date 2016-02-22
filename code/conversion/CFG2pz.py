@@ -113,11 +113,10 @@ def parse_ref(line, G, id_to_num_mapper, line_num):
         
     G.node[ref_num]['label'] = 'r'
     
-    
-
-SOURCE_CLASSES_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets', ('CFG (2 '
-                           'classes, 1715 directed graphs, unlabeled edges)'),
-                           'plain')
+                           
+SOURCE_CLASSES_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets',
+                           ('FLASH CFG (2 classes, 1715 directed graphs, '
+                           'unlabeled edges)'), 'plain')
                     
 folder_of_class = dataset_loader.get_folder_of_class_dict(SOURCE_CLASSES_PATH)
 
