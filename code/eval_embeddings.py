@@ -44,10 +44,12 @@ SCRIPT_FOLDER_PATH = dirname(abspath(SCRIPT_PATH))
 from misc import dataset_loader, utils
 from performance_evaluation import cross_validation
 
+
+DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', 'datasets')
+
 # --------------------------------------------------------------------------------
 # parameter definitions
 # --------------------------------------------------------------------------------
-DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', 'datasets')
 
 # embeddings
 WEISFEILER_LEHMAN = 'weisfeiler_lehman'
@@ -72,9 +74,9 @@ CFG = 'CFG'
 #EMBEDDING_NAMES = [LABEL_COUNTER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, LABEL_COUNTER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
-EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
+#EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, NEIGHBORHOOD_HASH]
-#EMBEDDING_NAMES = [COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
+EMBEDDING_NAMES = [COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
 #EMBEDDING_NAMES = [COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER]
 #EMBEDDING_NAMES = [NEIGHBORHOOD_HASH, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL]
@@ -96,11 +98,11 @@ EMBEDDING_PARAM_RANGES = {
 #DATASET = 'CFG' # !! change file names from hashes to numbers
 
 # sorted by number of graphs in ascending order
-DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
+#DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
 #DATASETS = [MUTAG, PTC_MR, ENZYMES]
 #DATASETS = [DD, NCI1, NCI109]
 #DATASETS = [MUTAG]
-#DATASETS = [PTC_MR]
+DATASETS = [PTC_MR]
 #DATASETS = [ENZYMES]
 #DATASETS = [DD]
 #DATASETS = [NCI1]
@@ -115,8 +117,8 @@ OPT_PARAM = True
 COMPARE_PARAMS = False
 
 #NUM_ITER = 10
-NUM_ITER = 5
-#NUM_ITER = 1
+#NUM_ITER = 5
+NUM_ITER = 1
 
 NUM_OUTER_FOLDS = 10
 
@@ -126,45 +128,34 @@ NUM_INNER_FOLDS_LD = 2
 
 
 
-
-def load_dataset(dataset, datasets_path):
-    dataset_loading_start_time = time.time()
-
-    graph_of_num, class_lbls = dataset_loader.load_dataset(datasets_path, dataset)
-
-    dataset_loading_end_time = time.time()
-    dataset_loading_time = dataset_loading_end_time - dataset_loading_start_time
-    print 'Loading the dataset %s took %.1f seconds.\n' % (dataset,
-                                                           dataset_loading_time)
-    return graph_of_num, class_lbls
-    
-
-def extract_features(graph_of_num, embedding, param_range, result_file):
+def extract_features(graph_meta_data_of_num, embedding, param_range, result_file):
     print '-------------------------------------------------------------\n'
     result_file.write('------------------------------------------\n\n')
 
     feat_extr_start_time = time.time()
 
     data_mat_of_param, extr_time_of_param =\
-                             embedding.extract_features(graph_of_num, param_range)
+                   embedding.extract_features(graph_meta_data_of_num, param_range)
 
     feat_extr_end_time = time.time()
     feat_extr_time = feat_extr_end_time - feat_extr_start_time
-    utils.write('Total feature extraction took %.1f seconds.\n' % feat_extr_time,
-                result_file)
+    utils.write('Graph loading and feature exraction took %.1f seconds.\n' %\
+                                                      feat_extr_time, result_file)
     print ''
 
     return data_mat_of_param, extr_time_of_param
     
     
-def compute_kernel_matrix(graph_of_num, embedding, param_range, result_file):
+def compute_kernel_matrix(graph_meta_data_of_num, embedding, param_range,
+                          result_file):
     print '-------------------------------------------------------------\n'
     result_file.write('------------------------------------------\n\n')
 
     kernel_mat_comp_start_time = time.time()
 
     kernel_mat_of_param, kernel_mat_comp_time_of_param =\
-                           embedding.compute_kernel_mat(graph_of_num, param_range)
+                           embedding.compute_kernel_mat(graph_meta_data_of_num,
+                                                        param_range)
 
     kernel_mat_comp_end_time = time.time()
     kernel_mat_comp_time = kernel_mat_comp_end_time - kernel_mat_comp_start_time
@@ -176,9 +167,6 @@ def compute_kernel_matrix(graph_of_num, embedding, param_range, result_file):
     
   
 def init_clf(liblinear, embedding_is_implicit = False):
-    # !!
-#    return svm.SVC(kernel = kernel, decision_function_shape = 'ovr')     
-#    return svm.LinearSVC() # !!
     if embedding_is_implicit:
         return svm.SVC(kernel = 'precomputed', decision_function_shape = 'ovr')
     
@@ -186,18 +174,15 @@ def init_clf(liblinear, embedding_is_implicit = False):
         # library LIBLINEAR is used
         # for multiclass classification the One-Versus-Rest scheme is applied,
         # i.e., in case of N different classes N classifiers are trained in total
-
         svm_param_grid = {'C' : (0.01, 0.1, 1)}
-        grid_clf = GridSearchCV(svm.LinearSVC(),
-                                svm_param_grid, cv = NUM_INNER_FOLDS_LD)
+        grid_clf = GridSearchCV(svm.LinearSVC(), svm_param_grid,
+                                cv = NUM_INNER_FOLDS_LD)
+                                
+#        svm_param_grid = {'C' : (0.01, 0.1, 1)}
+#        grid_clf = GridSearchCV(svm.LinearSVC(), svm_param_grid,
+#                                cv = NUM_INNER_FOLDS_LD, n_jobs = 3,
+#                                pre_dispatch = '2*n_jobs')
         return grid_clf
-    
-#        svm_param_grid = {'C' : [1, 10]}
-#        grid_clf = GridSearchCV(svm.LinearSVC(), svm_param_grid, cv = 3)
-#        return grid_clf
-        
-        
-#        return svm.LinearSVC()
     else:
         # library LIBSVM is used
         # for multiclass classification also the One-Versus-Rest scheme is applied
@@ -206,14 +191,12 @@ def init_clf(liblinear, embedding_is_implicit = False):
 #                          'C' : np.logspace(-2, 1, 4)}        
         
         svm_param_grid = {'kernel' : ('linear', 'rbf'), 'C' : (0.1, 10)}
-        
         grid_clf = GridSearchCV(svm.SVC(decision_function_shape = 'ovr'),
                                 svm_param_grid, cv = NUM_INNER_FOLDS_SD)
                                 
 #        grid_clf = GridSearchCV(svm.SVC(decision_function_shape = 'ovr'),
 #                                svm_param_grid, cv = 3, n_jobs = 4,
-#                                pre_dispatch = '2*n_jobs')
-                                
+#                                pre_dispatch = '2*n_jobs')                  
         return grid_clf
         
 
@@ -291,11 +274,13 @@ script_exec_start_time = time.time()
 
 for dataset in DATASETS:
     # ----------------------------------------------------------------------------
-    # 1) load dataset
+    # 1) retrieve graph meta data and class lables
     # ----------------------------------------------------------------------------
-    graph_of_num, class_lbls = load_dataset(dataset, DATASETS_PATH)
+    graph_meta_data_of_num, class_lbls =\
+      dataset_loader.get_graph_meta_data_of_num_dict_and_class_lbls(dataset,
+                                                                    DATASETS_PATH)
     
-    num_samples = len(graph_of_num)
+    num_samples = len(graph_meta_data_of_num)
     
 
     for embedding_name in EMBEDDING_NAMES:
@@ -323,11 +308,12 @@ for dataset in DATASETS:
         # ------------------------------------------------------------------------
         if not embedding_is_implicit:
             data_mat_of_param, extr_time_of_param =\
-               extract_features(graph_of_num, embedding, param_range, result_file)
+                  extract_features(graph_meta_data_of_num, embedding, param_range,
+                                   result_file)
         else:
             kernel_mat_of_param, kernel_mat_comp_time_of_param =\
-                       compute_kernel_matrix(graph_of_num, embedding, param_range,
-                                             result_file)
+                          compute_kernel_matrix(graph_meta_data_of_num, embedding,
+                                                param_range, result_file)
         
         if OPT_PARAM and len(param_range) > 1:
             #---------------------------------------------------------------------

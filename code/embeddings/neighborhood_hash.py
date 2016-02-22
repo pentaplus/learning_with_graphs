@@ -14,31 +14,32 @@ sys.path.append(join(SCRIPT_FOLDER_PATH, '..'))
 from embeddings import neighborhood_hash_main
 
 
-def extract_features(graph_of_num, h):
-    return neighborhood_hash_main.extract_features(graph_of_num, h,
-                                                   count_sensitive = False)
+def extract_features(graph_meta_data_of_num, h_range):
+    return neighborhood_hash_main.extract_features(graph_meta_data_of_num,
+                                                   h_range,
+                                                   count_sensitive = False,
+                                                   all_iter = False)
     
 
 # !!
 if __name__ == '__main__':
     import time
     from misc import dataset_loader
-    
+        
     DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
     dataset = 'MUTAG'
-    graph_of_num = dataset_loader.load_dataset(DATASETS_PATH, dataset)
     
+    graph_meta_data_of_num, class_lbls =\
+      dataset_loader.get_graph_meta_data_of_num_dict_and_class_lbls(dataset,
+                                                                    DATASETS_PATH)
     
-    h = 9
+    h_range = range(6)
     start = time.time()
-    data_matrix, class_lbls = extract_features(graph_of_num, h)
+    data_mat_of_param, extr_time_of_param =\
+                                 extract_features(graph_meta_data_of_num, h_range)
     
     end = time.time()
-    print 'h = %d: %.3f' % (h, end - start)
+    print 'h_range = %s: %.3f' % (h_range, end - start)
     
-    
-    Z = data_matrix.todense()
-    
-    print data_matrix.__repr__()
-    #print data_matrix.__str__()
+    print '%r' % data_mat_of_param
         

@@ -15,10 +15,10 @@ SCRIPT_FOLDER_PATH = dirname(abspath(SCRIPT_PATH))
 # of the script's parent directory
 sys.path.append(join(SCRIPT_FOLDER_PATH, '..'))
 
-from misc import utils
+from misc import utils, pz
 
 
-def extract_features(graph_of_num, h_range):
+def extract_features(graph_meta_data_of_num, h_range):
     extr_start_time = time.time()
     
     data_mat_of_param = {}
@@ -60,14 +60,18 @@ def extract_features(graph_of_num, h_range):
     # ----------------------------------------------------------------------------
     # 1) extract features iterating over all graphs in the dataset
     # ----------------------------------------------------------------------------
-    for r in h_range:
-        for (graph_num, (G, class_lbl)) in graph_of_num.iteritems():
+    for h in h_range:
+        for graph_num, (graph_path, class_lbl) in\
+                                               graph_meta_data_of_num.iteritems():
             # !!        
 #            if graph_num % 100 == 0:
 #                print 'r = ' + str(r) + ', graph_num = ' + str(graph_num)
+                                               
+            # load graph
+            G = pz.load(graph_path)
                 
             for v in G.nodes_iter():
-                if r == 0:
+                if h == 0:
                     uncompr_lbl = G.node[v]['label']
                     if isinstance(uncompr_lbl, np.ndarray):
                         uncompr_lbl = utils.calc_hash_of_array(uncompr_lbl)
@@ -130,7 +134,7 @@ def extract_features(graph_of_num, h_range):
                     # upd_lbls_dict[graph_num][v] (== new_compr_lbl)
                     feature_counts_dict[graph_num][index] += 1
                 
-                if r < h_max:
+                if h < h_max:
                     # next_upd_lbls_dict[graph_num][v] == compr_func[lbl]
                     # == new_compr_lbl
                     next_upd_lbls_dict[graph_num][v] = new_compr_lbl
@@ -155,7 +159,7 @@ def extract_features(graph_of_num, h_range):
         feature_ptr = [0]
         
         
-        for graph_num in graph_of_num.iterkeys():
+        for graph_num in graph_meta_data_of_num.iterkeys():
             features += features_dict[graph_num]
             feature_counts += feature_counts_dict[graph_num]
             feature_ptr.append(feature_ptr[-1] + len(features_dict[graph_num]))
@@ -168,9 +172,10 @@ def extract_features(graph_of_num, h_range):
         #                .
         #  feature vector of the last graph]
         data_mat = csr_matrix((np.array(feature_counts), np.array(features),
-                               np.array(feature_ptr)), shape = (len(graph_of_num),
+                               np.array(feature_ptr)),
+                               shape = (len(graph_meta_data_of_num),
                                len(compr_func)), dtype = np.float64)
-        data_mat_of_param[r] = data_mat
+        data_mat_of_param[h] = data_mat
         
         extr_end_time = time.time()
         extr_time = extr_end_time - extr_start_time - sum(mat_constr_times)
@@ -180,9 +185,9 @@ def extract_features(graph_of_num, h_range):
         mat_constr_times.append(mat_constr_time)
         
         extr_time += mat_constr_time
-        extr_time_of_param[r] = extr_time
+        extr_time_of_param[h] = extr_time
   
-        if r < h_max:
+        if h < h_max:
             upd_lbls_dict = next_upd_lbls_dict
             next_upd_lbls_dict = defaultdict(dict)
     
@@ -205,12 +210,15 @@ if __name__ == '__main__':
     dataset = 'MUTAG'
 #    dataset = 'PTC(MR)'
     
-    graph_of_num, class_lbls = dataset_loader.load_dataset(DATASETS_PATH, dataset)    
+    graph_meta_data_of_num, class_lbls =\
+      dataset_loader.get_graph_meta_data_of_num_dict_and_class_lbls(dataset,
+                                                                    DATASETS_PATH)    
     
     h_range = range(6)
     
-    data_mat_of_param, extr_time_of_param = extract_features(graph_of_num,
-                                                             h_range)
+    data_mat_of_param, extr_time_of_param =\
+                                 extract_features(graph_meta_data_of_num, h_range)
+                                 
     data_mat = data_mat_of_param[1]                                                                
                                                                    
 
@@ -239,7 +247,7 @@ if __name__ == '__main__':
     
     
 #    X = []
-#    for i in xrange(len(graph_of_num)):
+#    for i in xrange(len(graph_meta_data_of_num)):
 #        X.append([i])
 #    X = np.array(X)
 #        

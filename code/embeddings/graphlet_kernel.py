@@ -13,7 +13,7 @@ SCRIPT_FOLDER_PATH = dirname(abspath(SCRIPT_PATH))
 # of the script's parent directory
 sys.path.append(join(SCRIPT_FOLDER_PATH, '..'))
 
-from misc import utils
+from misc import pz, utils
 
 
 def calc_cards(v1_nbrs, v2_nbrs, v3_nbrs):
@@ -26,7 +26,7 @@ def calc_cards(v1_nbrs, v2_nbrs, v3_nbrs):
                      len(v1_nbrs & v2_nbrs & v3_nbrs)])
     
 
-def extract_features(graph_of_num, graphlet_size = 4):
+def extract_features(graph_meta_data_of_num, graphlet_size = 4):
     extr_start_time = time.time()
     
     data_mat_of_param = {}
@@ -42,12 +42,15 @@ def extract_features(graph_of_num, graphlet_size = 4):
 #        graphlets_count = 34
         
     # initialize data_matrix
-    graphs_count = len(graph_of_num)
+    graphs_count = len(graph_meta_data_of_num)
     data_matrix = np.zeros((graphs_count, graphlets_count), dtype = np.float64)
     
     
     # iterate over all graphs in the dataset -------------------------------------
-    for i, (graph_num, (G, class_lbl)) in enumerate(graph_of_num.iteritems()):
+    for i, (graph_num, (graph_path, class_lbl)) in\
+                                    enumerate(graph_meta_data_of_num.iteritems()):
+        G = pz.load(graph_path)
+        
         nodes_count = len(G.node)
     
         if graphlet_size == 3:
@@ -198,11 +201,14 @@ if __name__ == '__main__':
 #    dataset = 'ENZYMES'
 #    dataset = 'NCI1'
 #    dataset = 'NCI109'
-    graph_of_num, class_lbls = dataset_loader.load_dataset(DATASETS_PATH, dataset)
+    graph_meta_data_of_num, class_lbls =\
+      dataset_loader.get_graph_meta_data_of_num_dict_and_class_lbls(dataset,
+                                                                    DATASETS_PATH)
     
     
     start = time.time()
-    data_mat_of_param, extr_time_of_param = extract_features(graph_of_num, 4)
+    data_mat_of_param, extr_time_of_param =\
+                                       extract_features(graph_meta_data_of_num, 4)
     end = time.time()
     print end - start
     

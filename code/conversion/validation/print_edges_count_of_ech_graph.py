@@ -10,7 +10,7 @@ SCRIPT_FOLDER_PATH = dirname(abspath(SCRIPT_PATH))
 # of the script's parent directory
 sys.path.append(join(SCRIPT_FOLDER_PATH, '..', '..'))
 
-from misc import datasetloader
+from misc import dataset_loader, pz
 
 
 DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', '..', 'datasets')
@@ -20,9 +20,12 @@ dataset = 'ENZYMES'
 # dataset = 'NCI1'
 # dataset = 'NCI109'
 
-graph_of_num = datasetloader.load_dataset(DATASETS_PATH, dataset)
+graph_meta_data_of_num, class_lbls =\
+      dataset_loader.get_graph_meta_data_of_num_dict_and_class_lbls(dataset,
+                                                                    DATASETS_PATH)
 
 f = open('python_edges_count_of_each_graph.csv', 'w')    
-for graph_num, (G, class_lbl) in graph_of_num.iteritems():
-	f.write(str(graph_num) + '; ' + str(2*G.number_of_edges()) + '\n')
+for graph_num, (graph_path, class_lbl) in graph_meta_data_of_num.iteritems():
+    G = pz.load(graph_path)
+    f.write(str(graph_num) + '; ' + str(2*G.number_of_edges()) + '\n')
 f.close()

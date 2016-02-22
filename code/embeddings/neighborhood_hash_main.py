@@ -17,7 +17,7 @@ SCRIPT_FOLDER_PATH = dirname(abspath(SCRIPT_PATH))
 # of the script's parent directory
 sys.path.append(join(SCRIPT_FOLDER_PATH, '..'))
 
-from misc import utils
+from misc import utils, pz
 
 
 # test section -------------------------------------------------------------------
@@ -107,7 +107,7 @@ from misc import utils
 
 
 
-def extract_features(graph_of_num, h_range, count_sensitive = True,
+def extract_features(graph_meta_data_of_num, h_range, count_sensitive = True,
                      all_iter = False):
     extr_start_time = time.time()
     
@@ -152,10 +152,18 @@ def extract_features(graph_of_num, h_range, count_sensitive = True,
     # ----------------------------------------------------------------------------
     # 1) extract features iterating over all graphs in the dataset
     # ----------------------------------------------------------------------------
-    for r in h_range:
-        for (graph_num, (G, class_lbl)) in graph_of_num.iteritems():
+    for h in h_range:
+        for graph_num, (graph_path, class_lbl) in\
+                                               graph_meta_data_of_num.iteritems():
+            # !!        
+#            if graph_num % 100 == 0:
+#                print 'r = ' + str(r) + ', graph_num = ' + str(graph_num)
+                                               
+            # load graph
+            G = pz.load(graph_path)
+            
             for v in G.nodes_iter():
-                if r == 0:
+                if h == 0:
                     orig_lbl = G.node[v]['label']
                     
                     if isinstance(orig_lbl, np.ndarray):
@@ -169,7 +177,7 @@ def extract_features(graph_of_num, h_range, count_sensitive = True,
                         # determine bit label new_bit_lbl assigned to orig_lbl
                         new_bit_lbl = label_map[orig_lbl]
                 else:
-                    # r > 0
+                    # h > 0
                     has_elem, nbrs_iter = utils.has_elem(G.neighbors_iter(v))
                     if not has_elem:
                         # node v has no neighbors
@@ -216,7 +224,7 @@ def extract_features(graph_of_num, h_range, count_sensitive = True,
                         for nbr_lbl, num in num_of_nbr_lbl.iteritems():
                             new_bit_lbl ^= rot_left(nbr_lbl ^ num, num)
                 
-                if r < h_max:
+                if h < h_max:
                     # next_upd_lbls_dict[graph_num][v] == label_map[lbl]
                     # == new_bit_lbl
                     next_upd_lbls_dict[graph_num][v] = new_bit_lbl
@@ -272,7 +280,7 @@ def extract_features(graph_of_num, h_range, count_sensitive = True,
         next_compr_lbl = 0
 		
 	
-        for (graph_num, (G, class_lbl)) in graph_of_num.iteritems():
+        for graph_num in graph_meta_data_of_num.iterkeys():
             for bit_lbl, bit_lbl_count in\
                                       itools.izip(features_dict[graph_num],
                                                   feature_counts_dict[graph_num]):
@@ -297,9 +305,8 @@ def extract_features(graph_of_num, h_range, count_sensitive = True,
         #                .
         #  feature vector of the last graph]
         data_mat = csr_matrix((np.array(feature_counts), np.array(features),
-                               np.array(feature_ptr)),
-                               dtype = np.float64)
-        data_mat_of_param[r] = data_mat
+                               np.array(feature_ptr)), dtype = np.float64)
+        data_mat_of_param[h] = data_mat
         
         
         extr_end_time = time.time()
@@ -310,10 +317,10 @@ def extract_features(graph_of_num, h_range, count_sensitive = True,
         mat_constr_times.append(mat_constr_time)
         
         extr_time += mat_constr_time
-        extr_time_of_param[r] = extr_time
+        extr_time_of_param[h] = extr_time
 		  
 		  
-        if r < h_max:
+        if h < h_max:
             upd_lbls_dict = next_upd_lbls_dict
             next_upd_lbls_dict = defaultdict(dict)
             
@@ -331,8 +338,10 @@ if __name__ == '__main__':
         
     DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
     dataset = 'MUTAG'
-    graph_of_num, class_lbls = dataset_loader.load_dataset(DATASETS_PATH, dataset)
     
+    graph_meta_data_of_num, class_lbls =\
+      dataset_loader.get_graph_meta_data_of_num_dict_and_class_lbls(dataset,
+                                                                    DATASETS_PATH)    
     
     # h = 0: 56900    586
     # h = 1: 55892    828
@@ -349,13 +358,10 @@ if __name__ == '__main__':
     h_range = range(6)
     start = time.time()
     data_mat_of_param, extr_time_of_param =\
-                   extract_features(graph_of_num, h_range, count_sensitive = True,
-                                    all_iter = True)
+                         extract_features(graph_meta_data_of_num, h_range,
+                                          count_sensitive = True, all_iter = True)
     end = time.time()
     print 'h_range = %s: %.3f' % (h_range, end - start)
     
+    print '%r' % data_mat_of_param
     
-#    Z = data_mat.todense()
-#    
-#    print data_mat.__repr__()
-#    #print data_mat.__str__()

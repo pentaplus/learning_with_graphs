@@ -1,8 +1,6 @@
 import inspect
 import networkx as nx
-import numpy as np
 import os
-import re
 import sys
 
 from os.path import abspath, dirname, join
@@ -29,8 +27,7 @@ def bin_array_to_num(array):
 DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
 
 SOURCE_CLASSES_PATH = join(DATASETS_PATH, ('ANDROID FCG PARTIAL (2 '
-                                'classes, x directed graphs, unlabeled edges)'),
-                                'pz')
+                           'classes, x directed graphs, unlabeled edges)'), 'pz')
 
 utils.check_for_pz_folder()
                            

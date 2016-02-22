@@ -17,7 +17,7 @@ from misc import utils
 
     
 
-def extract_features(graph_of_num, param = None):
+def extract_features(graph_meta_data_of_num, param_range = [None]):
     extr_start_time = time.time()
     
     data_mat_of_param = {}
@@ -27,12 +27,13 @@ def extract_features(graph_of_num, param = None):
 
         
     # initialize kernel_mat
-    graphs_count = len(graph_of_num)
+    graphs_count = len(graph_meta_data_of_num)
     
     
     
     # iterate over all graphs in the dataset -------------------------------------
-    for i, (graph_num, (G, class_lbl)) in enumerate(graph_of_num.iteritems()):
+    for i, (graph_num, (G, class_lbl)) in\
+                                    enumerate(graph_meta_data_of_num.iteritems()):
         pass
     
     data_mat_of_param[graphlet_size] = data_matrix
@@ -53,11 +54,13 @@ if __name__ == '__main__':
 #    dataset = 'ENZYMES'
 #    dataset = 'NCI1'
 #    dataset = 'NCI109'
-    graph_of_num, class_lbls = dataset_loader.load_dataset(DATASETS_PATH, dataset)
+    graph_meta_data_of_num, class_lbls =\
+                               dataset_loader.load_dataset(DATASETS_PATH, dataset)
     
     
     start = time.time()
-    data_mat_of_param, extr_time_of_param = extract_features(graph_of_num, None)
+    data_mat_of_param, extr_time_of_param =\
+                                    extract_features(graph_meta_data_of_num, None)
     end = time.time()
     print end - start
     
