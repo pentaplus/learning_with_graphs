@@ -26,8 +26,8 @@ def bin_array_to_num(array):
 
 DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
 
-SOURCE_CLASSES_PATH = join(DATASETS_PATH, ('ANDROID FCG PARTIAL (2 '
-                           'classes, x directed graphs, unlabeled edges)'), 'pz')
+SOURCE_CLASSES_PATH = join(DATASETS_PATH, ('ANDROID FCG PARTIAL (2 classes, '
+                           'x directed graphs, unlabeled edges)'), 'pz')
 
 utils.check_for_pz_folder()
                            
@@ -45,17 +45,75 @@ with open(join(SOURCE_CLASSES_PATH, 'hash_num_map.txt'), 'w') as f:
         graph_file_names = utils.list_files(source_class_path)
         
         for graph_file_name in graph_file_names:
+            if graph_num % 10 == 0:
+                print graph_num            
+            
             id_to_num_mapper = utils.Id_to_num_mapper()
             G_uncompr = pz.load(join(source_class_path, graph_file_name))
             G_compr = nx.DiGraph()
             
             id_to_num_mapper = utils.Id_to_num_mapper()
             
-            for node_id_tuple, lbl_array in G_uncompr.node.iteritems():
+            # process nodes
+            for node_id_tuple, lbl_dict in G_uncompr.node.iteritems():
                 node_id = '\n'.join(node_id_tuple)
                 node_num = id_to_num_mapper.map_id_to_num(node_id)
+                
+                lbl_array = lbl_dict['label']
                 lbl_num = bin_array_to_num(lbl_array)
                 
-                G_compr[node_num] = lbl_num
-            
+                G_compr.node[node_num] = {'label' : lbl_num}
                 
+            # process edges
+            for node_id_tuple, edge_label_dict_of_node_neigh_id_tuple in\
+                                                       G_uncompr.edge.iteritems():
+                node_id = '\n'.join(node_id_tuple)
+                node_num = id_to_num_mapper.map_id_to_num(node_id)
+                
+                G_compr.edge[node_num] = {}
+                
+                for node_neigh_id_tuple, edge_label_dict in\
+                               edge_label_dict_of_node_neigh_id_tuple.iteritems():
+                    node_neigh_id = '\n'.join(node_neigh_id_tuple)
+                    node_neigh_num = id_to_num_mapper.map_id_to_num(node_neigh_id)
+                    
+                    G_compr.edge[node_num][node_neigh_num] = edge_label_dict
+                    
+                    
+            pz.save(G_compr, join(target_class_path, graph_file_name))
+            
+            graph_num += 1
+
+
+# = 0
+#x += 1
+#len(G_uncompr.edge.items()[5][1])
+#d = G_uncompr.edge.items()[5][1]
+#len(d)
+#d.items()[0]
+#
+#G_uncompr.edge.items()[5]
+
+#x = G_uncompr.edge.items()[0]
+#x
+#len(x)
+#x0, x1 = x
+#x0
+#y0 = '\n'.join(x0)
+#y1 = '\n'.join(x1.keys()[0])
+#
+#id_to_num_mapper.id_to_num_map[y0]
+#id_to_num_mapper.id_to_num_map[y1]
+
+#G_compr
+#G_uncompr
+#G_compr.number_of_nodes()
+#G_uncompr.number_of_nodes()
+#G_compr.number_of_nodes()
+#G_uncompr.number_of_nodes()
+#G_compr.node.items()[:3]
+#G_uncompr.node.items()[:3]
+#import networkx as nx
+#nx.is_isomorphic(G_compr, G_uncompr)
+#G_uncompr.pred = {}
+#G_compr.pred

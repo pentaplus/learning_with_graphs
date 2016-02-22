@@ -3,7 +3,6 @@ NUM_ITER: 10
 NUM_INNER_FOLDS: 3
 ------------------------------------------
 
-Total feature extraction took 0.2 seconds.
+Graph loading and feature exraction took 1.2 seconds.
 
 LINEAR/RBF (OPT_PARAM)
-.905 (+/-0.009) in 33.7 seconds
