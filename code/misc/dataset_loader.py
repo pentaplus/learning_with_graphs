@@ -15,7 +15,7 @@ SCRIPT_FOLDER_PATH = dirname(abspath(SCRIPT_PATH))
 from misc import utils
 
 
-def determine_folder_of_dataset_dict(datasets_path):
+def get_folder_of_dataset_dict(datasets_path):
     folder_of_dataset = {}
     folders = utils.list_sub_dirs(datasets_path)
     for folder in folders:
@@ -29,7 +29,7 @@ def determine_folder_of_dataset_dict(datasets_path):
     return folder_of_dataset
     
     
-def determine_folder_of_class_dict(classes_path):
+def get_folder_of_class_dict(classes_path):
     folder_of_class = {}
     dataset_classes = listdir(classes_path)
     for dataset_class in dataset_classes:
@@ -54,7 +54,7 @@ def get_class_lbls(graph_meta_data_of_num):
     
     
 def get_graph_meta_data_of_num_dict_and_class_lbls(dataset, datasets_path):
-    folder_of_dataset = determine_folder_of_dataset_dict(datasets_path)
+    folder_of_dataset = get_folder_of_dataset_dict(datasets_path)
     
     datasets = folder_of_dataset.keys()
     if not dataset in datasets:
@@ -63,7 +63,7 @@ def get_graph_meta_data_of_num_dict_and_class_lbls(dataset, datasets_path):
     
     classes_path = join(datasets_path, folder_of_dataset[dataset], 'pz')
     
-    folder_of_class = determine_folder_of_class_dict(classes_path)
+    folder_of_class = get_folder_of_class_dict(classes_path)
     
     graph_meta_data_of_num = {}
     

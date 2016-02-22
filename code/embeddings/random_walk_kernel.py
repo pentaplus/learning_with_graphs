@@ -36,7 +36,7 @@ def extract_features(graph_meta_data_of_num, param_range = [None]):
                                     enumerate(graph_meta_data_of_num.iteritems()):
         pass
     
-    data_mat_of_param[graphlet_size] = data_matrix
+    data_mat_of_param[graphlet_size] = data_mat
     
     extr_end_time = time.time()
     extr_time_of_param[graphlet_size] = extr_end_time - extr_start_time
@@ -55,7 +55,8 @@ if __name__ == '__main__':
 #    dataset = 'NCI1'
 #    dataset = 'NCI109'
     graph_meta_data_of_num, class_lbls =\
-                               dataset_loader.load_dataset(DATASETS_PATH, dataset)
+      dataset_loader.get_graph_meta_data_of_num_dict_and_class_lbls(dataset,
+                                                                    DATASETS_PATH)
     
     
     start = time.time()

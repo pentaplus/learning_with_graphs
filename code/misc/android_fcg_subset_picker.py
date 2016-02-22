@@ -28,8 +28,7 @@ utils.check_for_pz_folder()
                            
 os.makedirs('pz')
 
-folder_of_class =\
-                dataset_loader.determine_folder_of_class_dict(SOURCE_CLASSES_PATH)
+folder_of_class = dataset_loader.get_folder_of_class_dict(SOURCE_CLASSES_PATH)
                 
 
 for class_lbl, class_folder in folder_of_class.iteritems():

@@ -119,8 +119,7 @@ SOURCE_CLASSES_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets', ('CFG (2 
                            'classes, 1715 directed graphs, unlabeled edges)'),
                            'plain')
                     
-folder_of_class =\
-                dataset_loader.determine_folder_of_class_dict(SOURCE_CLASSES_PATH)
+folder_of_class = dataset_loader.get_folder_of_class_dict(SOURCE_CLASSES_PATH)
 
 
 utils.check_for_pz_folder()
