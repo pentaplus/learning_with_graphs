@@ -22,12 +22,12 @@ ANDROID_FCG_PARTIAL_PATH = join(DATASETS_PATH, ('ANDROID FCG PARTIAL (2 '
                                 'classes, x directed graphs, unlabeled edges)'),
                                 'pz')
                                 
-CFG_PATH = join(DATASETS_PATH, ('CFG (2 classes, 1715 directed graphs, unlabeled '
-                                'edges)'), 'pz')
+FLASH_CFG_PATH = join(DATASETS_PATH, ('FLASH CFG (2 classes, 1715 directed '
+                                      'graphs, unlabeled edges)'), 'pz')
                                 
 
 #DATASET_PATH = ANDROID_FCG_PARTIAL_PATH
-DATASET_PATH = CFG_PATH
+DATASET_PATH = FLASH_CFG_PATH
 
 class_folders = utils.list_sub_dirs(DATASET_PATH)
 

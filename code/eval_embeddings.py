@@ -69,7 +69,7 @@ DD = 'DD'
 NCI1 = 'NCI1'
 NCI109 = 'NCI109'
 ANDROID_FCG_PARTIAL = 'ANDROID FCG PARTIAL'
-CFG = 'CFG'
+FLASH_CFG = 'FLASH CFG'
 
 #EMBEDDING_NAMES = [LABEL_COUNTER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, LABEL_COUNTER]
@@ -95,7 +95,7 @@ EMBEDDING_PARAM_RANGES = {
                          }
 
 #DATASET = 'ANDROID FCG' # !! change file names from hashes to numbers
-#DATASET = 'CFG' # !! change file names from hashes to numbers
+#DATASET = 'FLASH_CFG' # !! change file names from hashes to numbers
 
 # sorted by number of graphs in ascending order
 #DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
@@ -108,7 +108,7 @@ DATASETS = [PTC_MR]
 #DATASETS = [NCI1]
 #DATASETS = [NCI109]
 #DATASETS = [ANDROID_FCG_PARTIAL]
-#DATASETS = [CFG]
+#DATASETS = [FLASH_CFG]
 
 OPT_PARAM = True
 #OPT_PARAM = False

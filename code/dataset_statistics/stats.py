@@ -22,7 +22,7 @@ t0 = time.time()
 DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
 
 #DATASET = 'ANDROID FCG' # !! change file names from hashes to numbers
-#DATASET = 'CFG' # !! change file names from hashes to numbers
+#DATASET = 'FLASH CFG' # !! change file names from hashes to numbers
 #DATASET = 'DD'
 DATASET = 'ENZYMES'
 #DATASET = 'MUTAG'
