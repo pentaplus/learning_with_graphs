@@ -95,15 +95,14 @@ EMBEDDING_PARAM_RANGES = {
                           RANDOM_WALK_KERNEL: [None]
                          }
 
-#DATASET = 'ANDROID FCG' # !! change file names from hashes to numbers
-#DATASET = 'FLASH_CFG' # !! change file names from hashes to numbers
+#DATASET = ANDROID_FCG_PARTIAL # !! increase number of samples
 
 # sorted by number of graphs in ascending order
 #DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
-#DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109, FLASH_CFG]
+DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109, FLASH_CFG]
 #DATASETS = [MUTAG, PTC_MR, ENZYMES]
 #DATASETS = [DD, NCI1, NCI109]
-DATASETS = [MUTAG]
+#DATASETS = [MUTAG]
 #DATASETS = [PTC_MR]
 #DATASETS = [ENZYMES]
 #DATASETS = [DD]
@@ -118,8 +117,8 @@ OPT_PARAM = True
 COMPARE_PARAMS = True
 #COMPARE_PARAMS = False
 
-#SEARCH_OPT_SVM_PARAM_IN_PAR = True
-SEARCH_OPT_SVM_PARAM_IN_PAR = False
+SEARCH_OPT_SVM_PARAM_IN_PAR = True
+#SEARCH_OPT_SVM_PARAM_IN_PAR = False
 
 NUM_ITER = 10
 #NUM_ITER = 5

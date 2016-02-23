@@ -1,8 +1,0 @@
-LIBRARY: LIBSVM
-NUM_ITER: 10
-NUM_INNER_FOLDS: 3
-------------------------------------------
-
-Graph loading and feature exraction took 1.2 seconds.
-
-LINEAR/RBF (OPT_PARAM)
