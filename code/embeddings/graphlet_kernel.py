@@ -41,9 +41,9 @@ def extract_features(graph_meta_data_of_num, graphlet_size = 4):
 #    elif graphlet_size == 5:
 #        graphlets_count = 34
         
-    # initialize data_matrix
+    # initialize data_mat
     graphs_count = len(graph_meta_data_of_num)
-    data_matrix = np.zeros((graphs_count, graphlets_count), dtype = np.float64)
+    data_mat = np.zeros((graphs_count, graphlets_count), dtype = np.float64)
     
     
     # iterate over all graphs in the dataset -------------------------------------
@@ -79,7 +79,7 @@ def extract_features(graph_meta_data_of_num, graphlet_size = 4):
             counts[:3] /= weights
             counts[3] = comb(nodes_count, 3) - sum(counts)
             
-            data_matrix[i] = counts
+            data_mat[i] = counts
         
         elif graphlet_size == 4:
             # count 4-graphlets !!!
@@ -181,9 +181,9 @@ def extract_features(graph_meta_data_of_num, graphlet_size = 4):
             
             counts[10] = comb(nodes_count, 4) - sum(counts[:10])           
             
-            data_matrix[i] = counts
+            data_mat[i] = counts
     
-    data_mat_of_param[graphlet_size] = data_matrix
+    data_mat_of_param[graphlet_size] = data_mat
     
     extr_end_time = time.time()
     extr_time_of_param[graphlet_size] = extr_end_time - extr_start_time

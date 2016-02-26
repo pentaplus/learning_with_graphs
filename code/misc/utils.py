@@ -1,3 +1,5 @@
+import networkx as nx
+import numpy as np
 import os
 import shutil
 import sys
@@ -56,6 +58,12 @@ def fatal_error(msg, fid = None):
         fid.close()
     
     sys.exit(1)
+    
+
+
+# !!   
+def get_adjacency_matrix(G):
+    return (nx.to_numpy_matrix(G) != 0).astype(int)
 
 
 def has_elem(it): 

@@ -62,7 +62,7 @@ with open(join(SOURCE_CLASSES_PATH, 'hash_num_map.txt'), 'w') as f:
                 lbl_array = lbl_dict['label']
                 lbl_num = bin_array_to_num(lbl_array)
                 
-                G_compr.node[node_num] = {'label' : lbl_num}
+                G_compr.node[node_num] = {'label': lbl_num}
                 
             # process edges
             for node_id_tuple, edge_label_dict_of_node_neigh_id_tuple in\

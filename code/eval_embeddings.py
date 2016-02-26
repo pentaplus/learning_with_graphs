@@ -17,9 +17,6 @@
 # 
 # 100. make feature vectors for NHGK unary 
 
-# CAREFUL: PERFECTIONISM!
-# 1000. make a grid search for kernels = ['linear', 'rbf'] in each optimization
-# step (speedup by parallelization?)
 
 
 import importlib
@@ -86,12 +83,12 @@ EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH,
 # keys are indices of the list EMBEDDING_NAMES, values are the respective
 # parameters
 EMBEDDING_PARAM_RANGES = {
-                          WEISFEILER_LEHMAN : range(6),
-                          NEIGHBORHOOD_HASH : range(6),
-                          COUNT_SENSITIVE_NEIGHBORHOOD_HASH : range(6),
-                          COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER : range(6),                                   
-                          GRAPHLET_KERNEL : [3],
-#                          GRAPHLET_KERNEL : [4],
+                          WEISFEILER_LEHMAN: range(6),
+                          NEIGHBORHOOD_HASH: range(6),
+                          COUNT_SENSITIVE_NEIGHBORHOOD_HASH: range(6),
+                          COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER: range(6),
+                          GRAPHLET_KERNEL: [3],
+#                          GRAPHLET_KERNEL: [4],
                           RANDOM_WALK_KERNEL: [None]
                          }
 
@@ -186,10 +183,10 @@ def init_clf(use_liblinear, embedding_is_implicit, dataset_is_large,
         clf = svm.SVC(decision_function_shape = 'ovr')
         
     if dataset_is_large:
-        svm_param_grid = {'C' : (0.01, 0.1, 1)}
+        svm_param_grid = {'C': (0.01, 0.1, 1)}
         num_jobs = 3
     else:
-        svm_param_grid = {'kernel' : ('linear', 'rbf'), 'C' : (0.1, 10)}
+        svm_param_grid = {'kernel': ('linear', 'rbf'), 'C': (0.1, 10)}
         num_jobs = 4
     
     if SEARCH_OPT_SVM_PARAM_IN_PAR:
@@ -288,8 +285,8 @@ for dataset in DATASETS:
 
 
     for embedding_name in EMBEDDING_NAMES:
-        # set parameters depending on whether or not the number of samples within the
-        # dataset is larger than 1000 and depending on wether the embedding is
+        # set parameters depending on whether or not the number of samples within 
+        # the dataset is larger than 1000 and depending on wether the embedding is
         # implict or explicit
         embedding = importlib.import_module('embeddings.' + embedding_name)
         embedding_is_implicit = is_embedding_implicit(embedding_name)
