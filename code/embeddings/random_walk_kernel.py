@@ -1,13 +1,10 @@
-from __future__ import division
 import inspect
 import networkx as nx
 import numpy as np
 import sys
 import time
 
-from control import dlyap
 from os.path import abspath, dirname, join
-from scipy.sparse.linalg import cg, LinearOperator
 
 
 # determine script path
@@ -28,10 +25,10 @@ def invvec(M, m, n):
     return M.reshape((m, n))
     
     
-def smtfilter(x, A_i, A_j, lmbd):
+def smtfilter(x, A_i, A_j, lambda_):
     yy = vec(A_i.dot(invvec(x, A_i.shape[0], A_j.shape[0])).dot(A_j))
     
-    yy *= lmbd
+    yy *= lambda_
     
     vecu = x - yy
     
@@ -50,8 +47,7 @@ def compute_kernel_mat(graph_meta_data_of_num, param_range = [None]):
     
     kernel_mat = np.zeros((num_graphs, num_graphs), dtype = np.float64)
     
-    lmbd = -2
-    
+    lambda_ = -2
         
     
     # iterate over all graphs in the dataset -------------------------------------
@@ -59,42 +55,34 @@ def compute_kernel_mat(graph_meta_data_of_num, param_range = [None]):
         # load graph       
         G_i = pz.load(graph_meta_data[i][0])
         # determine adjacency matrix A of graph G
-#        A_i = utils.get_adjacency_matrix(G_i)
-        A_i = nx.adjacency_matrix(G_i, weight = None).todense()
+        A_i = utils.get_adjacency_matrix(G_i)
 
         for j in xrange(i, num_graphs):
             # load graph       
             G_j = pz.load(graph_meta_data[j][0])
             # determine adjacency matrix A of graph G
-#            A_j = utils.get_adjacency_matrix(G_j)
-            A_j = nx.adjacency_matrix(G_j, weight = None).todense()
+            A_j = utils.get_adjacency_matrix(G_j)
             
-            smtfiler_op = LinearOperator((A_i.shape[0] * A_j.shape[0],
-                                          A_i.shape[0] * A_j.shape[0]),
-                                         lambda x: smtfilter(x, A_i, A_j, lmbd))            
-            
-#            C = np.ones((A_j.shape[0], A_i.shape[0]))
-            
+            # apply preconditioned conjugate gradient method (the pcg.pcg
+            # function is a translation of the MATLAB pcg to Python,
+            # see http://de.mathworks.com/help/matlab/ref/pcg.html for further
+            # details)
             b = np.ones((A_i.shape[0] * A_j.shape[0], 1))
             
-            x, info = cg(smtfiler_op, b,
-                         x0 = np.zeros((A_i.shape[0] * A_j.shape[0])), tol = 1e-6,
-                         maxiter = 20)
+            x, flag, relres, iter_, resvec =\
+                   pcg.pcg(lambda x: smtfilter(x, A_i, A_j, lambda_), b, 1e-6, 20)
+                
             
-            x, info = cg(smtfiler_op, b, tol = 1e-6, maxiter = 20)
-            
-#            x, flag, relres, iter_, resvec = pcg.pcg(lambda x: smtfilter(x, A_i, A_j, lmbd), b, 1e-6, 20)
-            
-#            return X, info
-#            
             kernel_mat[i,j] = np.sum(x)
-#            
-#            # i = 0, j = 0: 38.926
+            if i != j:
+                kernel_mat[j,i] = kernel_mat[i,j]
+            
+#             # !!
+##            sys.modules['__main__'].kernel_mat = kernel_mat
+            
+#            print 'i =', i, 'j =', j
             print 'i =', i, 'j =', j, kernel_mat[i,j]
-#            
-#            Y = A_j.dot(X).dot((lmbd * A_i).T) - X + C
-#            
-#            x = 0
+
         
         
     
@@ -112,8 +100,9 @@ if __name__ == '__main__':
     from misc import dataset_loader, utils
     
     DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
-    dataset = 'MUTAG'
-#    dataset = 'DD'
+#    dataset = 'MUTAG'
+#    dataset = 'PTC(MR)'
+    dataset = 'DD'
 #    dataset = 'ENZYMES'
 #    dataset = 'NCI1'
 #    dataset = 'NCI109'
@@ -125,11 +114,10 @@ if __name__ == '__main__':
     kernel_mat_of_param, kernel_mat_comp_time_of_param =\
                   compute_kernel_mat(graph_meta_data_of_num, param_range = [None])
 
-    X, info = compute_kernel_mat(graph_meta_data_of_num, param_range = [None])
     
     kernel_mat = kernel_mat_of_param[None]
     kernel_mat_comp_time = kernel_mat_comp_time_of_param[None]
-    print kernel_mat_comp_time
+    print 'kernel_mat_comp_time = ', kernel_mat_comp_time
     
     
     import networkx as nx
@@ -147,27 +135,6 @@ if __name__ == '__main__':
     
     A_mat = mat['A']
     
+    # utils: 24.0, adj_mat calc: 12.7
+
     
-    lmbd = -2
-    G = pz.load(graph_meta_data_of_num.values()[0][0])
-#    A = nx.adjacency_matrix(G, weight = None).todense()
-    A = utils.get_adjacency_matrix(G)
-    
-#    smtfiler_op = LinearOperator((A.shape[0] * A.shape[0],
-#                                  A.shape[0] * A.shape[0]),
-#                                 lambda x: smtfilter(x, A, A, lmbd))
-                                 
-    b = np.ones((A.shape[0] * A.shape[0], 1))
-#    x, info = cg(smtfiler_op, b, tol = 1e-6, maxiter = 20)
-    
-#    x = np.zeros((529,1))
-#    out = smtfilter(x, A, A, lmbd)
-    
-        
-    
-    f = lambda x: smtfilter(x, A, A, lmbd)
-    
-    x = np.zeros((529, 1))
-    
-    f(x)
-   

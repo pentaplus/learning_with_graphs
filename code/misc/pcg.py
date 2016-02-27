@@ -107,7 +107,7 @@ def pcg(afun, b, tol = 1e-6, maxit = 20):
 #    resvec=zeros(maxit + 1,1)
     resvec = np.zeros((maxit + 1, 1))
 #    resvec[1,:] = normr
-    resvec[0,:] = normr
+    resvec[0,0] = normr
     normrmin = normr
     rho = 1
     stag = 0
@@ -139,20 +139,20 @@ def pcg(afun, b, tol = 1e-6, maxit = 20):
             p = z
         else:
             beta = rho / rho1
-            if (beta == 0).all() or np.isinf(beta).all():
+            if beta == 0 or np.isinf(beta):
                 flag = 4
                 break
             p = z + beta * p
             
 #        q=iterapp(char('mtimes'),afun,atype,afcnstr,p,varargin[:])
         q = afun(p)
-        pq = p.T * q
-        if (q <= 0).all() or np.isinf(pq).all():
+        pq = float(p.T.dot(q))
+        if pq <= 0 or np.isinf(pq):
             flag = 4
             break
         else:
             alpha = rho / pq
-        if np.isinf(alpha).all():
+        if np.isinf(alpha):
             flag = 4
             break
         
@@ -166,7 +166,7 @@ def pcg(afun, b, tol = 1e-6, maxit = 20):
         normr = norm(r)
         normr_act = normr
 #        resvec[ii + 1, 1] = normr
-        resvec[ii, 0] = normr
+        resvec[ii,0] = normr
         if normr <= tolb or stag >= maxstagsteps or moresteps:
             r = b - afun(x)
             normr_act = norm(r)
@@ -194,6 +194,8 @@ def pcg(afun, b, tol = 1e-6, maxit = 20):
         if stag >= maxstagsteps:
             flag = 3
             break
+        
+        
     if flag == 0:
         relres = normr_act / n2b
     else:

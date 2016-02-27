@@ -57,9 +57,9 @@ def extract_features(graph_meta_data_of_num, h_range):
     next_compr_lbl = 0
     
     
-    # ----------------------------------------------------------------------------
+    #=============================================================================
     # 1) extract features iterating over all graphs in the dataset
-    # ----------------------------------------------------------------------------
+    #=============================================================================
     for h in h_range:
         for graph_num, (graph_path, class_lbl) in\
                                                graph_meta_data_of_num.iteritems():
@@ -139,10 +139,10 @@ def extract_features(graph_meta_data_of_num, h_range):
                     # == new_compr_lbl
                     next_upd_lbls_dict[graph_num][v] = new_compr_lbl
         
-        # ------------------------------------------------------------------------
+        #=========================================================================
         # 2) construct data matrix whose i-th row equals the i-th feature vector,
         #    which comprises the features of the first r iterations
-        # ------------------------------------------------------------------------
+        #=========================================================================
         mat_constr_start_time = time.time()        
         
         # list containing the features of all graphs

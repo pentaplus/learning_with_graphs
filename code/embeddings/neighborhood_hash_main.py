@@ -149,9 +149,9 @@ def extract_features(graph_meta_data_of_num, h_range, count_sensitive = True,
     label_map = {}
     
     
-    # ----------------------------------------------------------------------------
+    #=============================================================================
     # 1) extract features iterating over all graphs in the dataset
-    # ----------------------------------------------------------------------------
+    #=============================================================================
     for h in h_range:
         for graph_num, (graph_path, class_lbl) in\
                                                graph_meta_data_of_num.iteritems():
@@ -253,10 +253,10 @@ def extract_features(graph_meta_data_of_num, h_range, count_sensitive = True,
                     feature_counts_dict[graph_num][index] += 1
                     
         
-        # ------------------------------------------------------------------------
+        #=========================================================================
         # 2) compress bit labels and construct data matrix whose i-th row equals
         #    the i-th feature vector
-        # ------------------------------------------------------------------------
+        #=========================================================================
         mat_constr_start_time = time.time()
         
         # list containing the features of all graphs

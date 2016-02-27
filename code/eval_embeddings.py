@@ -275,9 +275,9 @@ def write_kernel_comp_for_param(param, kernel_mat_comp_time_of_param,
 script_exec_start_time = time.time()
 
 for dataset in DATASETS:
-    # ----------------------------------------------------------------------------
+    #=============================================================================
     # 1) retrieve graph meta data and class lables
-    # ----------------------------------------------------------------------------
+    #=============================================================================
     graph_meta_data_of_num, class_lbls =\
       dataset_loader.get_graph_meta_data_of_num_dict_and_class_lbls(dataset,
                                                                     DATASETS_PATH)
@@ -305,10 +305,10 @@ for dataset in DATASETS:
         write_param_info(use_liblinear, embedding_is_implicit, num_inner_folds,
                          result_file)
 
-        #-------------------------------------------------------------------------
+        #=========================================================================
         # 2) extract features if embedding is an explicit embedding, else compute
         #    the kernel matrix
-        # ------------------------------------------------------------------------
+        #=========================================================================
         if not embedding_is_implicit:
             data_mat_of_param, extr_time_of_param =\
                   extract_features(graph_meta_data_of_num, embedding, param_range,
@@ -323,10 +323,10 @@ for dataset in DATASETS:
                             dataset_is_large, num_inner_folds)
         
         if OPT_PARAM and len(param_range) > 1:
-            #---------------------------------------------------------------------
+            #=====================================================================
             # 3) evaluate the embedding's performance with optimized embedding
             #    parameter (this is only done for explicit embeddings)
-            # --------------------------------------------------------------------
+            #=====================================================================
             mode = 'opt_param'
             
             result_file.write('\n%s (%s)\n' % (kernel.upper(), mode.upper()))
@@ -348,10 +348,10 @@ for dataset in DATASETS:
                 
                                                                 
         if COMPARE_PARAMS:
-            # --------------------------------------------------------------------
+            #=====================================================================
             # 4) evaluate the embedding's performance for each embedding
             #    parameter
-            # --------------------------------------------------------------------
+            #=====================================================================
             for param in param_range:
                 if not embedding_is_implicit:
                     write_extr_time_for_param(param, extr_time_of_param,

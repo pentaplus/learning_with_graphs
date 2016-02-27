@@ -7,3 +7,8 @@ NUM_OUTER_FOLDS: 10
 
 Graph loading and feature exraction took 0.2 seconds.
 ------------------------------------------
+Parameter: None
+
+Feature extraction took 0.2 seconds.
+
+LINEAR/RBF
