@@ -1,5 +1,6 @@
 import inspect
 import sys
+import time
 
 import numpy as np
 from os.path import abspath, dirname, join
@@ -183,16 +184,16 @@ def extract_features(graph_meta_data_of_num, graphlet_size = 4):
             
             data_mat[i] = counts
     
-    data_mat_of_param[graphlet_size] = data_mat
+    data_mat_of_param[None] = data_mat
     
     extr_end_time = time.time()
-    extr_time_of_param[graphlet_size] = extr_end_time - extr_start_time
+    extr_time_of_param[None] = extr_end_time - extr_start_time
 
     return data_mat_of_param, extr_time_of_param
 
 
 if __name__ == '__main__':
-    import time
+    
     from misc import dataset_loader
     
     DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')

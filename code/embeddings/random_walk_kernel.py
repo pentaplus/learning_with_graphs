@@ -69,21 +69,21 @@ def compute_kernel_mat(graph_meta_data_of_num, param_range = [None]):
 #            A_j = utils.get_adjacency_matrix(G_j)
             A_j = nx.adjacency_matrix(G_j, weight = None).todense()
             
-#            smtfiler_op = LinearOperator((A_i.shape[0] * A_j.shape[0],
-#                                          A_i.shape[0] * A_j.shape[0]),
-#                                         lambda x: smtfilter(x, A_i, A_j, lmbd))            
+            smtfiler_op = LinearOperator((A_i.shape[0] * A_j.shape[0],
+                                          A_i.shape[0] * A_j.shape[0]),
+                                         lambda x: smtfilter(x, A_i, A_j, lmbd))            
             
 #            C = np.ones((A_j.shape[0], A_i.shape[0]))
             
             b = np.ones((A_i.shape[0] * A_j.shape[0], 1))
             
-#            x, info = cg(smtfiler_op, b,
-#                         x0 = np.zeros((A_i.shape[0] * A_j.shape[0])), tol = 1e-6,
-#                         maxiter = 20)
+            x, info = cg(smtfiler_op, b,
+                         x0 = np.zeros((A_i.shape[0] * A_j.shape[0])), tol = 1e-6,
+                         maxiter = 20)
             
-#            x, info = cg(smtfiler_op, b, tol = 1e-6, maxiter = 20)
+            x, info = cg(smtfiler_op, b, tol = 1e-6, maxiter = 20)
             
-            x, flag, relres, iter_, resvec = pcg.pcg(lambda x: smtfilter(x, A_i, A_j, lmbd), b, 1e-6, 20)
+#            x, flag, relres, iter_, resvec = pcg.pcg(lambda x: smtfilter(x, A_i, A_j, lmbd), b, 1e-6, 20)
             
 #            return X, info
 #            
@@ -163,6 +163,11 @@ if __name__ == '__main__':
 #    x = np.zeros((529,1))
 #    out = smtfilter(x, A, A, lmbd)
     
+        
     
+    f = lambda x: smtfilter(x, A, A, lmbd)
     
+    x = np.zeros((529, 1))
+    
+    f(x)
    

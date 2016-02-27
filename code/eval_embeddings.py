@@ -53,7 +53,8 @@ NEIGHBORHOOD_HASH = 'neighborhood_hash'
 COUNT_SENSITIVE_NEIGHBORHOOD_HASH = 'count_sensitive_neighborhood_hash'
 COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER =\
                                       'count_sensitive_neighborhood_hash_all_iter'
-GRAPHLET_KERNEL = 'graphlet_kernel'
+GRAPHLET_KERNEL_3 = 'graphlet_kernel_3'
+GRAPHLET_KERNEL_4 = 'graphlet_kernel_4'
 LABEL_COUNTER = 'label_counter'
 RANDOM_WALK_KERNEL = 'random_walk_kernel'
 
@@ -71,13 +72,14 @@ FLASH_CFG = 'FLASH CFG'
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, LABEL_COUNTER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
-EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH,
-                   COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER]
+#EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH,
+#                   COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, NEIGHBORHOOD_HASH]
 #EMBEDDING_NAMES = [COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
 #EMBEDDING_NAMES = [COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER]
 #EMBEDDING_NAMES = [NEIGHBORHOOD_HASH, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
-#EMBEDDING_NAMES = [GRAPHLET_KERNEL]
+#EMBEDDING_NAMES = [GRAPHLET_KERNEL_3]
+EMBEDDING_NAMES = [GRAPHLET_KERNEL_4]
 
 
 # keys are indices of the list EMBEDDING_NAMES, values are the respective
@@ -87,8 +89,8 @@ EMBEDDING_PARAM_RANGES = {
                           NEIGHBORHOOD_HASH: range(6),
                           COUNT_SENSITIVE_NEIGHBORHOOD_HASH: range(6),
                           COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER: range(6),
-                          GRAPHLET_KERNEL: [3],
-#                          GRAPHLET_KERNEL: [4],
+                          GRAPHLET_KERNEL_3: [None],
+                          GRAPHLET_KERNEL_4: [None],
                           RANDOM_WALK_KERNEL: [None]
                          }
 
@@ -108,8 +110,8 @@ DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109, FLASH_CFG]
 #DATASETS = [ANDROID_FCG_PARTIAL]
 #DATASETS = [FLASH_CFG]
 
-OPT_PARAM = True
-#OPT_PARAM = False
+#OPT_PARAM = True
+OPT_PARAM = False
 
 COMPARE_PARAMS = True
 #COMPARE_PARAMS = False
@@ -117,8 +119,8 @@ COMPARE_PARAMS = True
 SEARCH_OPT_SVM_PARAM_IN_PAR = True
 #SEARCH_OPT_SVM_PARAM_IN_PAR = False
 
-NUM_ITER = 10
-#NUM_ITER = 5
+#NUM_ITER = 10
+NUM_ITER = 3
 #NUM_ITER = 1
 
 NUM_OUTER_FOLDS = 10
@@ -253,7 +255,7 @@ def write_eval_info(dataset, embedding_name, kernel, mode = None):
 def write_extr_time_for_param(param, extr_time_of_param, result_file):
     print '-------------------------------------------------------------'
     result_file.write('------------------------------------------\n')
-    utils.write('Parameter: %d\n\n' % param, result_file)
+    utils.write('Parameter: %r\n\n' % param, result_file)
     utils.write('Feature extraction took %.1f seconds.\n' %\
                 extr_time_of_param[param], result_file)
     sys.stdout.write('\n')
@@ -263,7 +265,7 @@ def write_kernel_comp_for_param(param, kernel_mat_comp_time_of_param,
                                 result_file):
     print '-------------------------------------------------------------'
     result_file.write('------------------------------------------\n')
-    utils.write('Parameter: %d\n\n' % param, result_file)
+    utils.write('Parameter: %r\n\n' % param, result_file)
     utils.write('The computation of the kernel matrix took %.1f seconds.\n' %\
                 kernel_mat_comp_time_of_param[param], result_file)
     sys.stdout.write('\n')
