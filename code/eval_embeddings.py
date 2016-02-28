@@ -7,7 +7,7 @@
 # 4. test WL on ANDROID FCG PARTIAL (10 iterations, LIBSVM)
 # 
 # at Ben-PC:
-# 1. implement an implicit embedding method
+# 1. implement Eigen kernel
 # 10. compress FCGs
 # 
 #
@@ -79,7 +79,8 @@ FLASH_CFG = 'FLASH CFG'
 #EMBEDDING_NAMES = [COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER]
 #EMBEDDING_NAMES = [NEIGHBORHOOD_HASH, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL_3]
-EMBEDDING_NAMES = [GRAPHLET_KERNEL_4]
+#EMBEDDING_NAMES = [GRAPHLET_KERNEL_4]
+EMBEDDING_NAMES = [RANDOM_WALK_KERNEL]
 
 
 # keys are indices of the list EMBEDDING_NAMES, values are the respective
@@ -116,12 +117,15 @@ OPT_PARAM = False
 COMPARE_PARAMS = True
 #COMPARE_PARAMS = False
 
-SEARCH_OPT_SVM_PARAM_IN_PAR = True
-#SEARCH_OPT_SVM_PARAM_IN_PAR = False
+#SEARCH_OPT_SVM_PARAM_IN_PAR = True
+SEARCH_OPT_SVM_PARAM_IN_PAR = False
 
 #NUM_ITER = 10
 NUM_ITER = 3
 #NUM_ITER = 1
+
+#MAX_ITER_SD = 1e7
+MAX_ITER_SD = -1
 
 NUM_OUTER_FOLDS = 10
 
@@ -176,13 +180,14 @@ def init_clf(use_liblinear, embedding_is_implicit, dataset_is_large,
     # i.e., in case of N different classes N classifiers are trained in total
     if embedding_is_implicit:
         # library LIBSVM is used
-        clf = svm.SVC(kernel = 'precomputed', decision_function_shape = 'ovr')
+        clf = svm.SVC(kernel = 'precomputed', max_iter = MAX_ITER_SD,
+                      decision_function_shape = 'ovr')
     elif use_liblinear:
         # library LIBLINEAR is used
         clf = svm.LinearSVC()
     else:
         # library LIBSVM is used
-        clf = svm.SVC(decision_function_shape = 'ovr')
+        clf = svm.SVC(max_iter = MAX_ITER_SD, decision_function_shape = 'ovr')
         
     if dataset_is_large:
         svm_param_grid = {'C': (0.01, 0.1, 1)}

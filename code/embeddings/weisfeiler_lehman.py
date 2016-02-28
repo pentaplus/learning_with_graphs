@@ -239,12 +239,10 @@ if __name__ == '__main__':
 #    print np.average(scores)
     
     
-    cross_validation.cross_val(clf, kernel_mat, class_lbls, 10, 10, False,
+    cross_validation.cross_val(clf, kernel_mat, class_lbls, 10, 10,
                                open('bla.txt', 'w'))   
 
 
-    
-    
     
 #    X = []
 #    for i in xrange(len(graph_meta_data_of_num)):

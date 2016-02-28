@@ -1,0 +1,15 @@
+LIBRARY: LIBSVM
+EMBEDDING TYPE: IMPLICIT
+SEARCH_OPT_SVM_PARAM_IN_PAR: False
+NUM_ITER: 3
+NUM_OUTER_FOLDS: 10
+------------------------------------------
+
+The computation of the kernel matrix took 15.9 seconds.
+------------------------------------------
+Parameter: None
+
+The computation of the kernel matrix took 15.9 seconds.
+
+PRECOMPUTED
+0.852 (+/-0.007) in 208.2 seconds

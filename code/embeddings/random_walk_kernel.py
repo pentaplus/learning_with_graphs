@@ -5,6 +5,7 @@ import sys
 import time
 
 from os.path import abspath, dirname, join
+from scipy.sparse import csr_matrix, issparse
 
 
 # determine script path
@@ -48,20 +49,38 @@ def compute_kernel_mat(graph_meta_data_of_num, param_range = [None]):
     kernel_mat = np.zeros((num_graphs, num_graphs), dtype = np.float64)
     
     lambda_ = -2
+    
+
+    #=============================================================================
+    # 1) precompute the (sparse) adjacency matrices of the graphs in the dataset
+    #=============================================================================
+    adj_mats = []
+    
+    for i in xrange(num_graphs):
+        # !!
+#        if i % 10 == 0:
+#            print i
+        
+        # load graph
+        G = pz.load(graph_meta_data[i][0])
+        # determine its adjacency matrix
+        A = nx.adj_matrix(G, weight = None)
+#        A = utils.get_adjacency_matrix(G)
+        
+        adj_mats.append(A)
         
     
-    # iterate over all graphs in the dataset -------------------------------------
+    #=============================================================================
+    # 2) compute kernel matrix over all graphs in the dataset
+    #=============================================================================
     for i in xrange(num_graphs):
-        # load graph       
-        G_i = pz.load(graph_meta_data[i][0])
-        # determine adjacency matrix A of graph G
-        A_i = utils.get_adjacency_matrix(G_i)
+        A_i = adj_mats[i].todense()
 
         for j in xrange(i, num_graphs):
-            # load graph       
-            G_j = pz.load(graph_meta_data[j][0])
-            # determine adjacency matrix A of graph G
-            A_j = utils.get_adjacency_matrix(G_j)
+            A_j = adj_mats[j].todense()
+            
+            # !!
+#            sys.modules['__main__'].A_j = A_j
             
             # apply preconditioned conjugate gradient method (the pcg.pcg
             # function is a translation of the MATLAB pcg to Python,
@@ -96,45 +115,95 @@ def compute_kernel_mat(graph_meta_data_of_num, param_range = [None]):
     return kernel_mat_of_param, kernel_mat_comp_time_of_param
 
 
+#if __name__ == '__main__':
+#    from misc import dataset_loader, utils
+#    
+#    DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
+#    dataset = 'MUTAG'
+##    dataset = 'PTC(MR)'
+##    dataset = 'DD'
+##    dataset = 'ENZYMES'
+##    dataset = 'NCI1'
+##    dataset = 'NCI109'
+##    dataset = 'FLASH CFG'
+#    
+#    graph_meta_data_of_num, class_lbls =\
+#      dataset_loader.get_graph_meta_data_of_num_dict_and_class_lbls(dataset,
+#                                                                    DATASETS_PATH)
+#    
+#    
+#    kernel_mat_of_param, kernel_mat_comp_time_of_param =\
+#                  compute_kernel_mat(graph_meta_data_of_num, param_range = [None])
+#
+#    
+#    kernel_mat = kernel_mat_of_param[None]
+#    kernel_mat_comp_time = kernel_mat_comp_time_of_param[None]
+#    print 'kernel_mat_comp_time = ', kernel_mat_comp_time
+#    
+#    
+#    import networkx as nx
+#    from scipy.sparse import csr_matrix
+#    import scipy.io as spio
+#    G = pz.load(graph_meta_data_of_num.values()[0][0])
+#    A = nx.adjacency_matrix(G, weight = None)
+#    
+##    timeit A = nx.adjacency_matrix(G, weight = None) # 2.3 ms
+##    timeit B = A.todense()  183 micros
+#    
+#    A_sprs = csr_matrix(A)
+#    A_sprs
+#    I = np.nonzero(A)
+#    I[0]
+#    
+#    mat = spio.loadmat('data.mat')
+#    
+#    A_mat = mat['A']
+#    
+#    # utils: 24.0, adj_mat calc: 12.7
+#
+#    # load all as dense matrices: 81 sec
+#    # load all as sparse matrices: 75 sec
+
+
 if __name__ == '__main__':
-    from misc import dataset_loader, utils
+    from misc import dataset_loader
+    from performance_evaluation import cross_validation
+    
+#    from sklearn.cross_validation import KFold
+    from sklearn.svm import SVC
+#    from sklearn.cross_validation import cross_val_score
+    from sklearn.metrics.pairwise import pairwise_kernels
     
     DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
-#    dataset = 'MUTAG'
+    dataset = 'MUTAG'
 #    dataset = 'PTC(MR)'
-    dataset = 'DD'
-#    dataset = 'ENZYMES'
-#    dataset = 'NCI1'
-#    dataset = 'NCI109'
+    
     graph_meta_data_of_num, class_lbls =\
       dataset_loader.get_graph_meta_data_of_num_dict_and_class_lbls(dataset,
-                                                                    DATASETS_PATH)
+                                                                    DATASETS_PATH)    
     
+    h_range = range(6)
     
     kernel_mat_of_param, kernel_mat_comp_time_of_param =\
                   compute_kernel_mat(graph_meta_data_of_num, param_range = [None])
+                                 
+    kernel_mat = kernel_mat_of_param[None]                                                                
+                                                                   
+
+
+    clf = SVC(kernel = 'precomputed')
 
     
-    kernel_mat = kernel_mat_of_param[None]
-    kernel_mat_comp_time = kernel_mat_comp_time_of_param[None]
-    print 'kernel_mat_comp_time = ', kernel_mat_comp_time
+    
+#    clf.fit(pairwise_kernels(data_mat), class_lbls)
+#    clf.fit(data_mat.dot(data_mat.T), class_lbls)
+    
+#    cv = KFold(len(class_lbls), 10, shuffle = True)    
+    
+#    cross_val_score(clf, pairwise_kernels(data_mat), class_lbls, cv = 10)
+#    scores = cross_val_score(clf, data_mat.dot(data_mat.T), class_lbls, cv = cv)
+#    print np.average(scores)
     
     
-    import networkx as nx
-    from scipy.sparse import csr_matrix
-    import scipy.io as spio
-    G = pz.load(graph_meta_data_of_num.values()[0][0])
-    A = nx.adjacency_matrix(G, weight = None).todense()
-    
-    A_sprs = csr_matrix(A)
-    A_sprs
-    I = np.nonzero(A)
-    I[0]
-    
-    mat = spio.loadmat('data.mat')
-    
-    A_mat = mat['A']
-    
-    # utils: 24.0, adj_mat calc: 12.7
-
-    
+    cross_validation.cross_val(clf, kernel_mat, class_lbls, 10, 10,
+                               open('bla.txt', 'w'))   
