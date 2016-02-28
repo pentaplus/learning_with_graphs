@@ -1,3 +1,13 @@
+""" Graphlet kernel counting graphlets of sizes 3 and 4.
+
+This module provides a function for the corresponding feature extraction.
+"""
+
+__author__ = "Benjamin Plock"
+__email__ = "benjamin.plock@stud.uni-goettingen.de"
+__date__ = "2016-02-28"
+
+
 import inspect
 import sys
 import time

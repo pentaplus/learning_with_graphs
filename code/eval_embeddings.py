@@ -1,3 +1,18 @@
+""" Evaluation of embedding methods.
+
+This module provides functions for evaluating the performance of four explecit
+two implicit graph embedding methods. The explicit ones are the Weisfeiler-Lehman
+subtree kernel, the neighborhood hash kernel (in three variants) and the !!.
+The implicit embeddings comprise the random walk kernel and the !!.
+The classification accuracies and runtimes are evaluated on the following 8
+datasets: MUTAG, PTC(MR), ENZYMES, DD, NCI1, NCI109, FLASH CFG, and ANDROID FCG.
+"""
+
+__author__ = "Benjamin Plock"
+__email__ = "benjamin.plock@stud.uni-goettingen.de"
+__date__ = "2016-02-28"
+
+
 # planed procedure:
 # at Benny-Notebook:
 # 0. test WL on first 7 datasets (param range = {0,...,5})

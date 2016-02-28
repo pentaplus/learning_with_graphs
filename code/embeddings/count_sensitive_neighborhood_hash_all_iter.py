@@ -1,3 +1,14 @@
+""" Count-sensitive neighborhood hash (all iterations).
+
+This module is a wrapper around the module neighborhood_hash_main.py. It provides
+a function for the corresponding feature extraction.
+"""
+
+__author__ = "Benjamin Plock"
+__email__ = "benjamin.plock@stud.uni-goettingen.de"
+__date__ = "2016-02-28"
+
+
 import inspect
 import sys
 

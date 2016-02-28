@@ -1,3 +1,11 @@
+""" Renaming of graph files (hash value -> number).
+"""
+
+__author__ = "Benjamin Plock"
+__email__ = "benjamin.plock@stud.uni-goettingen.de"
+__date__ = "2016-02-28"
+
+
 import inspect
 import os
 import re
