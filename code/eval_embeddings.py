@@ -57,11 +57,11 @@ from misc import dataset_loader, utils
 from performance_evaluation import cross_validation
 
 
-DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', 'datasets')
+#=================================================================================
+# constants
+#=================================================================================
 
-# --------------------------------------------------------------------------------
-# parameter definitions
-# --------------------------------------------------------------------------------
+DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', 'datasets')
 
 # embeddings
 WEISFEILER_LEHMAN = 'weisfeiler_lehman'
@@ -83,6 +83,11 @@ NCI1 = 'NCI1'
 NCI109 = 'NCI109'
 ANDROID_FCG_PARTIAL = 'ANDROID FCG PARTIAL'
 FLASH_CFG = 'FLASH CFG'
+
+
+#=================================================================================
+# parameter definitions
+#=================================================================================
 
 #EMBEDDING_NAMES = [LABEL_COUNTER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, LABEL_COUNTER]
@@ -131,23 +136,32 @@ DATASETS = [MUTAG, PTC_MR, ENZYMES]
 #OPT_PARAM = True
 OPT_PARAM = False
 
-COMPARE_PARAMS = True
-#COMPARE_PARAMS = False
+#COMPARE_PARAMS = True
+COMPARE_PARAMS = False
 
-SEARCH_OPT_SVM_PARAM_IN_PAR = True
-#SEARCH_OPT_SVM_PARAM_IN_PAR = False
+#SEARCH_OPT_SVM_PARAM_IN_PAR = True
+SEARCH_OPT_SVM_PARAM_IN_PAR = False
 
 NUM_ITER = 10
 #NUM_ITER = 3
 #NUM_ITER = 1
 
+# maximum number of iterations for small datasets (i.e., less than 1000 samples)
 MAX_ITER_SD = 1e7
 #MAX_ITER_SD = -1
 
+# maximum number of iterations for large datasets (i.e., more than 1000 samples)
+MAX_ITER_LD = 1e3
+
+# number of folds used in cross validation for performance evaluation
 NUM_OUTER_FOLDS = 10
 
+# number of folds used in cross validation on training data for small datasets
+# (i.e., less than 1000 samples)
 NUM_INNER_FOLDS_SD = 3
 
+# number of folds used in cross validation on training data for large datasets
+# (i.e., more than 1000 samples)
 NUM_INNER_FOLDS_LD = 2
 
 
@@ -190,28 +204,33 @@ def compute_kernel_matrix(graph_meta_data_of_num, embedding, param_range,
     return kernel_mat_of_param, kernel_mat_comp_time_of_param
     
   
-def init_clf(use_liblinear, embedding_is_implicit, dataset_is_large,
-             num_inner_folds):
-        
-    # for multiclass classification the One-Versus-Rest scheme is applied,
-    # i.e., in case of N different classes N classifiers are trained in total
-    if embedding_is_implicit:
-        # library LIBSVM is used
-        clf = svm.SVC(kernel = 'precomputed', max_iter = MAX_ITER_SD,
-                      decision_function_shape = 'ovr')
-    elif use_liblinear:
-        # library LIBLINEAR is used
-        clf = svm.LinearSVC()
-    else:
-        # library LIBSVM is used
-        clf = svm.SVC(max_iter = MAX_ITER_SD, decision_function_shape = 'ovr')
-        
+def init_clf(embedding_is_implicit, dataset_is_large, num_inner_folds):
+    """
+    Initialize classifier.
+    
+    For multiclass classification the One-Versus-Rest scheme is applied,
+    i.e., in case of N different classes N classifiers are trained in
+    total.
+    """
     if dataset_is_large:
+        max_iter = MAX_ITER_LD
         svm_param_grid = {'C': (0.01, 0.1, 1)}
         num_jobs = 3
     else:
+        max_iter = MAX_ITER_SD
         svm_param_grid = {'kernel': ('linear', 'rbf'), 'C': (0.1, 10)}
         num_jobs = 4
+    
+    if embedding_is_implicit:
+        # library LIBSVM is used
+        clf = svm.SVC(kernel = 'precomputed', max_iter = max_iter,
+                      decision_function_shape = 'ovr')
+    elif dataset_is_large:
+        # library LIBLINEAR is used
+        clf = svm.LinearSVC(max_iter = max_iter)
+    else:
+        # library LIBSVM is used
+        clf = svm.SVC(max_iter = max_iter, decision_function_shape = 'ovr')
     
     if SEARCH_OPT_SVM_PARAM_IN_PAR:
         grid_clf = GridSearchCV(clf, svm_param_grid, cv = num_inner_folds,
@@ -264,12 +283,12 @@ def write_param_info(use_liblinear, embedding_is_implicit, num_inner_folds,
     utils.write('NUM_OUTER_FOLDS: %d\n' % NUM_OUTER_FOLDS, result_file)
     if OPT_PARAM:
         utils.write('NUM_INNER_FOLDS: %d\n' % num_inner_folds, result_file)
-    sys.stdout.write('\n')
     if not use_liblinear:
         if MAX_ITER_SD == -1:
             utils.write('MAX_ITER_SD: UNLIMITED\n', result_file)
         else:
-            utils.write('MAX_ITER_SD: %d\n' % MAX_ITER_SD, result_file)
+            utils.write('MAX_ITER_SD: %.e\n' % MAX_ITER_SD, result_file)
+    sys.stdout.write('\n')
     
     
 def write_eval_info(dataset, embedding_name, kernel, mode = None):
@@ -346,8 +365,8 @@ for dataset in DATASETS:
                                                 param_range, result_file)
                                                 
         # initialize SVM classifier
-        grid_clf = init_clf(use_liblinear, embedding_is_implicit,
-                            dataset_is_large, num_inner_folds)
+        grid_clf = init_clf(embedding_is_implicit, dataset_is_large,
+                            num_inner_folds)
         
         if OPT_PARAM and len(param_range) > 1:
             #=====================================================================

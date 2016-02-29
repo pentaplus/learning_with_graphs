@@ -6,6 +6,7 @@ computation of the corresponding kernel matrix.
 """
 
 __author__ = "Benjamin Plock"
+__credits__ = ["Karsten Borgwardt", "Nino Shervashidze"]
 __date__ = "2016-02-28"
 
 

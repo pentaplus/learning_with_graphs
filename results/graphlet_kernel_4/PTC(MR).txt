@@ -6,4 +6,4 @@ NUM_OUTER_FOLDS: 10
 MAX_ITER_SD: 1e+07
 ------------------------------------------
 
-Graph loading and feature exraction took 0.2 seconds.
+Graph loading and feature exraction took 2.1 seconds.
