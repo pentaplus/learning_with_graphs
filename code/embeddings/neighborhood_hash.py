@@ -1,3 +1,15 @@
+"""
+Simple neighborhood hash kernel.
+
+This module is a wrapper around the module neighborhood_hash_main.py. It
+provides the function extract_features for the corresponding feature
+extraction.
+"""
+
+__author__ = "Benjamin Plock"
+__date__ = "2016-02-28"
+
+
 import inspect
 import sys
 

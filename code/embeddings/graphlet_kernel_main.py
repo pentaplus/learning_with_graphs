@@ -1,10 +1,11 @@
-""" Graphlet kernel counting graphlets of sizes 3 and 4.
+"""
+Graphlet kernel counting graphlets of sizes 3 and 4.
 
-This module provides a function for the corresponding feature extraction.
+This module provides the function extract_features for the corresponding
+feature extraction.
 """
 
 __author__ = "Benjamin Plock"
-__email__ = "benjamin.plock@stud.uni-goettingen.de"
 __date__ = "2016-02-28"
 
 

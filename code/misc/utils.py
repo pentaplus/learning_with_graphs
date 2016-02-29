@@ -1,5 +1,4 @@
 import networkx as nx
-import numpy as np
 import os
 import shutil
 import sys

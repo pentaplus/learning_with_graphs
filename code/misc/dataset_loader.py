@@ -1,3 +1,15 @@
+"""
+Dataset loader.
+
+This module provides functionality for loading the meta data of the
+specified dataset. This data comprises the absolute paths of the graph
+files and their class labels.
+"""
+
+__author__ = "Benjamin Plock"
+__date__ = "2016-02-28"
+
+
 import inspect
 import numpy as np
 import pz

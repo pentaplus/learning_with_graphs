@@ -1,3 +1,14 @@
+"""
+Neighborhood hash kernel.
+
+This module provides the function extract_features for the corresponding
+feature extraction.
+"""
+
+__author__ = "Benjamin Plock"
+__date__ = "2016-02-28"
+
+
 import inspect
 import itertools as itools
 import numpy as np

@@ -1,15 +1,16 @@
-""" Evaluation of embedding methods.
+"""
+Evaluation of embedding methods.
 
-This module provides functions for evaluating the performance of four explecit
-two implicit graph embedding methods. The explicit ones are the Weisfeiler-Lehman
-subtree kernel, the neighborhood hash kernel (in three variants) and the !!.
-The implicit embeddings comprise the random walk kernel and the !!.
-The classification accuracies and runtimes are evaluated on the following 8
-datasets: MUTAG, PTC(MR), ENZYMES, DD, NCI1, NCI109, FLASH CFG, and ANDROID FCG.
+This module provides functions for evaluating the performance of four
+explecit two implicit graph embedding methods. The explicit ones are the
+Weisfeiler-Lehman subtree kernel, the neighborhood hash kernel (in three
+variants) and the !!. The implicit embeddings comprise the random walk
+kernel and the !!. The classification accuracies and runtimes are
+evaluated on the following 8 datasets: MUTAG, PTC(MR), ENZYMES, DD,
+NCI1, NCI109, FLASH CFG, and ANDROID FCG.
 """
 
 __author__ = "Benjamin Plock"
-__email__ = "benjamin.plock@stud.uni-goettingen.de"
 __date__ = "2016-02-28"
 
 
@@ -95,7 +96,8 @@ FLASH_CFG = 'FLASH CFG'
 #EMBEDDING_NAMES = [NEIGHBORHOOD_HASH, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL_3]
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL_4]
-EMBEDDING_NAMES = [RANDOM_WALK_KERNEL]
+EMBEDDING_NAMES = [GRAPHLET_KERNEL_3, GRAPHLET_KERNEL_4]
+#EMBEDDING_NAMES = [RANDOM_WALK_KERNEL]
 
 
 # keys are indices of the list EMBEDDING_NAMES, values are the respective
@@ -114,8 +116,8 @@ EMBEDDING_PARAM_RANGES = {
 
 # sorted by number of graphs in ascending order
 #DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
-DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109, FLASH_CFG]
-#DATASETS = [MUTAG, PTC_MR, ENZYMES]
+#DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109, FLASH_CFG]
+DATASETS = [MUTAG, PTC_MR, ENZYMES]
 #DATASETS = [DD, NCI1, NCI109]
 #DATASETS = [MUTAG]
 #DATASETS = [PTC_MR]
@@ -132,15 +134,15 @@ OPT_PARAM = False
 COMPARE_PARAMS = True
 #COMPARE_PARAMS = False
 
-#SEARCH_OPT_SVM_PARAM_IN_PAR = True
-SEARCH_OPT_SVM_PARAM_IN_PAR = False
+SEARCH_OPT_SVM_PARAM_IN_PAR = True
+#SEARCH_OPT_SVM_PARAM_IN_PAR = False
 
-#NUM_ITER = 10
-NUM_ITER = 3
+NUM_ITER = 10
+#NUM_ITER = 3
 #NUM_ITER = 1
 
-#MAX_ITER_SD = 1e7
-MAX_ITER_SD = -1
+MAX_ITER_SD = 1e7
+#MAX_ITER_SD = -1
 
 NUM_OUTER_FOLDS = 10
 
@@ -256,13 +258,18 @@ def write_param_info(use_liblinear, embedding_is_implicit, num_inner_folds,
         utils.write('EMBEDDING TYPE: IMPLICIT\n', result_file)
     else:
         utils.write('EMBEDDING TYPE: EXPLICIT\n', result_file) 
-    utils.write('SEARCH_OPT_SVM_PARAM_IN_PAR: %r\n' % SEARCH_OPT_SVM_PARAM_IN_PAR,
-                result_file)
+    utils.write('SEARCH_OPT_SVM_PARAM_IN_PAR: %s\n' %\
+                       SEARCH_OPT_SVM_PARAM_IN_PAR.__str__().upper(), result_file)
     utils.write('NUM_ITER: %d\n' % NUM_ITER, result_file)
     utils.write('NUM_OUTER_FOLDS: %d\n' % NUM_OUTER_FOLDS, result_file)
     if OPT_PARAM:
         utils.write('NUM_INNER_FOLDS: %d\n' % num_inner_folds, result_file)
     sys.stdout.write('\n')
+    if not use_liblinear:
+        if MAX_ITER_SD == -1:
+            utils.write('MAX_ITER_SD: UNLIMITED\n', result_file)
+        else:
+            utils.write('MAX_ITER_SD: %d\n' % MAX_ITER_SD, result_file)
     
     
 def write_eval_info(dataset, embedding_name, kernel, mode = None):

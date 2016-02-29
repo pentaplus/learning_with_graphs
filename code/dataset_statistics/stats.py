@@ -1,8 +1,8 @@
-""" Statistics of datasets.
+"""
+Statistics of datasets.
 """
 
 __author__ = "Benjamin Plock"
-__email__ = "benjamin.plock@stud.uni-goettingen.de"
 __date__ = "2016-02-28"
 
 

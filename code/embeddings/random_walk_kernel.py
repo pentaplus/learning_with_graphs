@@ -1,3 +1,14 @@
+"""
+Random walk kernel.
+
+This module provides the function compute_kernel_mat for the
+computation of the corresponding kernel matrix.
+"""
+
+__author__ = "Benjamin Plock"
+__date__ = "2016-02-28"
+
+
 import inspect
 import networkx as nx
 import numpy as np
@@ -17,6 +28,9 @@ sys.path.append(join(SCRIPT_FOLDER_PATH, '..'))
 
 from misc import utils, pcg, pz
 
+
+def get_lamda(num_graphs):
+    return 
 
 def vec(M):
     return M.reshape((M.shape[0] * M.shape[1], 1))
@@ -49,7 +63,7 @@ def compute_kernel_mat(graph_meta_data_of_num, param_range = [None]):
     kernel_mat = np.zeros((num_graphs, num_graphs), dtype = np.float64)
     
     lambda_ = -2
-    
+    lamda = get_lamda(num_graphs)
 
     #=============================================================================
     # 1) precompute the (sparse) adjacency matrices of the graphs in the dataset
@@ -115,35 +129,12 @@ def compute_kernel_mat(graph_meta_data_of_num, param_range = [None]):
     return kernel_mat_of_param, kernel_mat_comp_time_of_param
 
 
-#if __name__ == '__main__':
-#    from misc import dataset_loader, utils
-#    
-#    DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
-#    dataset = 'MUTAG'
-##    dataset = 'PTC(MR)'
-##    dataset = 'DD'
-##    dataset = 'ENZYMES'
-##    dataset = 'NCI1'
-##    dataset = 'NCI109'
-##    dataset = 'FLASH CFG'
-#    
-#    graph_meta_data_of_num, class_lbls =\
-#      dataset_loader.get_graph_meta_data_of_num_dict_and_class_lbls(dataset,
-#                                                                    DATASETS_PATH)
-#    
-#    
-#    kernel_mat_of_param, kernel_mat_comp_time_of_param =\
-#                  compute_kernel_mat(graph_meta_data_of_num, param_range = [None])
-#
-#    
-#    kernel_mat = kernel_mat_of_param[None]
-#    kernel_mat_comp_time = kernel_mat_comp_time_of_param[None]
-#    print 'kernel_mat_comp_time = ', kernel_mat_comp_time
-#    
+
 #    
 #    import networkx as nx
 #    from scipy.sparse import csr_matrix
 #    import scipy.io as spio
+#
 #    G = pz.load(graph_meta_data_of_num.values()[0][0])
 #    A = nx.adjacency_matrix(G, weight = None)
 #    
@@ -193,16 +184,6 @@ if __name__ == '__main__':
 
     clf = SVC(kernel = 'precomputed')
 
-    
-    
-#    clf.fit(pairwise_kernels(data_mat), class_lbls)
-#    clf.fit(data_mat.dot(data_mat.T), class_lbls)
-    
-#    cv = KFold(len(class_lbls), 10, shuffle = True)    
-    
-#    cross_val_score(clf, pairwise_kernels(data_mat), class_lbls, cv = 10)
-#    scores = cross_val_score(clf, data_mat.dot(data_mat.T), class_lbls, cv = cv)
-#    print np.average(scores)
     
     
     cross_validation.cross_val(clf, kernel_mat, class_lbls, 10, 10,

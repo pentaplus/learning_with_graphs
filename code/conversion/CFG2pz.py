@@ -1,8 +1,8 @@
-""" Conversion of CFG graphs to networkx graphs.
+"""
+Conversion of Flash control flow graphs to networkx graphs.
 """
 
 __author__ = "Benjamin Plock"
-__email__ = "benjamin.plock@stud.uni-goettingen.de"
 __date__ = "2016-02-28"
 
 

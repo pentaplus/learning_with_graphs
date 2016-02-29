@@ -5,7 +5,6 @@ import time
 
 from os.path import abspath, dirname, join
 from sklearn.cross_validation import cross_val_score, KFold
-from sklearn import svm
 from sklearn.grid_search import GridSearchCV
 from sklearn.metrics.pairwise import pairwise_kernels
 

@@ -1,8 +1,8 @@
-""" Printing the number of edges for each graph within a dataset.
+"""
+Printing the number of edges for each graph within a dataset.
 """
 
 __author__ = "Benjamin Plock"
-__email__ = "benjamin.plock@stud.uni-goettingen.de"
 __date__ = "2016-02-28"
 
 

@@ -1,3 +1,16 @@
+"""
+Android FCG compressor.
+
+This module provides functionality for compressing Android function
+call graphs. The compression is performed by mapping the node
+identifiers and bit labels from strings to numbers and from
+numpy arrays to numbers, respectively.
+"""
+
+__author__ = "Benjamin Plock"
+__date__ = "2016-02-28"
+
+
 import inspect
 import networkx as nx
 import os

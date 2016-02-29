@@ -1,3 +1,15 @@
+"""
+Android FCG subset picker.
+
+This module provides functionality for choosing a subset of graphs
+from the whole Android FCG dataset, which consists of 135,791 benign
+and 12,158 malicious samples.
+"""
+
+__author__ = "Benjamin Plock"
+__date__ = "2016-02-28"
+
+
 import inspect
 import os
 import re
