@@ -2,10 +2,14 @@
 Graphlet kernel counting graphlets of sizes 3 and 4.
 
 This module provides the function extract_features for the corresponding
-feature extraction.
+feature extraction. It is a translation of the MATLAB files
+countall3graphlets.m and countall4graphlets.m by Nino Shervashidze,
+which can be downloaded from the following website:
+http://mlcb.is.tuebingen.mpg.de/Mitarbeiter/Nino/Graphkernels/
 """
 
-__author__ = "Benjamin Plock"
+__author__ = "Benjamin Plock <benjamin.plock@stud.uni-goettingen.de>"
+__credits__ = ["Nino Shervashidze"]
 __date__ = "2016-02-28"
 
 
@@ -41,24 +45,23 @@ def calc_cards(v1_nbrs, v2_nbrs, v3_nbrs):
 def extract_features(graph_meta_data_of_num, graphlet_size = 4):
     extr_start_time = time.time()
     
-    data_mat_of_param = {}
+    feature_mat_of_param = {}
     extr_time_of_param = {}    
-    
     
     graphlets_count = 0    
     if graphlet_size == 3:
         graphlets_count = 4
     elif graphlet_size == 4:
         graphlets_count = 11
-#    elif graphlet_size == 5:
-#        graphlets_count = 34
         
-    # initialize data_mat
+    # initialize feature matrix
     graphs_count = len(graph_meta_data_of_num)
-    data_mat = np.zeros((graphs_count, graphlets_count), dtype = np.float64)
+    feature_mat = np.zeros((graphs_count, graphlets_count), dtype = np.float64)
     
     
-    # iterate over all graphs in the dataset -------------------------------------
+    #=============================================================================
+    # extract features iterating over all graphs in the dataset
+    #=============================================================================
     for i, (graph_num, (graph_path, class_lbl)) in\
                                     enumerate(graph_meta_data_of_num.iteritems()):
         G = pz.load(graph_path)
@@ -91,10 +94,10 @@ def extract_features(graph_meta_data_of_num, graphlet_size = 4):
             counts[:3] /= weights
             counts[3] = comb(nodes_count, 3) - sum(counts)
             
-            data_mat[i] = counts
+            feature_mat[i] = counts
         
         elif graphlet_size == 4:
-            # count 4-graphlets !!!
+            # count 4-graphlets
             # c[i] finally holds the number of the graphlet g_(i + 1),
             # i = 0,...,10 (see Figure !!)
             counts = np.zeros(11, np.float64)
@@ -120,11 +123,10 @@ def extract_features(graph_meta_data_of_num, graphlet_size = 4):
                     v2_nbrs = set(G.neighbors(v2))
                     
                     v1_nbrs_inter_v2_nbrs = v1_nbrs & v2_nbrs
-                    v1_nbrs_minus_v2_nbrs = v1_nbrs - v2_nbrs # diff1
-                    v2_nbrs_minus_v1_nbrs = v2_nbrs - v1_nbrs # diff2
+                    v1_nbrs_minus_v2_nbrs = v1_nbrs - v2_nbrs
+                    v2_nbrs_minus_v1_nbrs = v2_nbrs - v1_nbrs
                     
                     
-#                    for v3 in v1_nbrs_inter_v2_nbrs | {0}:
                     for v3 in v1_nbrs_inter_v2_nbrs:
                         v3_nbrs = set(G.neighbors(v3))
                         
@@ -193,14 +195,14 @@ def extract_features(graph_meta_data_of_num, graphlet_size = 4):
             
             counts[10] = comb(nodes_count, 4) - sum(counts[:10])           
             
-            data_mat[i] = counts
+            feature_mat[i] = counts
     
-    data_mat_of_param[None] = data_mat
+    feature_mat_of_param[None] = feature_mat
     
     extr_end_time = time.time()
     extr_time_of_param[None] = extr_end_time - extr_start_time
 
-    return data_mat_of_param, extr_time_of_param
+    return feature_mat_of_param, extr_time_of_param
 
 
 if __name__ == '__main__':
@@ -219,7 +221,7 @@ if __name__ == '__main__':
     
     
     start = time.time()
-    data_mat_of_param, extr_time_of_param =\
+    feature_mat_of_param, extr_time_of_param =\
                                        extract_features(graph_meta_data_of_num, 4)
     end = time.time()
     print end - start

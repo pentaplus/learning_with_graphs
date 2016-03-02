@@ -2,7 +2,7 @@
 Conversion of Flash control flow graphs to networkx graphs.
 """
 
-__author__ = "Benjamin Plock"
+__author__ = "Benjamin Plock <benjamin.plock@stud.uni-goettingen.de>"
 __date__ = "2016-02-28"
 
 

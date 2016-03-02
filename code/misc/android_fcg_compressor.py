@@ -7,7 +7,7 @@ identifiers and bit labels from strings to numbers and from
 numpy arrays to numbers, respectively.
 """
 
-__author__ = "Benjamin Plock"
+__author__ = "Benjamin Plock <benjamin.plock@stud.uni-goettingen.de>"
 __date__ = "2016-02-28"
 
 

@@ -6,7 +6,7 @@ provides the function extract_features for the corresponding feature
 extraction.
 """
 
-__author__ = "Benjamin Plock"
+__author__ = "Benjamin Plock <benjamin.plock@stud.uni-goettingen.de>"
 __date__ = "2016-02-28"
 
 
@@ -33,7 +33,7 @@ from misc import utils, pz
 def extract_features(graph_meta_data_of_num, h_range):
     extr_start_time = time.time()
     
-    data_mat_of_param = {}
+    feature_mat_of_param = {}
     extr_time_of_param = {}
     mat_constr_times = []
     
@@ -64,7 +64,7 @@ def extract_features(graph_meta_data_of_num, h_range):
     compr_func = {}
     
     # next_compr_lbl is used for assigning new compressed labels to the nodes
-    # These build the features (= columns in data_mat) used for the explicit
+    # These build the features (= columns in feature_mat) used for the explicit
     # graph embedding
     next_compr_lbl = 0
     
@@ -163,10 +163,10 @@ def extract_features(graph_meta_data_of_num, h_range):
         # list containing the corresponding features counts of all graphs
         feature_counts = []
         
-        # list indicating to which graph (= row in data_mat) the features in
+        # list indicating to which graph (= row in feature_mat) the features in
         # the list features belong. The difference
         # feature_ptr[i+1] - feature_ptr[i] equals the number of specified entries
-        # for row i. Consequently, the number of rows of data_mat equals
+        # for row i. Consequently, the number of rows of feature_mat equals
         # len(feature_ptr) - 1.
         feature_ptr = [0]
         
@@ -177,17 +177,17 @@ def extract_features(graph_meta_data_of_num, h_range):
             feature_ptr.append(feature_ptr[-1] + len(features_dict[graph_num]))
         
         
-        # data_mat is of type csr_matrix and has the following form:
+        # feature_mat is of type csr_matrix and has the following form:
         # [feature vector of the first graph,
         #  feature vector of the second graph,
         #                .
         #                .
         #  feature vector of the last graph]
-        data_mat = csr_matrix((np.array(feature_counts), np.array(features),
-                               np.array(feature_ptr)),
-                               shape = (len(graph_meta_data_of_num),
-                               len(compr_func)), dtype = np.float64)
-        data_mat_of_param[h] = data_mat
+        feature_mat = csr_matrix((np.array(feature_counts), np.array(features),
+                                  np.array(feature_ptr)),
+                                  shape = (len(graph_meta_data_of_num),
+                                  len(compr_func)), dtype = np.float64)
+        feature_mat_of_param[h] = feature_mat
         
         extr_end_time = time.time()
         extr_time = extr_end_time - extr_start_time - sum(mat_constr_times)
@@ -204,7 +204,7 @@ def extract_features(graph_meta_data_of_num, h_range):
             next_upd_lbls_dict = defaultdict(dict)
     
    
-    return data_mat_of_param, extr_time_of_param
+    return feature_mat_of_param, extr_time_of_param
 
 
 
@@ -228,26 +228,27 @@ if __name__ == '__main__':
     
     h_range = range(6)
     
-    data_mat_of_param, extr_time_of_param =\
+    feature_mat_of_param, extr_time_of_param =\
                                  extract_features(graph_meta_data_of_num, h_range)
                                  
-    data_mat = data_mat_of_param[1]                                                                
+    feature_mat = feature_mat_of_param[1]                                                                
                                                                    
 
 
     clf = SVC(kernel = 'precomputed')
 
-    # kernel_mat == data_mat.dot(data_mat.T)
-    kernel_mat = pairwise_kernels(data_mat)
+    # kernel_mat == feature_mat.dot(feature_mat.T)
+    kernel_mat = pairwise_kernels(feature_mat)
     
     
-#    clf.fit(pairwise_kernels(data_mat), class_lbls)
-#    clf.fit(data_mat.dot(data_mat.T), class_lbls)
+#    clf.fit(pairwise_kernels(feature_mat), class_lbls)
+#    clf.fit(feature_mat.dot(feature_mat.T), class_lbls)
     
 #    cv = KFold(len(class_lbls), 10, shuffle = True)    
     
-#    cross_val_score(clf, pairwise_kernels(data_mat), class_lbls, cv = 10)
-#    scores = cross_val_score(clf, data_mat.dot(data_mat.T), class_lbls, cv = cv)
+#    cross_val_score(clf, pairwise_kernels(feature_mat), class_lbls, cv = 10)
+#    scores = cross_val_score(clf, feature_mat.dot(feature_mat.T),
+#                             class_lbls, cv = cv)
 #    print np.average(scores)
     
     

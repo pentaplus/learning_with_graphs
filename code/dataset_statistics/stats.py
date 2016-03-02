@@ -2,7 +2,7 @@
 Statistics of datasets.
 """
 
-__author__ = "Benjamin Plock"
+__author__ = "Benjamin Plock <benjamin.plock@stud.uni-goettingen.de>"
 __date__ = "2016-02-28"
 
 
@@ -23,20 +23,19 @@ sys.path.append(join(SCRIPT_FOLDER_PATH, '..'))
 from misc import dataset_loader, pz
 
 
-
 t0 = time.time()
-
 
 DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
 
 #DATASET = 'ANDROID FCG' # !! change file names from hashes to numbers
-#DATASET = 'FLASH CFG' # !! change file names from hashes to numbers
 #DATASET = 'DD'
-DATASET = 'ENZYMES'
+#DATASET = 'ENZYMES'
 #DATASET = 'MUTAG'
 #DATASET = 'NCI1'
 #DATASET = 'NCI109'
 #DATASET = 'PTC(MR)'
+#DATASET = 'FLASH CFG'
+DATASET = 'ANDROID FCG PARTIAL'
 
 
 graph_meta_data_of_num, class_lbls =\
@@ -54,6 +53,7 @@ degrees = []
 min_deg = float("inf")
 max_deg = 0
 number_of_isolated_nodes = 0
+
 for graph_path, class_num in graph_meta_data_of_num.itervalues():
     G = pz.load(graph_path)
     node_counts.append(G.number_of_nodes())
@@ -93,7 +93,6 @@ print 'avg_deg: %.3f' % avg_deg
 print 'max_deg:', max_deg
 print 'min_deg:', min_deg
 print 'isolated:', number_of_isolated_nodes, '\n'
-
 
 t1 = time.time()
 total = t1 - t0

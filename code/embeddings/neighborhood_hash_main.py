@@ -5,7 +5,7 @@ This module provides the function extract_features for the corresponding
 feature extraction.
 """
 
-__author__ = "Benjamin Plock"
+__author__ = "Benjamin Plock <benjamin.plock@stud.uni-goettingen.de>"
 __date__ = "2016-02-28"
 
 
@@ -31,98 +31,11 @@ sys.path.append(join(SCRIPT_FOLDER_PATH, '..'))
 from misc import utils, pz
 
 
-# test section -------------------------------------------------------------------
-
-#import timeit
-#
-#setup1 = """
-#from os import urandom
-#from numpy import bitwise_xor, frombuffer, uint64
-#l = []
-#for i in xrange(1000):
-#    l.append(frombuffer(urandom(8), dtype = uint64))
-#"""
-#
-#code1 = """
-#s = l[0]
-#for i in xrange(1, 1000):
-#    s = bitwise_xor(s, l[i])
-#"""
-#
-#setup2 = """
-#from random import randint
-#l = []
-#for i in xrange(1000):
-#    l.append(randint(0, 18446744073709551615))
-#"""
-#
-#code2 = """
-#s = l[0]
-#for i in xrange(1, 1000):
-#    s = s ^ i
-#"""
-#
-#2**64-1 - 18446744073709551615
-#%timeit randint(0, 18446744073709551615)
-#
-#%timeit frombuffer(urandom(8), dtype = uint64)
-#
-#N = 1
-#min(timeit.repeat(code1, setup1, repeat = 3, number = N))/N
-#min(timeit.repeat(code2, setup2, repeat = 3, number = N))/N
-#
-#
-#np.frombuffer(urandom(8), dtype = uint64)
-#
-#l = []
-#for i in xrange(1000):
-#    l.append(np.frombuffer(urandom(8), dtype = uint64))
-#
-#s = l[0]
-#for i in xrange(1, 82):
-#    s = bitwise_xor(s, l[i])
-#    
-#
-#for x in xrange(1000):
-#    x = np.frombuffer(urandom(8), dtype = uint64)
-    
-# http://www.falatic.com/index.php/108/python-and-bitwise-rotation
-    
-# max bits > 0 == width of the value in bits (e.g., int_16 -> 16)
- 
-# Rotate left: 0b1001 --> 0b0011
-#rol = lambda val, r_bits, max_bits: \
-#    (val << r_bits % max_bits) & (2**max_bits - 1) | \
-#    ((val & (2**max_bits - 1)) >> (max_bits - (r_bits % max_bits)))
-# 
-## Rotate right: 0b1001 --> 0b1100
-#ror = lambda val, r_bits, max_bits: \
-#    ((val & (2**max_bits - 1)) >> r_bits % max_bits) | \
-#    (val << (max_bits - (r_bits%max_bits)) & (2**max_bits - 1))
-# 
-#max_bits = 64  # For fun, try 2, 17 or other arbitrary (positive!) values
-# 
-#print()
-#for i in xrange(0, 16):
-#    value = 0xC000
-#    newval = rol(value, i, max_bits)
-#    print "{0:016b} {1:016b} {2:016b}".format(value, i, newval)
-# 
-#print()
-#for i in xrange(0, 16):
-#    value = 0x0003
-#    newval = ror(value, i, max_bits)
-#    print "{0:064b} {1:04b} {2:064b}".format(value, i, newval)
-
-#---------------------------------------------------------------------------------
-
-
-
 def extract_features(graph_meta_data_of_num, h_range, count_sensitive = True,
                      all_iter = False):
     extr_start_time = time.time()
     
-    data_mat_of_param = {}
+    feature_mat_of_param = {}
     extr_time_of_param = {}
     mat_constr_times = []
     
@@ -276,18 +189,19 @@ def extract_features(graph_meta_data_of_num, h_range, count_sensitive = True,
         # list containing the corresponding features counts of all graphs
         feature_counts = []
 		
-        # list indicating to which graph (= row in data_mat) the features in the
-        # list features belong. The difference feature_ptr[i+1] - feature_ptr[i]
-        # equals the number of specified entries for row i. Consequently, the
-        # number of rows of data_mat equals len(feature_ptr) - 1.
+        # list indicating to which graph (= row in feature_mat) the features in
+        # the list features belong. The difference
+        # feature_ptr[i+1] - feature_ptr[i] equals the number of specified entries
+        # for row i. Consequently, the number of rows of feature_mat equals
+        # len(feature_ptr) - 1.
         feature_ptr = [0]
 		
         # keys are the bit labels and the values are new compressed labels
         compr_func = {}
 		
         # next_compr_lbl is used for assigning new compressed labels to the nodes.
-        # These build the features (= columns in data_mat), which are used for the
-        # explicit graph graph embedding.
+        # These build the features (= columns in feature_mat), which are used for
+        # the explicit graph graph embedding.
         next_compr_lbl = 0
 		
 	
@@ -309,15 +223,15 @@ def extract_features(graph_meta_data_of_num, h_range, count_sensitive = True,
             feature_ptr.append(feature_ptr[-1] + len(features_dict[graph_num]))
 		  
 		  
-        # data_mat is of type csr_matrix and has the following form:
+        # feature_mat is of type csr_matrix and has the following form:
         # [feature vector of the first graph,
         #  feature vector of the second graph,
         #                .
         #                .
         #  feature vector of the last graph]
-        data_mat = csr_matrix((np.array(feature_counts), np.array(features),
-                               np.array(feature_ptr)), dtype = np.float64)
-        data_mat_of_param[h] = data_mat
+        feature_mat = csr_matrix((np.array(feature_counts), np.array(features),
+                                  np.array(feature_ptr)), dtype = np.float64)
+        feature_mat_of_param[h] = feature_mat
         
         
         extr_end_time = time.time()
@@ -340,7 +254,7 @@ def extract_features(graph_meta_data_of_num, h_range, count_sensitive = True,
                 feature_counts_dict = defaultdict(list)
                 index_of_lbl_dict = defaultdict(dict)
 
-    return data_mat_of_param, extr_time_of_param
+    return feature_mat_of_param, extr_time_of_param
     
 
 # !!
@@ -368,11 +282,11 @@ if __name__ == '__main__':
     
     h_range = range(6)
     start = time.time()
-    data_mat_of_param, extr_time_of_param =\
+    feature_mat_of_param, extr_time_of_param =\
                          extract_features(graph_meta_data_of_num, h_range,
                                           count_sensitive = True, all_iter = True)
     end = time.time()
     print 'h_range = %s: %.3f' % (h_range, end - start)
     
-    print '%r' % data_mat_of_param
+    print '%r' % feature_mat_of_param
     

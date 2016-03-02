@@ -1,9 +1,10 @@
 LIBRARY: LIBLINEAR
 EMBEDDING TYPE: EXPLICIT
-SEARCH_OPT_SVM_PARAM_IN_PAR: True
+SEARCH_OPT_SVM_PARAM_IN_PAR: TRUE
 NUM_ITER: 10
 NUM_OUTER_FOLDS: 10
 NUM_INNER_FOLDS: 2
+MAX_ITER_SD: UNLIMITED
 ------------------------------------------
 
 Graph loading and feature exraction took 42.2 seconds.

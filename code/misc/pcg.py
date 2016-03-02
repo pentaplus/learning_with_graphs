@@ -1,8 +1,22 @@
+"""
+Preconditioned Conjugate Gradients Method.
+
+This module provides the function pcg, which is a shortened translation
+of MATLAB's function pcg, since it only features the signatures
+pcg(A, b), pcg(A, b, tol) and pcg(A, b, tol, maxit).
+See the documentation for MATLAB's function pcg:
+http://de.mathworks.com/help/matlab/ref/pcg.html
+"""
+
 from __future__ import division
+
+__author__ = "Benjamin Plock <benjamin.plock@stud.uni-goettingen.de>"
+__date__ = "2016-02-28"
 
 import numpy as np
 
 from numpy.linalg import norm
+
 
 def pcg(afun, b, tol = 1e-6, maxit = 20):
 #    nargout = kwargs["nargout"] if kwargs else None

@@ -6,7 +6,7 @@ specified dataset. This data comprises the absolute paths of the graph
 files and their class labels.
 """
 
-__author__ = "Benjamin Plock"
+__author__ = "Benjamin Plock <benjamin.plock@stud.uni-goettingen.de>"
 __date__ = "2016-02-28"
 
 

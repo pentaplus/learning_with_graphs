@@ -2,22 +2,25 @@
 Random walk kernel.
 
 This module provides the function compute_kernel_mat for the
-computation of the corresponding kernel matrix.
+computation of the corresponding kernel matrix. It is a translation of
+the MATLAB file RWkernel.m by Karsten Borgwardt and Nino Shervashidze,
+which can be downloaded from the following website:
+http://mlcb.is.tuebingen.mpg.de/Mitarbeiter/Nino/Graphkernels/
 """
 
-__author__ = "Benjamin Plock"
+__author__ = "Benjamin Plock <benjamin.plock@stud.uni-goettingen.de>"
 __credits__ = ["Karsten Borgwardt", "Nino Shervashidze"]
 __date__ = "2016-02-28"
 
 
 import inspect
 import networkx as nx
+import math
 import numpy as np
 import sys
 import time
 
 from os.path import abspath, dirname, join
-from scipy.sparse import csr_matrix, issparse
 
 
 # determine script path
@@ -27,11 +30,26 @@ SCRIPT_FOLDER_PATH = dirname(abspath(SCRIPT_PATH))
 # of the script's parent directory
 sys.path.append(join(SCRIPT_FOLDER_PATH, '..'))
 
-from misc import utils, pcg, pz
+from misc import pcg, pz
 
 
-def get_lamda(num_graphs):
-    return 
+def get_lambda(graph_meta_data_of_num):
+    """
+    Determine the parameter lamda in depende of the dataset size.
+    
+    The parameter lamda is determined according to the rule of thumb
+    to take the largest power of 10, which is smaller than 1/d^2,
+    d being the largest degree in the dataset.
+    """
+    max_deg = 0
+    
+    for graph_path, class_num in graph_meta_data_of_num.itervalues():
+        G = pz.load(graph_path)
+            
+        if max(G.degree().values()) > max_deg:
+            max_deg = max(G.degree().values())
+    
+    return math.floor(math.log10(1./max_deg**2))
 
 def vec(M):
     return M.reshape((M.shape[0] * M.shape[1], 1))
@@ -63,8 +81,7 @@ def compute_kernel_mat(graph_meta_data_of_num, param_range = [None]):
     
     kernel_mat = np.zeros((num_graphs, num_graphs), dtype = np.float64)
     
-    lambda_ = -2
-    lamda = get_lamda(num_graphs)
+    lambda_ = get_lambda(graph_meta_data_of_num)
 
     #=============================================================================
     # 1) precompute the (sparse) adjacency matrices of the graphs in the dataset
@@ -97,10 +114,7 @@ def compute_kernel_mat(graph_meta_data_of_num, param_range = [None]):
             # !!
 #            sys.modules['__main__'].A_j = A_j
             
-            # apply preconditioned conjugate gradient method (the pcg.pcg
-            # function is a translation of the MATLAB pcg to Python,
-            # see http://de.mathworks.com/help/matlab/ref/pcg.html for further
-            # details)
+            # apply preconditioned conjugate gradient method
             b = np.ones((A_i.shape[0] * A_j.shape[0], 1))
             
             x, flag, relres, iter_, resvec =\
@@ -169,6 +183,7 @@ if __name__ == '__main__':
     DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
     dataset = 'MUTAG'
 #    dataset = 'PTC(MR)'
+#    dataset = 'FLASH CFG'
     
     graph_meta_data_of_num, class_lbls =\
       dataset_loader.get_graph_meta_data_of_num_dict_and_class_lbls(dataset,
@@ -187,5 +202,12 @@ if __name__ == '__main__':
 
     
     
-    cross_validation.cross_val(clf, kernel_mat, class_lbls, 10, 10,
-                               open('bla.txt', 'w'))   
+#    cross_validation.cross_val(clf, kernel_mat, class_lbls, 10, 10,
+#                               open('bla.txt', 'w')) 
+    
+
+    import scipy.io as spio
+    mat = spio.loadmat('data.mat')
+    type(mat)
+    mat.keys()
+    K_mat = mat['ans']

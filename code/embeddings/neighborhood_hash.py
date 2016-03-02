@@ -6,7 +6,7 @@ provides the function extract_features for the corresponding feature
 extraction.
 """
 
-__author__ = "Benjamin Plock"
+__author__ = "Benjamin Plock <benjamin.plock@stud.uni-goettingen.de>"
 __date__ = "2016-02-28"
 
 
@@ -47,11 +47,11 @@ if __name__ == '__main__':
     
     h_range = range(6)
     start = time.time()
-    data_mat_of_param, extr_time_of_param =\
+    feature_mat_of_param, extr_time_of_param =\
                                  extract_features(graph_meta_data_of_num, h_range)
     
     end = time.time()
     print 'h_range = %s: %.3f' % (h_range, end - start)
     
-    print '%r' % data_mat_of_param
+    print '%r' % feature_mat_of_param
         
