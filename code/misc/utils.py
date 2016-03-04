@@ -59,7 +59,6 @@ def fatal_error(msg, fid = None):
     sys.exit(1)
     
 
-
 # !!   
 def get_adjacency_matrix(G):
     return (nx.to_numpy_matrix(G) != 0).astype(int)

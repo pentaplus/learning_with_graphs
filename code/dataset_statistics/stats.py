@@ -54,7 +54,7 @@ min_deg = float("inf")
 max_deg = 0
 number_of_isolated_nodes = 0
 
-for graph_path, class_num in graph_meta_data_of_num.itervalues():
+for graph_path, class_lbl in graph_meta_data_of_num.itervalues():
     G = pz.load(graph_path)
     node_counts.append(G.number_of_nodes())
     edge_counts.append(G.number_of_edges())
@@ -81,8 +81,8 @@ print 'dataset:', DATASET
 print '# graphs:', len(graph_meta_data_of_num)
 print '# classes:', len(classes)
 
-for class_num in graphs_of_class.iterkeys():
-    print 'class %d: %d' % (class_num, len(graphs_of_class[class_num]))
+for class_lbl in graphs_of_class.iterkeys():
+    print 'class %d: %d' % (class_lbl, len(graphs_of_class[class_lbl]))
 
 print 'avg_v: %.2f' % avg_v
 print 'avg_e: %.2f' % avg_e

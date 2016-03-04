@@ -1,9 +1,8 @@
 """
 Weisfeiler-Lehman subtree kernel.
 
-This module is a wrapper around the module graphlet_kernel_main.py. It
-provides the function extract_features for the corresponding feature
-extraction.
+This module provides the function extract_features for the
+corresponding feature extraction.
 """
 
 __author__ = "Benjamin Plock <benjamin.plock@stud.uni-goettingen.de>"

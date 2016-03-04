@@ -33,23 +33,23 @@ sys.path.append(join(SCRIPT_FOLDER_PATH, '..'))
 from misc import pcg, pz
 
 
-def get_lambda(graph_meta_data_of_num):
-    """
-    Determine the parameter lamda in depende of the dataset size.
-    
-    The parameter lamda is determined according to the rule of thumb
-    to take the largest power of 10, which is smaller than 1/d^2,
-    d being the largest degree in the dataset.
-    """
-    max_deg = 0
-    
-    for graph_path, class_num in graph_meta_data_of_num.itervalues():
-        G = pz.load(graph_path)
-            
-        if max(G.degree().values()) > max_deg:
-            max_deg = max(G.degree().values())
-    
-    return math.floor(math.log10(1./max_deg**2))
+#def get_lambda(graph_meta_data_of_num):
+#    """
+#    Determine the parameter lamda in depende of the dataset size.
+#    
+#    The parameter lamda is determined according to the rule of thumb
+#    to take the largest power of 10, which is smaller than 1/d^2,
+#    d being the largest degree in the dataset.
+#    """
+#    max_deg = 0
+#    
+#    for graph_path, class_num in graph_meta_data_of_num.itervalues():
+#        G = pz.load(graph_path)
+#            
+#        if max(G.degree().values()) > max_deg:
+#            max_deg = max(G.degree().values())
+#    
+#    return math.floor(math.log10(1./max_deg**2))
 
 def vec(M):
     return M.reshape((M.shape[0] * M.shape[1], 1))
@@ -77,27 +77,31 @@ def compute_kernel_mat(graph_meta_data_of_num, param_range = [None]):
     
     
     num_graphs = len(graph_meta_data_of_num)
-    graph_meta_data = graph_meta_data_of_num.values()
+#    graph_meta_data = graph_meta_data_of_num.values()
     
     kernel_mat = np.zeros((num_graphs, num_graphs), dtype = np.float64)
     
-    lambda_ = get_lambda(graph_meta_data_of_num)
+    # decaying factor lambda_ for down_weighting longer walks
+#    lambda_ = get_lambda(graph_meta_data_of_num)
+    LAMBDA = -4
 
     #=============================================================================
     # 1) precompute the (sparse) adjacency matrices of the graphs in the dataset
     #=============================================================================
     adj_mats = []
     
-    for i in xrange(num_graphs):
+#    for i in xrange(num_graphs):
+    for i, (graph_path, class_lbl) in \
+            enumerate(graph_meta_data_of_num.itervalues()):
+                
         # !!
 #        if i % 10 == 0:
 #            print i
         
         # load graph
-        G = pz.load(graph_meta_data[i][0])
+        G = pz.load(graph_path)
         # determine its adjacency matrix
         A = nx.adj_matrix(G, weight = None)
-#        A = utils.get_adjacency_matrix(G)
         
         adj_mats.append(A)
         
@@ -117,8 +121,8 @@ def compute_kernel_mat(graph_meta_data_of_num, param_range = [None]):
             # apply preconditioned conjugate gradient method
             b = np.ones((A_i.shape[0] * A_j.shape[0], 1))
             
-            x, flag, relres, iter_, resvec =\
-                   pcg.pcg(lambda x: smtfilter(x, A_i, A_j, lambda_), b, 1e-6, 20)
+            x, flag, relres, iter_, resvec \
+                = pcg.pcg(lambda x: smtfilter(x, A_i, A_j, LAMBDA), b, 1e-6, 20)
                 
             
             kernel_mat[i,j] = np.sum(x)
@@ -138,8 +142,8 @@ def compute_kernel_mat(graph_meta_data_of_num, param_range = [None]):
     kernel_mat_of_param[None] = kernel_mat
     
     kernel_mat_comp_end_time = time.time()
-    kernel_mat_comp_time_of_param[None] =\
-                             kernel_mat_comp_end_time - kernel_mat_comp_start_time
+    kernel_mat_comp_time_of_param[None] = kernel_mat_comp_end_time \
+                                          - kernel_mat_comp_start_time
 
     return kernel_mat_of_param, kernel_mat_comp_time_of_param
 

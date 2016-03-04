@@ -63,9 +63,10 @@ def extract_features(graph_meta_data_of_num, graphlet_size = 4):
     #=============================================================================
     # extract features iterating over all graphs in the dataset
     #=============================================================================
-    for i, (graph_num, (graph_path, class_lbl)) in \
-            enumerate(graph_meta_data_of_num.iteritems()):
+    for i, (graph_path, class_lbl) in \
+            enumerate(graph_meta_data_of_num.itervalues()):
                 
+        # load graph        
         G = pz.load(graph_path)
         
         nodes_count = len(G.node)

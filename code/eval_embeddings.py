@@ -84,6 +84,7 @@ GRAPHLET_KERNEL_3 = 'graphlet_kernel_3'
 GRAPHLET_KERNEL_4 = 'graphlet_kernel_4'
 LABEL_COUNTER = 'label_counter'
 RANDOM_WALK_KERNEL = 'random_walk_kernel'
+EIGEN_KERNEL = 'eigen_kernel'
 
 # datasets
 MUTAG = 'MUTAG'
@@ -112,7 +113,8 @@ FLASH_CFG = 'FLASH CFG'
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL_3]
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL_4]
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL_3, GRAPHLET_KERNEL_4]
-EMBEDDING_NAMES = [RANDOM_WALK_KERNEL]
+#EMBEDDING_NAMES = [RANDOM_WALK_KERNEL]
+EMBEDDING_NAMES = [EIGEN_KERNEL]
 
 
 # keys are indices of the list EMBEDDING_NAMES, values are the respective
@@ -124,7 +126,8 @@ EMBEDDING_PARAM_RANGES = {
                           COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER: range(6),
                           GRAPHLET_KERNEL_3: [None],
                           GRAPHLET_KERNEL_4: [None],
-                          RANDOM_WALK_KERNEL: [None]
+                          RANDOM_WALK_KERNEL: [None],
+                          EIGEN_KERNEL: [None]
                          }
 
 #DATASET = ANDROID_FCG_PARTIAL # !! increase number of samples
@@ -203,15 +206,14 @@ def compute_kernel_matrix(graph_meta_data_of_num, embedding, param_range,
 
     kernel_mat_comp_start_time = time.time()
 
-#    kernel_mat_of_param, kernel_mat_comp_time_of_param =\
-#                             embedding.compute_kernel_mat(graph_meta_data_of_num,
-#                                                          param_range)
+    kernel_mat_of_param, kernel_mat_comp_time_of_param \
+        = embedding.compute_kernel_mat(graph_meta_data_of_num, param_range)
 #                                                          
 #    import sys
 #    sys.modules['__main__'].F = kernel_mat_of_param[None]
     
-    kernel_mat_of_param = {None: F}
-    kernel_mat_comp_time_of_param = {None: 0}
+#    kernel_mat_of_param = {None: F}
+#    kernel_mat_comp_time_of_param = {None: 0}
 
     kernel_mat_comp_end_time = time.time()
     kernel_mat_comp_time = kernel_mat_comp_end_time - kernel_mat_comp_start_time
@@ -296,7 +298,7 @@ def init_grid_clf(embedding_is_implicit, dataset_is_large, clf_max_iter,
     total. !! further details
     """
     if dataset_is_large:
-        svm_param_grid = {'C': (0.01, 0.1, 1)}
+        svm_param_grid = {'C': [0.01, 0.1, 1]}
         num_jobs = 3
         if embedding_is_implicit:
             # library LIBSVM is used
@@ -320,7 +322,7 @@ def init_grid_clf(embedding_is_implicit, dataset_is_large, clf_max_iter,
         else:
             clf = svm.SVC(max_iter = clf_max_iter,
                           decision_function_shape = 'ovr')
-#            svm_param_grid = {'kernel': ('linear', 'rbf'), 'C': (0.1, 10)}
+#            svm_param_grid = {'kernel': ('linear', 'rbf'), 'C': [0.1, 10]}
             svm_param_grid = {'kernel': ('linear',), 'C': np.logspace(-2, 3, 4)}
     
     if SEARCH_OPT_SVM_PARAM_IN_PAR:
