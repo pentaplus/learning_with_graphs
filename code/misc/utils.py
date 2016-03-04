@@ -35,8 +35,8 @@ def check_for_pz_folder():
         shutil.rmtree('pz') # !!
         return        
         
-        user_input = raw_input(('The directory \'pz\' already exists. '
-                                'Do you want to delete it (y/n)? ')).strip()
+        user_input = raw_input('The directory \'pz\' already exists. '
+                               'Do you want to delete it (y/n)? ').strip()
         while True:
             if user_input == 'y':
                 shutil.rmtree('pz')
@@ -45,9 +45,9 @@ def check_for_pz_folder():
             if user_input == 'n':
                 sys.exit(1)
             
-            user_input = raw_input(('Invalid input! The directory \'pz\' already '
-                                    'exists. Do you want to delete it '
-                                    '(y/n)? ')).strip()
+            user_input = raw_input('Invalid input! The directory \'pz\' already '
+                                   'exists. Do you want to delete it '
+                                   '(y/n)? ').strip()
         
 
 def fatal_error(msg, fid = None):

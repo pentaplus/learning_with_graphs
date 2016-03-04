@@ -7,6 +7,7 @@ countall3graphlets.m and countall4graphlets.m by Nino Shervashidze,
 which can be downloaded from the following website:
 http://mlcb.is.tuebingen.mpg.de/Mitarbeiter/Nino/Graphkernels/
 """
+from __future__ import division
 
 __author__ = "Benjamin Plock <benjamin.plock@stud.uni-goettingen.de>"
 __credits__ = ["Nino Shervashidze"]
@@ -62,8 +63,9 @@ def extract_features(graph_meta_data_of_num, graphlet_size = 4):
     #=============================================================================
     # extract features iterating over all graphs in the dataset
     #=============================================================================
-    for i, (graph_num, (graph_path, class_lbl)) in\
-                                    enumerate(graph_meta_data_of_num.iteritems()):
+    for i, (graph_num, (graph_path, class_lbl)) in \
+            enumerate(graph_meta_data_of_num.iteritems()):
+                
         G = pz.load(graph_path)
         
         nodes_count = len(G.node)
@@ -102,8 +104,8 @@ def extract_features(graph_meta_data_of_num, graphlet_size = 4):
             # i = 0,...,10 (see Figure !!)
             counts = np.zeros(11, np.float64)
             
-            weights = np.array([1/12., 1/10., 1/8., 1/6., 1/8., 1/6., 1/6., 1/4.,
-                                1/4., 1/2., 0.], np.float64)
+            weights = np.array([1/12, 1/10, 1/8, 1/6, 1/8, 1/6, 1/6, 1/4, 1/4,
+                                1/2, 0], np.float64)
             
             # each undirected edge is only counted once
             edges_count = G.number_of_edges()
@@ -117,7 +119,7 @@ def extract_features(graph_meta_data_of_num, graphlet_size = 4):
                 v1_nbrs = set(G.neighbors(v1))
                 
                 for v2 in v1_nbrs:
-                    K = 0.                    
+                    K = 0                    
                     tmp_counts = np.zeros(11, np.float64)
                     
                     v2_nbrs = set(G.neighbors(v2))
@@ -132,64 +134,64 @@ def extract_features(graph_meta_data_of_num, graphlet_size = 4):
                         
                         cards = calc_cards(v1_nbrs, v2_nbrs, v3_nbrs)
                         
-                        tmp_counts[0] += 1/2.*cards[6]
-                        tmp_counts[1] += 1/2.*(cards[3] - 1)
-                        tmp_counts[1] += 1/2.*(cards[4] - 1)
-                        tmp_counts[1] += 1/2.*(cards[5] - 1)
-                        tmp_counts[2] += 1/2.*cards[0]
-                        tmp_counts[2] += 1/2.*cards[1]
+                        tmp_counts[0] += 1/2*cards[6]
+                        tmp_counts[1] += 1/2*(cards[3] - 1)
+                        tmp_counts[1] += 1/2*(cards[4] - 1)
+                        tmp_counts[1] += 1/2*(cards[5] - 1)
+                        tmp_counts[2] += 1/2*cards[0]
+                        tmp_counts[2] += 1/2*cards[1]
                         tmp_counts[2] += cards[2]
                         tmp_counts[6] += nodes_count - sum(cards)
                         
-                        K += 1/2.*cards[6] + 1/2.*(cards[4] - 1) +\
-                             1/2.*(cards[5] - 1) + cards[2]
+                        K += 1/2*cards[6] + 1/2*(cards[4] - 1) \
+                             + 1/2*(cards[5] - 1) + cards[2]
 
                     for v3 in v1_nbrs_minus_v2_nbrs - {v2}:
                         v3_nbrs = set(G.neighbors(v3))
                         
                         cards = calc_cards(v1_nbrs, v2_nbrs, v3_nbrs)
 
-                        tmp_counts[1] += 1/2.*cards[6]
-                        tmp_counts[2] += 1/2.*cards[3]
-                        tmp_counts[2] += 1/2.*cards[4]
-                        tmp_counts[4] += 1/2.*(cards[5] - 1)
-                        tmp_counts[3] += 1/2.*(cards[0] - 2)
-                        tmp_counts[5] += 1/2.*cards[1]
+                        tmp_counts[1] += 1/2*cards[6]
+                        tmp_counts[2] += 1/2*cards[3]
+                        tmp_counts[2] += 1/2*cards[4]
+                        tmp_counts[4] += 1/2*(cards[5] - 1)
+                        tmp_counts[3] += 1/2*(cards[0] - 2)
+                        tmp_counts[5] += 1/2*cards[1]
                         tmp_counts[5] += cards[2]
                         tmp_counts[7] += nodes_count - sum(cards)
 
-                        K += 1/2.*cards[6] + 1/2.*cards[4] +\
-                             1/2.*(cards[5] - 1) + cards[2]
+                        K += 1/2*cards[6] + 1/2*cards[4] \
+                             + 1/2*(cards[5] - 1) + cards[2]
                     
                     for v3 in v2_nbrs_minus_v1_nbrs - {v1}:
                         v3_nbrs = set(G.neighbors(v3))
                         
                         cards = calc_cards(v1_nbrs, v2_nbrs, v3_nbrs)
                         
-                        tmp_counts[1] += 1/2.*cards[6]
-                        tmp_counts[2] += 1/2.*cards[3]
-                        tmp_counts[4] += 1/2.*(cards[4] - 1)
-                        tmp_counts[2] += 1/2.*cards[5]
-                        tmp_counts[5] += 1/2.*cards[0]
-                        tmp_counts[3] += 1/2.*(cards[1] - 2)
+                        tmp_counts[1] += 1/2*cards[6]
+                        tmp_counts[2] += 1/2*cards[3]
+                        tmp_counts[4] += 1/2*(cards[4] - 1)
+                        tmp_counts[2] += 1/2*cards[5]
+                        tmp_counts[5] += 1/2*cards[0]
+                        tmp_counts[3] += 1/2*(cards[1] - 2)
                         tmp_counts[5] += cards[2]
                         tmp_counts[7] += nodes_count - sum(cards)
                         
-                        K += 1/2.*cards[6] + 1/2.*(cards[4] - 1) +\
-                             1/2.*cards[5] + cards[2]
+                        K += 1/2*cards[6] + 1/2*(cards[4] - 1) \
+                             + 1/2*cards[5] + cards[2]
                              
-                    tmp_counts[8] += edges_count + 1 - len(v1_nbrs) -\
-                                     len(v2_nbrs) - K
-                    tmp_counts[9] += (nodes_count -\
-                                      len(v1_nbrs_inter_v2_nbrs) -\
-                                      len(v1_nbrs_minus_v2_nbrs) -\
-                                      len(v2_nbrs_minus_v1_nbrs)) *\
-                                     (nodes_count -\
-                                      len(v1_nbrs_inter_v2_nbrs) -\
-                                      len(v1_nbrs_minus_v2_nbrs) -\
-                                      len(v2_nbrs_minus_v1_nbrs) - 1)/2. -\
-                                     (edges_count + 1 - len(v1_nbrs) -\
-                                      len(v2_nbrs) - K)
+                    tmp_counts[8] += edges_count + 1 - len(v1_nbrs) \
+                                     - len(v2_nbrs) - K
+                    tmp_counts[9] += (nodes_count \
+                                      - len(v1_nbrs_inter_v2_nbrs) \
+                                      - len(v1_nbrs_minus_v2_nbrs) \
+                                      - len(v2_nbrs_minus_v1_nbrs)) \
+                                     * (nodes_count \
+                                        - len(v1_nbrs_inter_v2_nbrs)
+                                        - len(v1_nbrs_minus_v2_nbrs)
+                                        - len(v2_nbrs_minus_v1_nbrs) - 1)/2 \
+                                     - (edges_count + 1 - len(v1_nbrs) \
+                                     - len(v2_nbrs) - K)
                     
                     counts += tmp_counts * weights
             
@@ -207,7 +209,7 @@ def extract_features(graph_meta_data_of_num, graphlet_size = 4):
 
 if __name__ == '__main__':
     
-    from misc import dataset_loader
+    from misc import dataset_loader as d_loader
     
     DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
     dataset = 'MUTAG'
@@ -215,14 +217,14 @@ if __name__ == '__main__':
 #    dataset = 'ENZYMES'
 #    dataset = 'NCI1'
 #    dataset = 'NCI109'
-    graph_meta_data_of_num, class_lbls =\
-      dataset_loader.get_graph_meta_data_of_num_dict_and_class_lbls(dataset,
+    graph_meta_data_of_num, class_lbls = \
+            d_loader.get_graph_meta_data_of_num_dict_and_class_lbls(dataset,
                                                                     DATASETS_PATH)
     
     
     start = time.time()
-    feature_mat_of_param, extr_time_of_param =\
-                                       extract_features(graph_meta_data_of_num, 4)
+    feature_mat_of_param, extr_time_of_param = \
+            extract_features(graph_meta_data_of_num, 4)
     end = time.time()
     print end - start
     

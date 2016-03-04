@@ -1,21 +1,12 @@
 LIBRARY: LIBSVM
 EMBEDDING TYPE: EXPLICIT
-SEARCH_OPT_SVM_PARAM_IN_PAR: False
-NUM_ITER: 1
+EXPER_NUM_ITER: 5
 NUM_OUTER_FOLDS: 10
+NUM_INNER_FOLDS: 3
+CLF_MAX_ITER: 1e+03
+SEARCH_OPT_SVM_PARAM_IN_PAR: FALSE
 ------------------------------------------
 
-Graph loading and feature exraction took 2.0 seconds.
-------------------------------------------
-Parameter: 0
+Graph loading and feature exraction took 1.6 seconds.
 
-Feature extraction took 0.6 seconds.
-
-LINEAR/RBF
-0.556 (+/-0.000) in 9.0 seconds
-------------------------------------------
-Parameter: 1
-
-Feature extraction took 0.9 seconds.
-
-LINEAR/RBF
+LINEAR/RBF (OPT_PARAM)

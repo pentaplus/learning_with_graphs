@@ -45,8 +45,8 @@ def get_folder_of_class_dict(classes_path):
     folder_of_class = {}
     dataset_classes = listdir(classes_path)
     for dataset_class in dataset_classes:
-        reg_exp = '(?<=class )-?\d+(?= \()' if '(' in dataset_class\
-                                                           else '(?<=class )-?\d+'
+        reg_exp = '(?<=class )-?\d+(?= \()' if '(' in dataset_class else \
+                  '(?<=class )-?\d+'
         m = re.search(reg_exp, dataset_class)
         if not m:
             continue
@@ -93,7 +93,7 @@ def get_graph_meta_data_of_num_dict_and_class_lbls(dataset, datasets_path):
             graph_meta_data_of_num[graph_num] = (graph_path, class_lbl)
             
     graph_meta_data_of_num =\
-                           OrderedDict(sorted(graph_meta_data_of_num.iteritems()))
+            OrderedDict(sorted(graph_meta_data_of_num.iteritems()))
                            
     class_lbls = get_class_lbls(graph_meta_data_of_num)
     
@@ -116,6 +116,6 @@ if __name__ == '__main__':
     dataset = 'PTC(MR)'
     
     graph_meta_data_of_num, class_lbls =\
-             get_graph_meta_data_of_num_dict_and_class_lbls(dataset, DATASET_PATH)
+            get_graph_meta_data_of_num_dict_and_class_lbls(dataset, DATASET_PATH)
                                                              
     G = pz.load(graph_meta_data_of_num[0][0])

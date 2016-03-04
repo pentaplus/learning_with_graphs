@@ -39,8 +39,8 @@ def bin_array_to_num(array):
 
 DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
 
-SOURCE_CLASSES_PATH = join(DATASETS_PATH, ('ANDROID FCG PARTIAL (2 classes, '
-                           'x directed graphs, unlabeled edges)'), 'pz')
+SOURCE_CLASSES_PATH = join(DATASETS_PATH, 'ANDROID FCG PARTIAL (2 classes, '
+                           'x directed graphs, unlabeled edges)', 'pz')
 
 utils.check_for_pz_folder()
                            
@@ -78,8 +78,8 @@ with open(join(SOURCE_CLASSES_PATH, 'hash_num_map.txt'), 'w') as f:
                 G_compr.node[node_num] = {'label': lbl_num}
                 
             # process edges
-            for node_id_tuple, edge_label_dict_of_node_neigh_id_tuple in\
-                                                       G_uncompr.edge.iteritems():
+            for node_id_tuple, edge_label_dict_of_node_neigh_id_tuple in \
+                    G_uncompr.edge.iteritems():
                 node_id = '\n'.join(node_id_tuple)
                 node_num = id_to_num_mapper.map_id_to_num(node_id)
                 

@@ -18,13 +18,13 @@ __date__ = "2016-02-28"
 #
 # at Ben-PC:
 # !!!
-# 1. document RWkernel, PCG, graphlet_kernel and get_lamda
-# 2. check kernel matrix of RWkernel for MUTAG
-# 3. implement get_lamda
-# 4. start to implement the Eigen kernel
-# 10. compress FCGs
-# 11. evaluate performance on ANDROID FCG PARTIAL
-# 12. gradually increment the number of samples of ANDROID FCG PARTIAL
+# 01. fix erroneous evaluation of implicit embeddings
+# 02. start to implement the Eigen kernel
+# 03. optimize coding style
+# 10. document RWkernel, PCG, graphlet_kernel and get_lamda
+# 20. compress FCGs
+# 21. evaluate performance on ANDROID FCG PARTIAL
+# 22. gradually increment the number of samples of ANDROID FCG PARTIAL
 # 
 # 
 # 100. make feature vectors for NHGK unary 
@@ -41,12 +41,12 @@ __date__ = "2016-02-28"
 # 12. test GRAPHLET_KERNEL for param = 3 (10 iterations, libsvm-liblinear)
 # 13. test GRAPHLET_KERNEL for param = 4 (10 iterations, libsvm-liblinear)
 # 14. test WL on ANDROID FCG PARTIAL (10 iterations, LIBSVM)
+# 20. test methods on ENZYMES with ovo
 # 
-# 
 
 
 
-
+import numpy as np
 import importlib
 import inspect
 import sys
@@ -109,10 +109,10 @@ FLASH_CFG = 'FLASH CFG'
 #EMBEDDING_NAMES = [COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
 #EMBEDDING_NAMES = [COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER]
 #EMBEDDING_NAMES = [NEIGHBORHOOD_HASH, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
-EMBEDDING_NAMES = [GRAPHLET_KERNEL_3]
+#EMBEDDING_NAMES = [GRAPHLET_KERNEL_3]
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL_4]
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL_3, GRAPHLET_KERNEL_4]
-#EMBEDDING_NAMES = [RANDOM_WALK_KERNEL]
+EMBEDDING_NAMES = [RANDOM_WALK_KERNEL]
 
 
 # keys are indices of the list EMBEDDING_NAMES, values are the respective
@@ -153,13 +153,13 @@ COMPARE_PARAMS = True
 SEARCH_OPT_SVM_PARAM_IN_PAR = False
 
 #EXPER_NUM_ITER = 10
-#EXPER_NUM_ITER = 5
+EXPER_NUM_ITER = 5
 #EXPER_NUM_ITER = 3
-EXPER_NUM_ITER = 2
 #EXPER_NUM_ITER = 1
 
 # maximum number of iterations for small datasets (having less than 1000 samples)
-CLF_MAX_ITER_SD = 1e7
+CLF_MAX_ITER_SD = 1e3
+#CLF_MAX_ITER_SD = 1e7
 #CLF_MAX_ITER_SD = -1
 
 # maximum number of iterations for large datasets (having more than 1000 samples)
@@ -203,9 +203,15 @@ def compute_kernel_matrix(graph_meta_data_of_num, embedding, param_range,
 
     kernel_mat_comp_start_time = time.time()
 
-    kernel_mat_of_param, kernel_mat_comp_time_of_param =\
-                             embedding.compute_kernel_mat(graph_meta_data_of_num,
-                                                          param_range)
+#    kernel_mat_of_param, kernel_mat_comp_time_of_param =\
+#                             embedding.compute_kernel_mat(graph_meta_data_of_num,
+#                                                          param_range)
+#                                                          
+#    import sys
+#    sys.modules['__main__'].F = kernel_mat_of_param[None]
+    
+    kernel_mat_of_param = {None: F}
+    kernel_mat_comp_time_of_param = {None: 0}
 
     kernel_mat_comp_end_time = time.time()
     kernel_mat_comp_time = kernel_mat_comp_end_time - kernel_mat_comp_start_time
@@ -306,11 +312,16 @@ def init_grid_clf(embedding_is_implicit, dataset_is_large, clf_max_iter,
         if embedding_is_implicit:
             clf = svm.SVC(kernel = 'precomputed', max_iter = clf_max_iter,
                           decision_function_shape = 'ovr')
-            svm_param_grid = {'C': (0.01, 0.1, 1, 10)}
+            svm_param_grid = {'C': np.logspace(-2, 3, 4)}
+            
+            # !!
+#            import numpy as np
+#            svm_param_grid = {'C': np.logspace(-8, 8, 17)}
         else:
             clf = svm.SVC(max_iter = clf_max_iter,
                           decision_function_shape = 'ovr')
-            svm_param_grid = {'kernel': ('linear', 'rbf'), 'C': (0.1, 10)}
+#            svm_param_grid = {'kernel': ('linear', 'rbf'), 'C': (0.1, 10)}
+            svm_param_grid = {'kernel': ('linear',), 'C': np.logspace(-2, 3, 4)}
     
     if SEARCH_OPT_SVM_PARAM_IN_PAR:
         grid_clf = GridSearchCV(clf, svm_param_grid, cv = num_inner_folds,
@@ -506,3 +517,6 @@ script_exec_time = script_exec_end_time - script_exec_start_time
 
 print '\nThe evaluation of the emedding method(s) took %.1f seconds.' %\
                                                                   script_exec_time
+                                                                  
+                                                                  
+                                                                  
