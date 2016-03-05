@@ -103,7 +103,7 @@ FLASH_CFG = 'FLASH CFG'
 #EMBEDDING_NAMES = [LABEL_COUNTER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, LABEL_COUNTER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
-#EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH]
+EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH,
 #                   COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, NEIGHBORHOOD_HASH]
@@ -114,7 +114,7 @@ FLASH_CFG = 'FLASH CFG'
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL_4]
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL_3, GRAPHLET_KERNEL_4]
 #EMBEDDING_NAMES = [RANDOM_WALK_KERNEL]
-EMBEDDING_NAMES = [EIGEN_KERNEL]
+#EMBEDDING_NAMES = [EIGEN_KERNEL]
 
 
 # keys are indices of the list EMBEDDING_NAMES, values are the respective
@@ -134,10 +134,10 @@ EMBEDDING_PARAM_RANGES = {
 
 # sorted by number of graphs in ascending order
 #DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
-#DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109, FLASH_CFG]
+DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109, FLASH_CFG]
 #DATASETS = [MUTAG, PTC_MR, ENZYMES]
 #DATASETS = [DD, NCI1, NCI109]
-DATASETS = [MUTAG]
+#DATASETS = [MUTAG]
 #DATASETS = [PTC_MR]
 #DATASETS = [ENZYMES]
 #DATASETS = [DD]
@@ -152,17 +152,18 @@ OPT_PARAM = True
 COMPARE_PARAMS = True
 #COMPARE_PARAMS = False
 
-#SEARCH_OPT_SVM_PARAM_IN_PAR = True
-SEARCH_OPT_SVM_PARAM_IN_PAR = False
+SEARCH_OPT_SVM_PARAM_IN_PAR = True
+#SEARCH_OPT_SVM_PARAM_IN_PAR = False
 
-#EXPER_NUM_ITER = 10
-EXPER_NUM_ITER = 5
+EXPER_NUM_ITER = 10
+#EXPER_NUM_ITER = 5
 #EXPER_NUM_ITER = 3
 #EXPER_NUM_ITER = 1
 
 # maximum number of iterations for small datasets (having less than 1000 samples)
-CLF_MAX_ITER_SD = 1e3
-#CLF_MAX_ITER_SD = 1e7
+#CLF_MAX_ITER_SD = 1e3
+#CLF_MAX_ITER_SD = 1e6
+CLF_MAX_ITER_SD = 1e7
 #CLF_MAX_ITER_SD = -1
 
 # maximum number of iterations for large datasets (having more than 1000 samples)
@@ -298,9 +299,12 @@ def init_grid_clf(embedding_is_implicit, dataset_is_large, clf_max_iter,
     i.e., in case of N different classes N classifiers are trained in
     total. !! further details
     """
+    num_jobs = 4    
+    
     if dataset_is_large:
-        svm_param_grid = {'C': [0.01, 0.1, 1]}
-        num_jobs = 3
+#        svm_param_grid = {'C': [0.01, 0.1, 1]}
+        svm_param_grid = {'C': np.logspace(-2, 3, num_jobs)}
+#        num_jobs = 3
         if embedding_is_implicit:
             # library LIBSVM is used
             clf = svm.SVC(kernel = 'precomputed', max_iter = clf_max_iter,
@@ -311,11 +315,10 @@ def init_grid_clf(embedding_is_implicit, dataset_is_large, clf_max_iter,
         
     else:
         # library LIBSVM is used
-        num_jobs = 4
         if embedding_is_implicit:
             clf = svm.SVC(kernel = 'precomputed', max_iter = clf_max_iter,
                           decision_function_shape = 'ovr')
-            svm_param_grid = {'C': np.logspace(-2, 3, 4)}
+            svm_param_grid = {'C': np.logspace(-2, 3, num_jobs)}
             
             # !!
 #            import numpy as np
@@ -323,8 +326,8 @@ def init_grid_clf(embedding_is_implicit, dataset_is_large, clf_max_iter,
         else:
             clf = svm.SVC(max_iter = clf_max_iter,
                           decision_function_shape = 'ovr')
-#            svm_param_grid = {'kernel': ('linear', 'rbf'), 'C': [0.1, 10]}
-            svm_param_grid = {'kernel': ('linear',), 'C': np.logspace(-2, 3, 4)}
+            svm_param_grid = {'kernel': ('linear', 'rbf'), 'C': [0.1, 10]}
+#            svm_param_grid = {'kernel': ('linear',), 'C': np.logspace(-2, 3, num_jobs)}
     
     if SEARCH_OPT_SVM_PARAM_IN_PAR:
         grid_clf = GridSearchCV(clf, svm_param_grid, cv = num_inner_folds,
