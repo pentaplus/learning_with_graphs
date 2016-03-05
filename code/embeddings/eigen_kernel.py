@@ -14,7 +14,9 @@ import numpy as np
 import sys
 import time
 
+from itertools import izip
 from numpy.linalg import eigvalsh
+from operator import itemgetter
 from os.path import abspath, dirname, join
 
 
@@ -34,7 +36,26 @@ def get_average_num_of_nodes(graph_meta_data_of_num):
         G = pz.load(graph_path)
         node_counts.append(G.number_of_nodes())
         
-    return np.mean(node_counts)
+#    return np.mean(node_counts)
+    return max(node_counts)
+    
+    
+def get_node_num_degree_pairs_sorted_by_degree(G):
+    node_degrees = G.degree().values()
+    return sorted(enumerate(node_degrees), key = itemgetter(1))
+
+
+def update_upd_index_of_orig_index(upd_index_of_orig_index,
+                                   removed_node_num):
+    
+    upd_index_of_orig_index[removed_node_num] = None
+    
+    for node_num in xrange(removed_node_num + 1, len(upd_index_of_orig_index)):
+        if upd_index_of_orig_index[node_num]:
+            upd_index_of_orig_index[node_num] -= 1
+                                 
+    return upd_index_of_orig_index
+        
     
 
 def extract_features(graph_meta_data_of_num, param_range = [None]):
@@ -66,16 +87,40 @@ def extract_features(graph_meta_data_of_num, param_range = [None]):
         A = utils.get_adjacency_matrix(G)
 #        A = nx.adj_matrix(G, weight = None)
         
+        num_nodes = len(G.node)
+        upd_index_of_orig_index = dict(izip(xrange(num_nodes), xrange(num_nodes)))
+        node_num_degree_pairs = get_node_num_degree_pairs_sorted_by_degree(G)
+        
+        for j in xrange(min(int(average_num_of_nodes), num_nodes)):
+            # store largest eigenvalue of A in feature matrix
+            feature_mat[i,j] = eigvalsh(A)[-1]
+#            feature_mat[i,j] = np.linalg.det(A)
+            
+            # determine the node number, which corresponds to the node with
+            # smallest degree, and remove the corresponding row and column of
+            # the (original) adjacency matrix of G
+            node_num_smallest_deg = node_num_degree_pairs[j][0]
+            
+            delete_index = upd_index_of_orig_index[node_num_smallest_deg]        
+            
+            A = np.delete(A, (delete_index), axis = 0)
+            A = np.delete(A, (delete_index), axis = 1)
+            
+            upd_index_of_orig_index = update_upd_index_of_orig_index(
+                upd_index_of_orig_index,
+                node_num_smallest_deg)
+        
         # !!
         import sys
+        sys.modules['__main__'].G = G
         sys.modules['__main__'].A = A
         sys.modules['__main__'].F = feature_mat
         
-        x = 0
-        eigvalsh(A)
-
-        for j in xrange(feature_mat.shape[1]):
-            largest_eigen_val = eigvalsh(A)[-1]
+#        x = 0
+#        eigvalsh(A)
+#
+#        for j in xrange(feature_mat.shape[1]):
+#            largest_eigen_val = eigvalsh(A)[-1]
         
         
         # feature_mat is of type csr_matrix and has the following form:

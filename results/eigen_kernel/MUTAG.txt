@@ -1,9 +1,19 @@
 LIBRARY: LIBSVM
 EMBEDDING TYPE: EXPLICIT
-EXPER_NUM_ITER: 5
+EXPER_NUM_ITER: 10
 NUM_OUTER_FOLDS: 10
 NUM_INNER_FOLDS: 3
-CLF_MAX_ITER: 1e+03
+CLF_MAX_ITER: 1e+07
 SEARCH_OPT_SVM_PARAM_IN_PAR: FALSE
 ------------------------------------------
 
+Graph loading and feature exraction took 0.6 seconds.
+
+------------------------------------------
+Parameter: None
+
+Feature extraction took 0.6 seconds.
+Feature matrix dimension: (188L, 28L)
+
+LINEAR/RBF
+0.848 (+/-0.011) in 6.1 seconds

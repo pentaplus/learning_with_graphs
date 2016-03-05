@@ -103,7 +103,7 @@ FLASH_CFG = 'FLASH CFG'
 #EMBEDDING_NAMES = [LABEL_COUNTER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, LABEL_COUNTER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
-EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER]
+#EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH,
 #                   COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, NEIGHBORHOOD_HASH]
@@ -114,7 +114,7 @@ EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL_4]
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL_3, GRAPHLET_KERNEL_4]
 #EMBEDDING_NAMES = [RANDOM_WALK_KERNEL]
-#EMBEDDING_NAMES = [EIGEN_KERNEL]
+EMBEDDING_NAMES = [EIGEN_KERNEL]
 
 
 # keys are indices of the list EMBEDDING_NAMES, values are the respective
@@ -134,10 +134,10 @@ EMBEDDING_PARAM_RANGES = {
 
 # sorted by number of graphs in ascending order
 #DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
-DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109, FLASH_CFG]
+#DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109, FLASH_CFG]
 #DATASETS = [MUTAG, PTC_MR, ENZYMES]
 #DATASETS = [DD, NCI1, NCI109]
-#DATASETS = [MUTAG]
+DATASETS = [MUTAG]
 #DATASETS = [PTC_MR]
 #DATASETS = [ENZYMES]
 #DATASETS = [DD]
@@ -152,8 +152,8 @@ OPT_PARAM = True
 COMPARE_PARAMS = True
 #COMPARE_PARAMS = False
 
-SEARCH_OPT_SVM_PARAM_IN_PAR = True
-#SEARCH_OPT_SVM_PARAM_IN_PAR = False
+#SEARCH_OPT_SVM_PARAM_IN_PAR = True
+SEARCH_OPT_SVM_PARAM_IN_PAR = False
 
 EXPER_NUM_ITER = 10
 #EXPER_NUM_ITER = 5
@@ -327,7 +327,7 @@ def init_grid_clf(embedding_is_implicit, dataset_is_large, clf_max_iter,
             clf = svm.SVC(max_iter = clf_max_iter,
                           decision_function_shape = 'ovr')
             svm_param_grid = {'kernel': ('linear', 'rbf'), 'C': [0.1, 10]}
-#            svm_param_grid = {'kernel': ('linear',), 'C': np.logspace(-2, 3, num_jobs)}
+#            svm_param_grid = {'kernel': ('linear', 'rbf'), 'C': np.logspace(-3, 6, 4)}
     
     if SEARCH_OPT_SVM_PARAM_IN_PAR:
         grid_clf = GridSearchCV(clf, svm_param_grid, cv = num_inner_folds,

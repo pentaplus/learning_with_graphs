@@ -1,5 +1,5 @@
 LIBRARY: LIBSVM
-EMBEDDING TYPE: IMPLICIT
+EMBEDDING TYPE: EXPLICIT
 EXPER_NUM_ITER: 1
 NUM_OUTER_FOLDS: 10
 NUM_INNER_FOLDS: 3
@@ -7,13 +7,13 @@ CLF_MAX_ITER: 1e+07
 SEARCH_OPT_SVM_PARAM_IN_PAR: FALSE
 ------------------------------------------
 
-The computation of the kernel matrix took 17.4 seconds.
+Graph loading and feature exraction took 1.8 seconds.
 
 ------------------------------------------
 Parameter: None
 
-The computation of the kernel matrix took 17.4 seconds.
-Kernel matrix dimension: (188L, 188L)
+Feature extraction took 1.8 seconds.
+Feature matrix dimension: (344L, 25L)
 
-PRECOMPUTED
-0.824 (+/-0.000) in 0.7 seconds
+LINEAR/RBF
+0.585 (+/-0.000) in 1.0 seconds
