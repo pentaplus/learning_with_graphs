@@ -26,7 +26,7 @@ from misc import utils
 
 
 def optimize_embedding_param(clf, feature_mat_of_param, class_lbls,
-                             num_iter, num_outer_folds, num_inner_folds,
+                             exper_num_iter, num_outer_folds, num_inner_folds,
                              result_file):
     """
     Perform cross-validation in order to find the best embedding parameter.
@@ -40,7 +40,7 @@ def optimize_embedding_param(clf, feature_mat_of_param, class_lbls,
     cross_val_start_time = time.time()
 
     mean_scores_on_test_data = []
-    for i in xrange(num_iter):
+    for i in xrange(exper_num_iter):
         scores_on_test_data = []
         outer_cv = KFold(len(class_lbls), num_outer_folds, shuffle = True)
                                                                
@@ -106,10 +106,9 @@ def optimize_embedding_param(clf, feature_mat_of_param, class_lbls,
                    cross_val_time), result_file)
     print('-------------------------------------------------------------\n')
 
-
     
-def cross_val(grid_clf, data_mat, class_lbls, num_iter, num_outer_folds,
-              result_file):
+def cross_val(grid_clf, data_mat, class_lbls, embedding_is_implicit,
+              exper_num_iter, num_outer_folds, result_file):
     """
     Perform cross-validation for fixed embedding parameter.
     
@@ -125,24 +124,24 @@ def cross_val(grid_clf, data_mat, class_lbls, num_iter, num_outer_folds,
     cross_val_start_time = time.time()
 
     mean_scores_on_test_data = []   
-    for i in xrange(num_iter):
+    for i in xrange(exper_num_iter):
         scores_on_test_data = []
         outer_cv = KFold(len(class_lbls), num_outer_folds, shuffle = True)
         
         for j, (train_indices, test_indices) in enumerate(outer_cv):
-            if grid_clf.estimator.kernel != 'precomputed':
+            if not embedding_is_implicit:
                 # explicit embedding
                 grid_clf.fit(data_mat[train_indices], class_lbls[train_indices])
             else:
                 # implicit embedding
                 grid_clf.fit(data_mat[np.ix_(train_indices, train_indices)],
-                        class_lbls[train_indices])
+                             class_lbls[train_indices])
                 
             opt_clf = grid_clf.best_estimator_
                 
             print('i = %d, j = %d: params = %s' % (i, j, grid_clf.best_params_))
             
-            if grid_clf.estimator.kernel != 'precomputed':
+            if not embedding_is_implicit:
                 # explicit embedding                 
                 score_on_test_data = opt_clf.score(data_mat[test_indices],
                                                    class_lbls[test_indices])

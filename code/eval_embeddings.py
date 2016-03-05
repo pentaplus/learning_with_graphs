@@ -268,6 +268,7 @@ def get_params(graph_meta_data_of_num, embedding_name):
 
 def write_param_info(use_liblinear, embedding_is_implicit, clf_max_iter,
                      num_inner_folds, result_file):
+                         
     if use_liblinear:
         utils.write('LIBRARY: LIBLINEAR\n', result_file)
     else:
@@ -501,6 +502,7 @@ for dataset in DATASETS:
                 if not embedding_is_implicit:
                     feature_mat = feature_mat_of_param[param]
                     cross_validation.cross_val(grid_clf, feature_mat, class_lbls,
+                                               embedding_is_implicit,
                                                EXPER_NUM_ITER, NUM_OUTER_FOLDS,
                                                result_file)
                 else:
@@ -508,6 +510,7 @@ for dataset in DATASETS:
 #                    kernel_mat = pairwise_kernels(feature_mat)
                     kernel_mat = kernel_mat_of_param[param]
                     cross_validation.cross_val(grid_clf, kernel_mat, class_lbls,
+                                               embedding_is_implicit,
                                                EXPER_NUM_ITER, NUM_OUTER_FOLDS,
                                                result_file)
 
