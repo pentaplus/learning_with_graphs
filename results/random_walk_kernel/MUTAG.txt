@@ -1,19 +1,10 @@
 LIBRARY: LIBSVM
 EMBEDDING TYPE: IMPLICIT
-EXPER_NUM_ITER: 1
+EXPER_NUM_ITER: 10
+SVM_PARAM_GRID: {C: (1.0e-02, 4.6e-01, 2.2e+01, 1.0e+03)}
 NUM_OUTER_FOLDS: 10
 NUM_INNER_FOLDS: 3
 CLF_MAX_ITER: 1e+07
 SEARCH_OPT_SVM_PARAM_IN_PAR: FALSE
 ------------------------------------------
 
-The computation of the kernel matrix took 17.4 seconds.
-
-------------------------------------------
-Parameter: None
-
-The computation of the kernel matrix took 17.4 seconds.
-Kernel matrix dimension: (188L, 188L)
-
-PRECOMPUTED
-0.824 (+/-0.000) in 0.7 seconds

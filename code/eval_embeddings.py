@@ -30,6 +30,7 @@ __date__ = "2016-02-28"
 # 100. make feature vectors for NHGK unary 
 #
 # at Benny-Notebook:
+#  0. test WEISFEILER_LEHMAN on ENZYMES (1e6)
 #  1. test GRAPHLET_KERNEL_3 and GRAPHLET_KERNEL_4 on small datasets for
 #     CLF_MAX_ITER_SD = 1e7
 #  2. test GRAPHLET_KERNEL_3 and GRAPHLET_KERNEL_4 on small datasets for
@@ -43,7 +44,6 @@ __date__ = "2016-02-28"
 # 14. test WL on ANDROID FCG PARTIAL (10 iterations, LIBSVM)
 # 20. test methods on ENZYMES with ovo
 # 
-
 
 
 import numpy as np
@@ -102,7 +102,7 @@ FLASH_CFG = 'FLASH CFG'
 #=================================================================================
 #EMBEDDING_NAMES = [LABEL_COUNTER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, LABEL_COUNTER]
-#EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
+EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH,
 #                   COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER]
@@ -114,30 +114,29 @@ FLASH_CFG = 'FLASH CFG'
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL_4]
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL_3, GRAPHLET_KERNEL_4]
 #EMBEDDING_NAMES = [RANDOM_WALK_KERNEL]
-EMBEDDING_NAMES = [EIGEN_KERNEL]
+#EMBEDDING_NAMES = [EIGEN_KERNEL]
 
 
 # keys are indices of the list EMBEDDING_NAMES, values are the respective
 # parameters
 EMBEDDING_PARAM_RANGES = {
-                          WEISFEILER_LEHMAN: range(6),
-                          NEIGHBORHOOD_HASH: range(6),
-                          COUNT_SENSITIVE_NEIGHBORHOOD_HASH: range(6),
-                          COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER: range(6),
-                          GRAPHLET_KERNEL_3: [None],
-                          GRAPHLET_KERNEL_4: [None],
-                          RANDOM_WALK_KERNEL: [None],
-                          EIGEN_KERNEL: [None]
-                         }
+    WEISFEILER_LEHMAN: range(6),
+    NEIGHBORHOOD_HASH: range(6),
+    COUNT_SENSITIVE_NEIGHBORHOOD_HASH: range(6),
+    COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER: range(6),
+    GRAPHLET_KERNEL_3: [None],
+    GRAPHLET_KERNEL_4: [None],
+    RANDOM_WALK_KERNEL: [None],
+    EIGEN_KERNEL: [None]}
 
 #DATASET = ANDROID_FCG_PARTIAL # !! increase number of samples
 
 # sorted by number of graphs in ascending order
-#DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109]
 #DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109, FLASH_CFG]
+DATASETS = [ENZYMES, DD, NCI1, NCI109, FLASH_CFG]
 #DATASETS = [MUTAG, PTC_MR, ENZYMES]
 #DATASETS = [DD, NCI1, NCI109]
-DATASETS = [MUTAG]
+#DATASETS = [MUTAG]
 #DATASETS = [PTC_MR]
 #DATASETS = [ENZYMES]
 #DATASETS = [DD]
@@ -152,8 +151,8 @@ OPT_PARAM = True
 COMPARE_PARAMS = True
 #COMPARE_PARAMS = False
 
-#SEARCH_OPT_SVM_PARAM_IN_PAR = True
-SEARCH_OPT_SVM_PARAM_IN_PAR = False
+SEARCH_OPT_SVM_PARAM_IN_PAR = True
+#SEARCH_OPT_SVM_PARAM_IN_PAR = False
 
 EXPER_NUM_ITER = 10
 #EXPER_NUM_ITER = 5
@@ -161,13 +160,14 @@ EXPER_NUM_ITER = 10
 #EXPER_NUM_ITER = 1
 
 # maximum number of iterations for small datasets (having less than 1000 samples)
+#CLF_MAX_ITER_SD = 1e7
+CLF_MAX_ITER_SD = 1e6
 #CLF_MAX_ITER_SD = 1e3
-#CLF_MAX_ITER_SD = 1e6
-CLF_MAX_ITER_SD = 1e7
 #CLF_MAX_ITER_SD = -1
 
 # maximum number of iterations for large datasets (having more than 1000 samples)
-CLF_MAX_ITER_LD = 1e3
+#CLF_MAX_ITER_LD = 1e3
+CLF_MAX_ITER_LD = 1e4
 
 # number of folds used in cross validation for performance evaluation
 NUM_OUTER_FOLDS = 10
@@ -228,7 +228,8 @@ def compute_kernel_matrix(graph_meta_data_of_num, embedding, param_range,
 #def get_params(dataset_is_large, embedding_is_implicit):
 def get_params(graph_meta_data_of_num, embedding_name):
     num_samples = len(graph_meta_data_of_num)
-    
+    num_jobs = 4
+
     if num_samples >= 1000:
         dataset_is_large = True
         clf_max_iter = CLF_MAX_ITER_LD
@@ -244,6 +245,7 @@ def get_params(graph_meta_data_of_num, embedding_name):
         embedding_is_implicit = True
         # use library LIBSVM
         use_liblinear = False
+        svm_param_grid = {'C': tuple(np.logspace(-2, 3, num_jobs))}
         kernel = 'precomputed'
     else:
         # embedding is explicit
@@ -251,24 +253,43 @@ def get_params(graph_meta_data_of_num, embedding_name):
         if dataset_is_large:
             # use library LIBLINEAR
             use_liblinear = True
+            svm_param_grid = {'C': tuple(np.logspace(-2, 3, num_jobs))}
             kernel = 'linear'
         else:
             # use library LIBSVM
             use_liblinear = False
+            svm_param_grid = {'kernel': ('linear', 'rbf'), 'C': (0.1, 10)}
             kernel = 'linear/rbf'
 
-    return dataset_is_large, embedding_is_implicit, use_liblinear, kernel,\
-                                                     clf_max_iter, num_inner_folds
+    return dataset_is_large, embedding_is_implicit, use_liblinear, kernel, \
+        svm_param_grid, clf_max_iter, num_inner_folds
     
 
-#def is_embedding_implicit(embedding_name):
-#    implicit_embeddings = [RANDOM_WALK_KERNEL]
-#    return True if embedding_name in implicit_embeddings else False
-# (use_liblinear, embedding_is_implicit, clf_max_iter,
-#                         num_inner_folds, result_file)   
+def get_svm_param_grid_str(svm_param_grid):
+    kernel_is_given = 'kernel' in svm_param_grid.iterkeys()
+    C_is_given = 'C' in svm_param_grid.iterkeys()
+    svm_param_grid_str = '{'
+    if kernel_is_given:
+        if isinstance(svm_param_grid['kernel'], (list, tuple)):
+            svm_param_grid_str += 'kernel: (' \
+                                  + ', '.join(svm_param_grid['kernel']) + ')'
+        else:
+            svm_param_grid_str += 'kernel: ' + svm_param_grid['kernel']
+    if kernel_is_given and C_is_given:
+        svm_param_grid_str += ', '
+    if C_is_given:
+        if isinstance(svm_param_grid['C'], (list, tuple)):
+            C_values_str = ['%.1e' % C_value for C_value in svm_param_grid['C']]
+            svm_param_grid_str += 'C: (' + ', '.join(C_values_str) + ')'
+        else:
+            svm_param_grid_str += 'C: %.1e' % svm_param_grid['C']
+    svm_param_grid_str += '}'
+    
+    return svm_param_grid_str
+    
 
-def write_param_info(use_liblinear, embedding_is_implicit, clf_max_iter,
-                     num_inner_folds, result_file):
+def write_param_info(use_liblinear, embedding_is_implicit, svm_param_grid,
+                     clf_max_iter, num_inner_folds, result_file):
                          
     if use_liblinear:
         utils.write('LIBRARY: LIBLINEAR\n', result_file)
@@ -279,19 +300,21 @@ def write_param_info(use_liblinear, embedding_is_implicit, clf_max_iter,
     else:
         utils.write('EMBEDDING TYPE: EXPLICIT\n', result_file) 
     utils.write('EXPER_NUM_ITER: %d\n' % EXPER_NUM_ITER, result_file)
+    utils.write('SVM_PARAM_GRID: %s\n' % get_svm_param_grid_str(svm_param_grid),
+                result_file)
     utils.write('NUM_OUTER_FOLDS: %d\n' % NUM_OUTER_FOLDS, result_file)
     utils.write('NUM_INNER_FOLDS: %d\n' % num_inner_folds, result_file)
     if clf_max_iter == -1:
         utils.write('CLF_MAX_ITER: UNLIMITED\n', result_file)
     else:
         utils.write('CLF_MAX_ITER: %.e\n' % clf_max_iter, result_file)
-    utils.write('SEARCH_OPT_SVM_PARAM_IN_PAR: %s\n' %\
-                       SEARCH_OPT_SVM_PARAM_IN_PAR.__str__().upper(), result_file)
+    utils.write('SEARCH_OPT_SVM_PARAM_IN_PAR: %s\n' \
+        % SEARCH_OPT_SVM_PARAM_IN_PAR.__str__().upper(), result_file)
     sys.stdout.write('\n')
     
- 
-def init_grid_clf(embedding_is_implicit, dataset_is_large, clf_max_iter,
-                  num_inner_folds):
+
+def init_grid_clf(embedding_is_implicit, dataset_is_large, svm_param_grid,
+                  clf_max_iter, num_inner_folds):
     """
     Initialize classifier.
     
@@ -302,9 +325,6 @@ def init_grid_clf(embedding_is_implicit, dataset_is_large, clf_max_iter,
     num_jobs = 4    
     
     if dataset_is_large:
-#        svm_param_grid = {'C': [0.01, 0.1, 1]}
-        svm_param_grid = {'C': np.logspace(-2, 3, num_jobs)}
-#        num_jobs = 3
         if embedding_is_implicit:
             # library LIBSVM is used
             clf = svm.SVC(kernel = 'precomputed', max_iter = clf_max_iter,
@@ -312,22 +332,14 @@ def init_grid_clf(embedding_is_implicit, dataset_is_large, clf_max_iter,
         else:
             # library LIBLINEAR is used            
             clf = svm.LinearSVC(max_iter = clf_max_iter)
-        
     else:
         # library LIBSVM is used
         if embedding_is_implicit:
             clf = svm.SVC(kernel = 'precomputed', max_iter = clf_max_iter,
                           decision_function_shape = 'ovr')
-            svm_param_grid = {'C': np.logspace(-2, 3, num_jobs)}
-            
-            # !!
-#            import numpy as np
-#            svm_param_grid = {'C': np.logspace(-8, 8, 17)}
         else:
             clf = svm.SVC(max_iter = clf_max_iter,
                           decision_function_shape = 'ovr')
-            svm_param_grid = {'kernel': ('linear', 'rbf'), 'C': [0.1, 10]}
-#            svm_param_grid = {'kernel': ('linear', 'rbf'), 'C': np.logspace(-3, 6, 4)}
     
     if SEARCH_OPT_SVM_PARAM_IN_PAR:
         grid_clf = GridSearchCV(clf, svm_param_grid, cv = num_inner_folds,
@@ -337,36 +349,6 @@ def init_grid_clf(embedding_is_implicit, dataset_is_large, clf_max_iter,
     
     return grid_clf        
         
-#    if dataset_is_large:
-#        clf_max_iter = CLF_MAX_ITER_LD
-#        num_jobs = 3
-#        svm_param_grid = {'C': (0.01, 0.1, 1)}
-#        
-#        # library LIBLINEAR is used
-#        clf = svm.LinearSVC(max_iter = clf_max_iter)
-#    else:
-#        clf_max_iter = CLF_MAX_ITER_SD
-#        num_jobs = 4
-#        if embedding_is_implicit:
-#            svm_param_grid = {'kernel': ('precomputed'), 'C': (0.01, 0.1, 1, 10)}
-#        else:
-#            svm_param_grid = {'kernel': ('linear', 'rbf'), 'C': (0.1, 10)}
-#        # library LIBSVM is used
-#        clf = svm.SVC(max_iter = clf_max_iter, decision_function_shape = 'ovr')    
-#            
-#    if embedding_is_implicit:
-#        # library LIBSVM is used
-#        clf = svm.SVC(kernel = 'precomputed', max_iter = clf_max_iter,
-#                      decision_function_shape = 'ovr')
-#    elif dataset_is_large:
-#        # library LIBLINEAR is used
-#        clf = svm.LinearSVC(max_iter = clf_max_iter)
-#    else:
-#        # library LIBSVM is used
-#        clf = svm.SVC(max_iter = clf_max_iter, decision_function_shape = 'ovr')
-    
-
-    
     
 def write_eval_info(dataset, embedding_name, kernel, mode = None):
     mode_str = ' (' + mode + ')' if mode else ''
@@ -420,13 +402,12 @@ for dataset in DATASETS:
         # the dataset is larger than 1000 and depending on wether the embedding is
         # implict or explicit
         embedding = importlib.import_module('embeddings.' + embedding_name)
-#        embedding_is_implicit = is_embedding_implicit(embedding_name)
         
-        dataset_is_large, embedding_is_implicit, use_liblinear, kernel,\
-                clf_max_iter, num_inner_folds = get_params(graph_meta_data_of_num,
-                                                           embedding_name)
-#                              get_params(dataset_is_large, embedding_is_implicit) 
-        
+        # initialize parameters
+        dataset_is_large, embedding_is_implicit, use_liblinear, kernel, \
+            svm_param_grid, clf_max_iter, num_inner_folds = get_params(
+                graph_meta_data_of_num,
+                embedding_name)
         
         param_range = EMBEDDING_PARAM_RANGES[embedding_name]
         
@@ -434,8 +415,8 @@ for dataset in DATASETS:
         utils.makedir(result_path)
         result_file = open(join(result_path, dataset + '.txt'), 'w')
         
-        write_param_info(use_liblinear, embedding_is_implicit, clf_max_iter,
-                         num_inner_folds, result_file)
+        write_param_info(use_liblinear, embedding_is_implicit, svm_param_grid,
+                         clf_max_iter, num_inner_folds, result_file)
         
 
         #=========================================================================
@@ -453,7 +434,7 @@ for dataset in DATASETS:
                                                 
         # initialize SVM classifier
         grid_clf = init_grid_clf(embedding_is_implicit, dataset_is_large,
-                                 clf_max_iter, num_inner_folds)
+                                 svm_param_grid, clf_max_iter, num_inner_folds)
                                  
         
         if OPT_PARAM and len(param_range) > 1:
