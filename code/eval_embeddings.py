@@ -180,6 +180,7 @@ NUM_INNER_FOLDS_SD = 3
 # (i.e., more than 1000 samples)
 NUM_INNER_FOLDS_LD = 2
 
+NUM_CROSS_VAL_JOBS = 4
 
 
 def extract_features(graph_meta_data_of_num, embedding, param_range, result_file):
@@ -225,10 +226,8 @@ def compute_kernel_matrix(graph_meta_data_of_num, embedding, param_range,
     return kernel_mat_of_param, kernel_mat_comp_time_of_param
         
 
-#def get_params(dataset_is_large, embedding_is_implicit):
 def get_params(graph_meta_data_of_num, embedding_name):
     num_samples = len(graph_meta_data_of_num)
-    num_jobs = 4
 
     if num_samples >= 1000:
         dataset_is_large = True
@@ -245,7 +244,7 @@ def get_params(graph_meta_data_of_num, embedding_name):
         embedding_is_implicit = True
         # use library LIBSVM
         use_liblinear = False
-        svm_param_grid = {'C': tuple(np.logspace(-2, 3, num_jobs))}
+        svm_param_grid = {'C': tuple(np.logspace(-2, 3, NUM_CROSS_VAL_JOBS))}
         kernel = 'precomputed'
     else:
         # embedding is explicit
@@ -253,7 +252,7 @@ def get_params(graph_meta_data_of_num, embedding_name):
         if dataset_is_large:
             # use library LIBLINEAR
             use_liblinear = True
-            svm_param_grid = {'C': tuple(np.logspace(-2, 3, num_jobs))}
+            svm_param_grid = {'C': tuple(np.logspace(-2, 3, NUM_CROSS_VAL_JOBS))}
             kernel = 'linear'
         else:
             # use library LIBSVM
@@ -322,8 +321,6 @@ def init_grid_clf(embedding_is_implicit, dataset_is_large, svm_param_grid,
     i.e., in case of N different classes N classifiers are trained in
     total. !! further details
     """
-    num_jobs = 4    
-    
     if dataset_is_large:
         if embedding_is_implicit:
             # library LIBSVM is used
@@ -343,7 +340,8 @@ def init_grid_clf(embedding_is_implicit, dataset_is_large, svm_param_grid,
     
     if SEARCH_OPT_SVM_PARAM_IN_PAR:
         grid_clf = GridSearchCV(clf, svm_param_grid, cv = num_inner_folds,
-                                n_jobs = num_jobs, pre_dispatch = '2*n_jobs')
+                                n_jobs = NUM_CROSS_VAL_JOBS,
+                                pre_dispatch = '2*n_jobs')
     else:
         grid_clf = GridSearchCV(clf, svm_param_grid, cv = num_inner_folds)
     
