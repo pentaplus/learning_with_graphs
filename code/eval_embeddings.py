@@ -30,7 +30,7 @@ __date__ = "2016-02-28"
 # 100. make feature vectors for NHGK unary 
 #
 # at Benny-Notebook:
-#  0. test WEISFEILER_LEHMAN on ENZYMES (1e6)
+#  0. test WEISFEILER_LEHMAN on ENZYMES (0.5e3)
 #  1. test GRAPHLET_KERNEL_3 and GRAPHLET_KERNEL_4 on small datasets for
 #     CLF_MAX_ITER_SD = 1e7
 #  2. test GRAPHLET_KERNEL_3 and GRAPHLET_KERNEL_4 on small datasets for
@@ -102,7 +102,7 @@ FLASH_CFG = 'FLASH CFG'
 #=================================================================================
 #EMBEDDING_NAMES = [LABEL_COUNTER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, LABEL_COUNTER]
-EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
+EMBEDDING_NAMES = [WEISFEILER_LEHMAN, GRAPHLET_KERNEL_3, GRAPHLET_KERNEL_4]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH,
 #                   COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER]
@@ -132,8 +132,8 @@ EMBEDDING_PARAM_RANGES = {
 #DATASET = ANDROID_FCG_PARTIAL # !! increase number of samples
 
 # sorted by number of graphs in ascending order
-#DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109, FLASH_CFG]
-DATASETS = [ENZYMES, DD, NCI1, NCI109, FLASH_CFG]
+DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109, FLASH_CFG]
+#DATASETS = [ENZYMES, DD, NCI1, NCI109, FLASH_CFG]
 #DATASETS = [MUTAG, PTC_MR, ENZYMES]
 #DATASETS = [DD, NCI1, NCI109]
 #DATASETS = [MUTAG]
@@ -161,13 +161,13 @@ EXPER_NUM_ITER = 10
 
 # maximum number of iterations for small datasets (having less than 1000 samples)
 #CLF_MAX_ITER_SD = 1e7
-CLF_MAX_ITER_SD = 1e6
+CLF_MAX_ITER_SD = 1e5
 #CLF_MAX_ITER_SD = 1e3
 #CLF_MAX_ITER_SD = -1
 
 # maximum number of iterations for large datasets (having more than 1000 samples)
 #CLF_MAX_ITER_LD = 1e3
-CLF_MAX_ITER_LD = 1e4
+CLF_MAX_ITER_LD = 500
 
 # number of folds used in cross validation for performance evaluation
 NUM_OUTER_FOLDS = 10
