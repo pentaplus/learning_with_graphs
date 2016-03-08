@@ -30,18 +30,17 @@ __date__ = "2016-02-28"
 # 100. make feature vectors for NHGK unary 
 #
 # at Benny-Notebook:
-#  0. test WEISFEILER_LEHMAN on ENZYMES (0.5e3)
-#  1. test GRAPHLET_KERNEL_3 and GRAPHLET_KERNEL_4 on small datasets for
-#     CLF_MAX_ITER_SD = 1e7
-#  2. test GRAPHLET_KERNEL_3 and GRAPHLET_KERNEL_4 on small datasets for
-#     CLF_MAX_ITER_SD = 1e8 (5 iterations)
-#  3. test GRAPHLET_KERNEL_3 and GRAPHLET_KERNEL_4 on small datasets for
-#     CLF_MAX_ITER_SD = 1e6 or 1e9 (5 iterations)
+
+# 01. test WL, G3 and G4 on large datasets (CLF_MAX_ITER_LD = 1e3)
+# 02. test WL, G3 and G4 on large datasets (CLF_MAX_ITER_LD = 500)
+# 03. test WL, G3 and G4 on large datasets (CLF_MAX_ITER_LD = 100)
+#
+# 09. test methods on ENZYMES with ovo
 # 10. test WL on first 7 datasets (param range = {0,...,5})
-# 11. test NH and CSNH all iter (10 iterations, libsvm-liblinear)
-# 12. test GRAPHLET_KERNEL for param = 3 (10 iterations, libsvm-liblinear)
-# 13. test GRAPHLET_KERNEL for param = 4 (10 iterations, libsvm-liblinear)
-# 14. test WL on ANDROID FCG PARTIAL (10 iterations, LIBSVM)
+# 11. test NH and CSNH all iter (10 iterations)
+# 12. test GRAPHLET_KERNEL for param = 3 (10 iterations)
+# 13. test GRAPHLET_KERNEL for param = 4 (10 iterations)
+# 14. test WL on ANDROID FCG PARTIAL (10 iterations)
 # 20. test methods on ENZYMES with ovo
 # 
 
@@ -127,7 +126,7 @@ EMBEDDING_PARAM_RANGES = {
     GRAPHLET_KERNEL_3: [None],
     GRAPHLET_KERNEL_4: [None],
     RANDOM_WALK_KERNEL: [None],
-    EIGEN_KERNEL: [None]}
+    EIGEN_KERNEL: [0.2, 0.4, 0.6, 0.8, 1.0]}
 
 #DATASET = ANDROID_FCG_PARTIAL # !! increase number of samples
 
@@ -160,14 +159,11 @@ EXPER_NUM_ITER = 10
 #EXPER_NUM_ITER = 1
 
 # maximum number of iterations for small datasets (having less than 1000 samples)
-#CLF_MAX_ITER_SD = 1e7
-CLF_MAX_ITER_SD = 1e5
-#CLF_MAX_ITER_SD = 1e3
-#CLF_MAX_ITER_SD = -1
+CLF_MAX_ITER_SD = 1e6 # final value!!!
 
 # maximum number of iterations for large datasets (having more than 1000 samples)
-#CLF_MAX_ITER_LD = 1e3
-CLF_MAX_ITER_LD = 500
+CLF_MAX_ITER_LD = 1e3
+#CLF_MAX_ITER_LD = 500
 
 # number of folds used in cross validation for performance evaluation
 NUM_OUTER_FOLDS = 10
@@ -191,6 +187,12 @@ def extract_features(graph_meta_data_of_num, embedding, param_range, result_file
 
     feature_mat_of_param, extr_time_of_param =\
                    embedding.extract_features(graph_meta_data_of_num, param_range)
+                   
+#    import sys
+#    sys.modules['__main__'].F = feature_mat_of_param[None]
+    
+#    kernel_mat_of_param = {None: F}
+#    kernel_mat_comp_time_of_param = {None: 0}
 
     feat_extr_end_time = time.time()
     feat_extr_time = feat_extr_end_time - feat_extr_start_time
@@ -210,12 +212,6 @@ def compute_kernel_matrix(graph_meta_data_of_num, embedding, param_range,
 
     kernel_mat_of_param, kernel_mat_comp_time_of_param \
         = embedding.compute_kernel_mat(graph_meta_data_of_num, param_range)
-#                                                          
-#    import sys
-#    sys.modules['__main__'].F = kernel_mat_of_param[None]
-    
-#    kernel_mat_of_param = {None: F}
-#    kernel_mat_comp_time_of_param = {None: 0}
 
     kernel_mat_comp_end_time = time.time()
     kernel_mat_comp_time = kernel_mat_comp_end_time - kernel_mat_comp_start_time
@@ -387,14 +383,11 @@ for dataset in DATASETS:
     #=============================================================================
     # 1) retrieve graph meta data and class lables
     #=============================================================================
-    graph_meta_data_of_num, class_lbls =\
-      dataset_loader.get_graph_meta_data_of_num_dict_and_class_lbls(dataset,
-                                                                    DATASETS_PATH)
+    graph_meta_data_of_num, class_lbls \
+        = dataset_loader.get_graph_meta_data_of_num_dict_and_class_lbls(
+            dataset,
+            DATASETS_PATH)
     
-#    num_samples = len(graph_meta_data_of_num)
-#    dataset_is_large = True if num_samples >= 1000 else False
-
-
     for embedding_name in EMBEDDING_NAMES:
         # set parameters depending on whether or not the number of samples within 
         # the dataset is larger than 1000 and depending on wether the embedding is
@@ -422,8 +415,10 @@ for dataset in DATASETS:
         #    the kernel matrix
         #=========================================================================
         if not embedding_is_implicit:
-            feature_mat_of_param, extr_time_of_param =\
-                  extract_features(graph_meta_data_of_num, embedding, param_range,
+            # !!
+#            pass
+            feature_mat_of_param, extr_time_of_param \
+                = extract_features(graph_meta_data_of_num, embedding, param_range,
                                    result_file)
         else:
             kernel_mat_of_param, kernel_mat_comp_time_of_param =\
@@ -433,7 +428,16 @@ for dataset in DATASETS:
         # initialize SVM classifier
         grid_clf = init_grid_clf(embedding_is_implicit, dataset_is_large,
                                  svm_param_grid, clf_max_iter, num_inner_folds)
-                                 
+
+# !!                                 
+#        feature_mat_of_param = F
+#        extr_time_of_param = {}
+#        extr_time_of_param[0.2] = 0
+#        extr_time_of_param[0.4] = 0
+#        extr_time_of_param[0.6] = 0
+#        extr_time_of_param[0.8] = 0
+#        extr_time_of_param[1] = 0
+                
         
         if OPT_PARAM and len(param_range) > 1:
             #=====================================================================
