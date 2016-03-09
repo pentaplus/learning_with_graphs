@@ -31,17 +31,19 @@ __date__ = "2016-02-28"
 #
 # at Benny-Notebook:
 
+#-03. test WL, G3 and G4 on small datasets (CLF_MAX_ITER_SD = 1e6)
+# WL on ENZYMES!!! (only 0.55?)
+#-02. 
+#-01.
+
 # 01. test WL, G3 and G4 on large datasets (CLF_MAX_ITER_LD = 1e3)
 # 02. test WL, G3 and G4 on large datasets (CLF_MAX_ITER_LD = 500)
 # 03. test WL, G3 and G4 on large datasets (CLF_MAX_ITER_LD = 100)
 #
 # 09. test methods on ENZYMES with ovo
-# 10. test WL on first 7 datasets (param range = {0,...,5})
-# 11. test NH and CSNH all iter (10 iterations)
 # 12. test GRAPHLET_KERNEL for param = 3 (10 iterations)
 # 13. test GRAPHLET_KERNEL for param = 4 (10 iterations)
 # 14. test WL on ANDROID FCG PARTIAL (10 iterations)
-# 20. test methods on ENZYMES with ovo
 # 
 
 
@@ -132,8 +134,8 @@ EMBEDDING_PARAM_RANGES = {
 
 # sorted by number of graphs in ascending order
 #DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109, FLASH_CFG]
-DATASETS = [DD, NCI1, NCI109, FLASH_CFG]
-#DATASETS = [MUTAG, PTC_MR, ENZYMES]
+#DATASETS = [DD, NCI1, NCI109, FLASH_CFG]
+DATASETS = [MUTAG, PTC_MR, ENZYMES]
 #DATASETS = [DD, NCI1, NCI109]
 #DATASETS = [MUTAG]
 #DATASETS = [PTC_MR]
