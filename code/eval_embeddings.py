@@ -31,18 +31,9 @@ __date__ = "2016-02-28"
 #
 # at Benny-Notebook:
 
-#-03. test WL, G3 and G4 on small datasets (CLF_MAX_ITER_SD = 1e6)
-# WL on ENZYMES!!! (only 0.55?)
-#-02. 
-#-01.
 
-# 01. test WL, G3 and G4 on large datasets (CLF_MAX_ITER_LD = 1e3)
-# 02. test WL, G3 and G4 on large datasets (CLF_MAX_ITER_LD = 500)
-# 03. test WL, G3 and G4 on large datasets (CLF_MAX_ITER_LD = 100)
-#
+# 05. test on large datasets with twice param grid size
 # 09. test methods on ENZYMES with ovo
-# 12. test GRAPHLET_KERNEL for param = 3 (10 iterations)
-# 13. test GRAPHLET_KERNEL for param = 4 (10 iterations)
 # 14. test WL on ANDROID FCG PARTIAL (10 iterations)
 # 
 
@@ -133,9 +124,9 @@ EMBEDDING_PARAM_RANGES = {
 #DATASET = ANDROID_FCG_PARTIAL # !! increase number of samples
 
 # sorted by number of graphs in ascending order
-#DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109, FLASH_CFG]
+DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109, FLASH_CFG]
 #DATASETS = [DD, NCI1, NCI109, FLASH_CFG]
-DATASETS = [MUTAG, PTC_MR, ENZYMES]
+#DATASETS = [MUTAG, PTC_MR, ENZYMES]
 #DATASETS = [DD, NCI1, NCI109]
 #DATASETS = [MUTAG]
 #DATASETS = [PTC_MR]
@@ -161,12 +152,10 @@ EXPER_NUM_ITER = 10
 #EXPER_NUM_ITER = 1
 
 # maximum number of iterations for small datasets (having less than 1000 samples)
-CLF_MAX_ITER_SD = 1e6 # final value!!!
+CLF_MAX_ITER_SD = 1e7 # final value (take care of perfectionism!!!)
 
 # maximum number of iterations for large datasets (having more than 1000 samples)
-CLF_MAX_ITER_LD = 250
-#CLF_MAX_ITER_LD = 500 # BETTER THAN 1e3 (see G3 on DD!!)
-#CLF_MAX_ITER_LD = 1e3
+CLF_MAX_ITER_LD = 1e3 # final value (take care of perfectionism!!!)
 
 # number of folds used in cross validation for performance evaluation
 NUM_OUTER_FOLDS = 10
