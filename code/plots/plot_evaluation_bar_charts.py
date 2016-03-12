@@ -1,10 +1,13 @@
-# 0. Schauen, wie die logarithmische Zeit-Skala aussieht
+# 1. Schauen, wie die logarithmische Zeit-Skala aussieht
+# 2. Plots für die Laufzeiten auf den kleinen Datensätzen und Plots für die
+#    großen Datensätze erstellen
+# 3. Alle 4 Säulen-Diagramme in das pdf-Dokument übernehmen
+
 # 1. Die Höhen der Säulen müssen korrekt angegeben werden.
 # 2. Die "error bars" müssen richtig spezifiziert werden.
 # 3. Die y-Achse muss richtig beschriftet werden.
 # 4. Ein weiterer Plot muss mit den Laufzeiten erstellt werden.
 # 5. Alle Schritte müssen wiederholt werden für die anderen 5 Datensätze.
-
 """
 Plot bar charts for the classification accuracy of the embedding methods.
 """
@@ -55,6 +58,8 @@ NCI109 = 'NCI109'
 ANDROID_FCG_PARTIAL = 'ANDROID FCG PARTIAL'
 FLASH_CFG = 'FLASH CFG'
 
+EMBEDDING_SHORTCUTS = {}
+
 
 mpl.use("pgf")
 pgf_with_rc_fonts = {
@@ -92,8 +97,8 @@ import matplotlib.pyplot as plt
 
 import numpy as np
 
-# add
-
+# The data matrix has the following columns:
+# embedding name, dataset, score, standard deviation, runtime
 data = np.array(
     [[WEISFEILER_LEHMAN, MUTAG, 9.97],
      [WEISFEILER_LEHMAN, PTC_MR, 27.31],
@@ -123,19 +128,23 @@ data = np.array(
 # order according to the sequence of the embeddings in data      
 COLORS = ['#00008F', '#0020FF', '#00AFFF', '#40FFBF', '#CFFF30', '#FF9F00',
           '#FF1000', '#800000']
+          
+LABELS = [WEISFEILER_LEHMAN, NEIGHBORHOOD_HASH, COUNT_SENSITIVE_NEIGHBORHOOD_HASH,
+          COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER, GRAPHLET_KERNEL_3,
+          GRAPHLET_KERNEL_4, RANDOM_WALK_KERNEL, EIGEN_KERNEL]
 
 fig = plt.figure()
-ax = fig.add_subplot(111)#00008F
-
+ax = fig.add_subplot(111)
 
 
 embeddings = np.unique(data[:,0])
 datasets = np.unique(data[:,1])
+#scores = data[:,2]
+#std_devs = data[:,3]
+#runtimes = data[:,4]
 
-n = len(embeddings)
+#num_embeddings = len(embeddings)
 
-#space = 1/(n + 1)
-# from
 space = 2/(len(embeddings) + 2)
 
 width = (1 - space) / len(embeddings)
@@ -145,22 +154,20 @@ for i, embedding in enumerate(embeddings):
     print "embedding:", embedding
     vals = data[data[:,0] == embedding][:,2].astype(np.float)
     pos = [j - (1 - space)/2 + i * width for j in range(1, len(datasets) + 1)]
-    if i == 0:
-        color = 'red'
-    elif i == 1:
-        color = 'yellow'
-    elif i == 2:
-        color = 'green'
-    ax.bar(pos, vals, width = width, color = [COLORS[i]] * 3, yerr = [1, 2, 3],
-           ecolor = 'black')
+
+    # add label param
+    rect = ax.bar(pos, vals, width = width, color = [COLORS[i]] * 3, yerr = [1, 2, 3],
+                  ecolor = 'black', label = LABELS[i])
+                  
+    x = 0
            
 
 ax.set_xlim(0.5 - space/2, len(datasets) + 0.5 + space/2)
+ax.set_ylim([0, 110])
 
 
-#fig, ax = plt.subplots()
-# We need to draw the canvas, otherwise the labels won't be positioned and 
-# won't have values yet.
+# Drawing the canvas causes the labels to be positioned, which is necessary
+# in order to get their values
 fig.canvas.draw()
 labels = [item.get_text() for item in ax.get_xticklabels()]
 labels[1] = u''
@@ -172,6 +179,13 @@ labels[6] = u'ENZYMES'
 labels[7] = u''
 
 ax.set_xticklabels(labels)
+
+#fig.legend()
+
+handles, labels = ax.get_legend_handles_labels()
+ax.legend(handles, labels, prop = {'size': 6})
+
+#ax.legend([rect])
 
 
 plt.savefig('figure.pdf')
