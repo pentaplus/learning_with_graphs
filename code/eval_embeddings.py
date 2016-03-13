@@ -18,8 +18,7 @@ __date__ = "2016-02-28"
 #
 # at Ben-PC:
 # !!!
-# 01. fix erroneous evaluation of implicit embeddings
-# 02. start to implement the Eigen kernel
+# 01. finish the implementation of the Eigen kernel
 # 03. optimize coding style
 # 10. document RWkernel, PCG, graphlet_kernel and get_lamda
 # 20. compress FCGs
@@ -31,7 +30,8 @@ __date__ = "2016-02-28"
 #
 # at Benny-Notebook:
 
-
+# 01. test RW kernel
+# 02. test Eigen kernel
 # 05. test on large datasets with twice param grid size
 # 09. test methods on ENZYMES with ovo
 # 14. test WL on ANDROID FCG PARTIAL (10 iterations)
