@@ -18,6 +18,7 @@ __date__ = "2016-03-10"
 
 
 import inspect
+import itertools
 import matplotlib as mpl
 import numpy as np
 import sys
@@ -59,6 +60,12 @@ NCI109 = 'NCI109'
 FLASH_CFG = 'FLASH CFG'
 ANDROID_FCG = 'ANDROID FCG'
 
+SMALL = 'small'
+LARGE = 'large'
+
+SCORES = 'scores'
+RUNTIMES = 'runtimes'
+
 
 EMBEDDING_ABBRVS = {
     WEISFEILER_LEHMAN: 'WL',
@@ -73,11 +80,12 @@ EMBEDDING_ABBRVS = {
     
 FONT_SIZE = 10
 LEGEND_FONT_SIZE = 6
-    
-SMALL = 'small'
-LARGE = 'large'
+
+
     
 DATASET_TYPES = [SMALL, LARGE]
+
+MODES = [SCORES, RUNTIMES]
 
 
 mpl.use("pgf")
@@ -96,75 +104,82 @@ import matplotlib.pyplot as plt
 
 
 # The data matrices DATA_SD and DATA_LD have the following columns:
-# embedding name, dataset, score, standard deviation, runtime
+# embedding name, dataset, score, standard deviation, runtime (in seconds)
 DATA_SD = np.array(
-    [[WEISFEILER_LEHMAN, MUTAG, 91.3, 0.8],
-     [WEISFEILER_LEHMAN, PTC_MR, 64.6, 1.1],
-     [WEISFEILER_LEHMAN, ENZYMES, 60.7, 1.2],
-     [NEIGHBORHOOD_HASH, MUTAG, 88.9, 0.8],
-     [NEIGHBORHOOD_HASH, PTC_MR, 66.4, 1.0],
-     [NEIGHBORHOOD_HASH, ENZYMES, 46.8, 1.0],
-     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH, MUTAG, 91.1, 1.0],
-     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH, PTC_MR, 65.0, 1.0],
-     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH, ENZYMES, 56.2, 1.0],
-     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER, MUTAG, 91.4, 0.8],
-     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER, PTC_MR, 65.6, 1.3],
-     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER, ENZYMES, 61.4, 1.3],
-     [GRAPHLET_KERNEL_3, MUTAG, 85.8, 2.1],
-     [GRAPHLET_KERNEL_3, PTC_MR, 55.3, 1.0],
-     [GRAPHLET_KERNEL_3, ENZYMES, 19.6, 1.9],
-     [GRAPHLET_KERNEL_4, MUTAG, 86.4, 1.0],
-     [GRAPHLET_KERNEL_4, PTC_MR, 54.4, 1.7],
-     [GRAPHLET_KERNEL_4, ENZYMES, 17.6, 1.4],
-     [RANDOM_WALK_KERNEL, MUTAG, 100.0, 10.0],
-     [RANDOM_WALK_KERNEL, PTC_MR, 100.0, 10.0],
-     [RANDOM_WALK_KERNEL, ENZYMES, 100.0, 10.0],
-     [EIGEN_KERNEL, MUTAG, 100.0, 10.0],
-     [EIGEN_KERNEL, PTC_MR, 100.0, 10.0],
-     [EIGEN_KERNEL, ENZYMES, 100.0, 10.0]])
+    [[WEISFEILER_LEHMAN, MUTAG, 91.3, 0.8, 110.3/10 + 0.6],
+     [WEISFEILER_LEHMAN, PTC_MR, 64.6, 1.1, 425.8/10 + 1.2],
+     [WEISFEILER_LEHMAN, ENZYMES, 60.7, 1.2, 998.5/10 + 2.6],
+     [NEIGHBORHOOD_HASH, MUTAG, 88.9, 0.8, 108.7/10 + 0.5],
+     [NEIGHBORHOOD_HASH, PTC_MR, 66.4, 1.0, 435.7/10 + 1.3],
+     [NEIGHBORHOOD_HASH, ENZYMES, 46.8, 1.0, 1325.8/10 + 2.1],
+     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH, MUTAG, 91.1, 1.0, 109.7/10 + 0.6],
+     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH, PTC_MR, 65.0, 1.0, 288.5/10 + 1.3],
+     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH, ENZYMES, 56.2, 1.0, 598.5/10 + 2.8],
+     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER, MUTAG, 91.4, 0.8,
+      112.0/10 + 0.6],
+     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER, PTC_MR, 65.6, 1.3,
+      397.9/10 + 1.3],
+     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER, ENZYMES, 61.4, 1.3,
+      1036.8/10 + 3.1],
+     [GRAPHLET_KERNEL_3, MUTAG, 85.8, 2.1, 929.7/10 + 0.2],
+     [GRAPHLET_KERNEL_3, PTC_MR, 55.3, 1.0, 3988.8/10 + 0.3],
+     [GRAPHLET_KERNEL_3, ENZYMES, 19.6, 1.9, 31158.3/10 + 1.1],
+     [GRAPHLET_KERNEL_4, MUTAG, 86.4, 1.0, 1370.8/10 + 0.7],
+     [GRAPHLET_KERNEL_4, PTC_MR, 54.4, 1.7, 4668.8/10 + 1.5],
+     [GRAPHLET_KERNEL_4, ENZYMES, 17.6, 1.4, 41190.1/10 + 8.6],
+     [RANDOM_WALK_KERNEL, MUTAG,  90.0, 0.0, 3600.0],
+     [RANDOM_WALK_KERNEL, PTC_MR, 90.0, 0.0, 3600.0],
+     [RANDOM_WALK_KERNEL, ENZYMES, 90.0, 0.0, 3600.0],
+     [EIGEN_KERNEL, MUTAG, 90.0, 0.0, 3600.0],
+     [EIGEN_KERNEL, PTC_MR, 90.0, 0.0, 3600.0],
+     [EIGEN_KERNEL, ENZYMES, 90.0, 0.0, 3600.0]])
      
 
 DATA_LD = np.array(
-    [[WEISFEILER_LEHMAN, DD, 79.1, 0.5],
-     [WEISFEILER_LEHMAN, NCI1, 86.0, 0.2],
-     [WEISFEILER_LEHMAN, NCI109, 86.3, 0.1],
-     [WEISFEILER_LEHMAN, FLASH_CFG, 85.9, 0.4],
-     [WEISFEILER_LEHMAN, ANDROID_FCG, 100.0, 10.0],
-     [NEIGHBORHOOD_HASH, DD, 76.7, 1.6],
-     [NEIGHBORHOOD_HASH, NCI1, 79.1, 0.3],
-     [NEIGHBORHOOD_HASH, NCI109, 79.1, 0.3],
-     [NEIGHBORHOOD_HASH, FLASH_CFG, 83.9, 2.4],
-     [NEIGHBORHOOD_HASH, ANDROID_FCG, 100.0, 10.0],
-     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH, DD, 77.8, 0.8],
-     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH, NCI1, 83.9, 0.2],
-     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH, NCI109, 83.4, 0.4],
-     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH, FLASH_CFG, 85.4, 0.5],
-     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH, ANDROID_FCG, 100.0, 10.0],
-     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER, DD, 78.8, 0.5],
-     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER, NCI1, 85.1, 0.1],
-     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER, NCI109, 85.0, 0.1],
-     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER, FLASH_CFG, 86.2, 0.4],
-     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER, ANDROID_FCG, 100.0, 10.0],
-     [GRAPHLET_KERNEL_3, DD, 55.1, 4.2],
-     [GRAPHLET_KERNEL_3, NCI1, 54.7, 2.0],
-     [GRAPHLET_KERNEL_3, NCI109, 53.3, 1.7],
-     [GRAPHLET_KERNEL_3, FLASH_CFG, 65.1, 4.4],
-     [GRAPHLET_KERNEL_3, ANDROID_FCG, 100.0, 10.0],
-     [GRAPHLET_KERNEL_4, DD, 46.6, 3.3],
-     [GRAPHLET_KERNEL_4, NCI1, 51.1, 1.8],
-     [GRAPHLET_KERNEL_4, NCI109, 54.3, 1.1],
-     [GRAPHLET_KERNEL_4, FLASH_CFG, 66.1, 4.1],
-     [GRAPHLET_KERNEL_4, ANDROID_FCG, 100.0, 10.0],
-     [RANDOM_WALK_KERNEL, DD, 100.0, 10.0],
-     [RANDOM_WALK_KERNEL, NCI1, 100.0, 10.0],
-     [RANDOM_WALK_KERNEL, NCI109, 100.0, 10.0],
-     [RANDOM_WALK_KERNEL, FLASH_CFG, 100.0, 10.0],
-     [RANDOM_WALK_KERNEL, ANDROID_FCG, 100.0, 10.0],
-     [EIGEN_KERNEL, DD, 100.0, 10.0],
-     [EIGEN_KERNEL, NCI1, 100.0, 10.0],
-     [EIGEN_KERNEL, NCI109, 100.0, 10.0],
-     [EIGEN_KERNEL, FLASH_CFG, 100.0, 10.0],
-     [EIGEN_KERNEL, ANDROID_FCG, 100.0, 10.0]])
+    [[WEISFEILER_LEHMAN, DD, 79.1, 0.5, 2170.2/10 + 31.9],
+     [WEISFEILER_LEHMAN, NCI1, 86.0, 0.2, 2603.8/10 + 17.6],
+     [WEISFEILER_LEHMAN, NCI109, 86.3, 0.1, 2636.1/10 + 17.4],
+     [WEISFEILER_LEHMAN, FLASH_CFG, 85.9, 0.4, 676.3/10 + 129.2],
+     [WEISFEILER_LEHMAN, ANDROID_FCG, 90.0, 0.0, 3600.0],
+     [NEIGHBORHOOD_HASH, DD, 76.7, 1.6, 255.9/10 + 26.0],
+     [NEIGHBORHOOD_HASH, NCI1, 79.1, 0.3, 655.6/10 + 16.7],
+     [NEIGHBORHOOD_HASH, NCI109, 79.1, 0.3, 684.1/10 + 15.3],
+     [NEIGHBORHOOD_HASH, FLASH_CFG, 83.9, 2.4, 405.2/10 + 117.8],
+     [NEIGHBORHOOD_HASH, ANDROID_FCG, 90.0, 0.0, 3600.0],
+     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH, DD, 77.8, 0.8, 259.8/10 + 40.9],
+     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH, NCI1, 83.9, 0.2, 742.0/10 + 19.9],
+     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH, NCI109, 83.4, 0.4, 761.7/10 + 20.1],
+     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH, FLASH_CFG, 85.4, 0.5, 425.3/10 + 142.6],
+     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH, ANDROID_FCG, 90.0, 0.0, 3600.0],
+     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER, DD, 78.8, 0.5,
+      2178.7/10 + 42.6],
+     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER, NCI1, 85.1, 0.1,
+      2297.1/10 + 19.8],
+     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER, NCI109, 85.0, 0.1,
+      2272.7/10 + 20.4],
+     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER, FLASH_CFG, 86.2, 0.4,
+      666.8/10 + 143.0],
+     [COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER, ANDROID_FCG, 90.0, 0.0, 3600.0],
+     [GRAPHLET_KERNEL_3, DD, 55.1, 4.2, 29.1/10 + 21.1],
+     [GRAPHLET_KERNEL_3, NCI1, 54.7, 2.0, 89.7/10 + 4.5],
+     [GRAPHLET_KERNEL_3, NCI109, 53.3, 1.7, 94.5/10 + 4.6],
+     [GRAPHLET_KERNEL_3, FLASH_CFG, 65.1, 4.4, 47.0/10 + 38.7],
+     [GRAPHLET_KERNEL_3, ANDROID_FCG, 90.0, 0.0, 3600.0],
+     [GRAPHLET_KERNEL_4, DD, 46.6, 3.3, 38.3/10 + 311.0],
+     [GRAPHLET_KERNEL_4, NCI1, 51.1, 1.8, 132.0/10 + 22.7],
+     [GRAPHLET_KERNEL_4, NCI109, 54.3, 1.1, 132.2/10 + 22.9],
+     [GRAPHLET_KERNEL_4, FLASH_CFG, 66.1, 4.1, 72.3/10 + 125.1],
+     [GRAPHLET_KERNEL_4, ANDROID_FCG, 90.0, 0.0, 3600.0],
+     [RANDOM_WALK_KERNEL, DD, 90.0, 0.0, 3600.0],
+     [RANDOM_WALK_KERNEL, NCI1, 90.0, 0.0, 3600.0],
+     [RANDOM_WALK_KERNEL, NCI109, 90.0, 0.0, 3600.0],
+     [RANDOM_WALK_KERNEL, FLASH_CFG, 90.0, 0.0, 3600.0],
+     [RANDOM_WALK_KERNEL, ANDROID_FCG, 90.0, 0.0, 3600.0],
+     [EIGEN_KERNEL, DD, 90.0, 0.0, 3600.0],
+     [EIGEN_KERNEL, NCI1, 90.0, 0.0, 3600.0],
+     [EIGEN_KERNEL, NCI109, 90.0, 0.0, 3600.0],
+     [EIGEN_KERNEL, FLASH_CFG, 90.0, 0.0, 3600.0],
+     [EIGEN_KERNEL, ANDROID_FCG, 90.0, 0.0, 3600.0]])
      
       
 # order according to the sequence of the embeddings in the data matrices
@@ -172,77 +187,157 @@ COLORS = ['#00008F', '#0020FF', '#00AFFF', '#40FFBF', '#CFFF30', '#FF9F00',
           '#FF1000', '#800000']
          
 
-for dataset_type in DATASET_TYPES:         
+for dataset_type, mode in itertools.product(DATASET_TYPES, MODES):         
     
-    if dataset_type == SMALL: 
-        data = DATA_SD
-        yerr = range(3)
-        legend_loc = 3
-    else:
-        # dataset_type == LARGE
-        data = DATA_LD
-        yerr = range(5)
-        legend_loc = 4
+    data = DATA_SD if dataset_type == SMALL else DATA_LD
     
-    fig = plt.figure(figsize = (5.8, 3))
+    figsize = (5.58, 3) if mode == SCORES else (5.8, 3)
+    fig = plt.figure(figsize = figsize)
     ax = fig.add_subplot(111)
     
     
     # embeddings ordered according to their sequence in the data matrices
-    indices = np.unique(data[:,0], return_index = True)[1]
-    embeddings = [data[:,0][index] for index in sorted(indices)]
+    idxs = np.unique(data[:,0], return_index = True)[1]
+    embeddings = [data[:,0][idx] for idx in sorted(idxs)]
     
     # datasets ordered according to their sequence in the data matrices
-    indices = np.unique(data[:,1], return_index = True)[1]
-    datasets = [data[:,1][index] for index in sorted(indices)]
+    idxs = np.unique(data[:,1], return_index = True)[1]
+    datasets = [data[:,1][idx] for idx in sorted(idxs)]
     #scores = data[:,2]
     #std_devs = data[:,3]
     #runtimes = data[:,4]
     
-    #num_embeddings = len(embeddings)
-    
     space = 2/(len(embeddings) + 2)
-    
     width = (1 - space) / len(embeddings)
-    print "width:", width
     
-    for i, embedding in enumerate(embeddings):
-        print "embedding:", embedding
-        vals = data[data[:,0] == embedding][:,2].astype(np.float)
-        pos = [j - (1 - space)/2 + i * width for j in range(1, len(datasets) + 1)]
-    
-        # add label param
-        ax.bar(pos, vals, width = width, color = [COLORS[i]] * 3, yerr = yerr,
-               ecolor = 'black', label = EMBEDDING_ABBRVS[embeddings[i]])
-                      
-        x = 0
+#    for i, embedding in enumerate(embeddings):
+    for i in xrange(len(embeddings)):
+        positions = []
+
+        scores = []
+        std_devs = []
+
+        runtimes = []
+        
+#        for j, dataset in enumerate(datasets):
+        for j in xrange(len(datasets)):
+            position = j + 1 - (1 - space)/2 + i * width
+            positions.append(position)                
+            
+            if mode == SCORES:   
+                score, std_dev = tuple(
+                    data[i * len(datasets) + j][2:4].astype(float))
+                
+                scores.append(score)
+                std_devs.append(std_dev)
+            else:
+                # mode == RUNTIMES
+                runtime = float(data[i * len(datasets) + j][4])
+                runtimes.append(runtime)
+
+        
+        if mode == SCORES:                      
+            ax.bar(positions, scores, width = width, color = COLORS[i],
+                   yerr = std_devs, ecolor = 'black',
+                   label = EMBEDDING_ABBRVS[embeddings[i]])
+        else:
+            # mode == RUNTIMES
+            ax.bar(positions, runtimes, width = width, color = COLORS[i],
+                   label = EMBEDDING_ABBRVS[embeddings[i]])
                
     
     ax.set_xlim(0.5 - space/2, len(datasets) + 0.5 + space/2)
-    ax.set_ylim([0, 110])
     
+    x = range(1, len(datasets) + 1)
+    #plt.xticks(x, datasets, fontsize = FONT_SIZE)
+    plt.xticks(x, datasets)
     
     # Drawing the canvas causes the labels to be positioned, which is necessary
     # in order to get their values
     fig.canvas.draw()
     xtick_labels = [item.get_text() for item in ax.get_xticklabels()]
     
-    x = range(1, len(datasets) + 1)
-    #plt.xticks(x, datasets, fontsize = FONT_SIZE)
-    plt.xticks(x, datasets)
+    if mode == SCORES:
+        ax.set_ylim([0, 120])
+        
+        y = np.linspace(0, 100, 11).astype(int)
+        #plt.yticks(y, datasets, fontsize = FONT_SIZE)
+        
+        plt.tick_params(axis = 'x', which = 'both', bottom = 'off', top = 'off')
+            
+        plt.yticks(y)
+    else:
+        # mode == RUNTIMES
+        plt.yscale('log')
+        
+        ax.set_ylim([1, 1.5*24*60*60])
+        
+        plt.tick_params(axis = 'x', which = 'both', bottom = 'off', top = 'off')
+        
+        plt.tick_params(axis = 'y', which = 'minor', left = 'off', right = 'off')
+        
+        y = range(1, 10, 1) + range(10, 60, 10) + range(60, 10*60, 60) \
+            + [10*60, 20*60, 30*60] + range(60*60, 12*60*60, 60*60) \
+            + [12*60*60, 24*60*60]
+            
+        y_labels = ['1 sec'] + ['']*8 + ['10 sec'] + ['']*4 + ['1 min'] \
+                   + ['']*8 + ['10 min', '', '30 min', '1 h'] + ['']*10 \
+                   + ['12 h', '1 day']
+
+        plt.yticks(y, y_labels)
     
     
     # plot legend
     handles, labels = ax.get_legend_handles_labels()
-    ax.legend(handles, labels, loc = legend_loc,
-              prop = {'size': LEGEND_FONT_SIZE})
-    #ax.legend(handles, labels)
-    #plot.legend(bbox_to_anchor = (1.2, 0.5))
+
+    if mode == SCORES:
+        if dataset_type == SMALL:
+#            loc = None
+            loc = 9
+#            bbox_to_anchor = (0.824, 1.0)
+#            bbox_to_anchor = (0.6, 1.0)
+#            ncol = 2
+            ncol = 5
+            # 12 Pixel auf 300%
+        else:
+            # dataset_type == LARGE
+#            loc = 4
+#            ncol = 1
+            loc = 9
+            ncol = 5
+    else:
+#        mode == RUNTIMES
+        if dataset_type == SMALL:
+#            loc = 2
+#            ncol = 1
+            loc = 9
+#            ncol = 2
+            ncol = 5
+        else:
+            # dataset_type == LARGE
+#            loc = 1
+#            ncol = 1
+            loc = 9
+            ncol = 5
+    
+    if loc:
+        ax.legend(handles, labels, loc = loc, ncol = ncol,
+                  prop = {'size': LEGEND_FONT_SIZE})
+    else:
+        # location specified by bbox_to_anchor
+        ax.legend(handles, labels, bbox_to_anchor = bbox_to_anchor, ncol = ncol,
+                  prop = {'size': LEGEND_FONT_SIZE})
     
     plt.tight_layout(0.5)
     
-    output_file_name = 'figure_' + dataset_type
+    output_file_name = 'figure_' + dataset_type + '_' + mode
     plt.savefig(output_file_name + '.pdf')
     plt.savefig(join(TARGET_PATH, output_file_name + '.pgf'))
+
+
+
+
+#data = DATA_SD
+#x = data[np.logical_and(data[:,0] == 'neighborhood_hash', data[:,1] == 'MUTAG')]
 
 

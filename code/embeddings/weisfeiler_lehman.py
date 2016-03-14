@@ -51,7 +51,7 @@ def extract_features(graph_meta_data_of_num, h_range):
     # the keys are graph numbers and the values are dictionaries which map
     # features to their position in features_dict[graph_number] and
     # feature_counts_dict[graph_number], respectively
-    index_of_lbl_dict = defaultdict(dict)
+    idx_of_lbl_dict = defaultdict(dict)
     
     # the keys are graph numbers and the values are dictionaries which map
     # nodes to their updated label
@@ -122,14 +122,14 @@ def extract_features(graph_meta_data_of_num, h_range):
                     # uncompr_lbl
                     new_compr_lbl = compr_func[uncompr_lbl]
         
-                if new_compr_lbl not in index_of_lbl_dict[graph_num]:
+                if new_compr_lbl not in idx_of_lbl_dict[graph_num]:
                     # len(feature_counts_dict[graph_num])
                     # == len(features_dict[graph_num])
-                    index = len(feature_counts_dict[graph_num])
+                    idx = len(feature_counts_dict[graph_num])
         
-                    index_of_lbl_dict[graph_num][new_compr_lbl] = index
+                    idx_of_lbl_dict[graph_num][new_compr_lbl] = idx
         
-                    # features_dict[graph_num][index]
+                    # features_dict[graph_num][idx]
                     # == feature upd_lbls_dict[graph_num][v] (== new_compr_lbl)
                     features_dict[graph_num].append(new_compr_lbl)
         
@@ -137,13 +137,13 @@ def extract_features(graph_meta_data_of_num, h_range):
                     # upd_lbls_dict[graph_num][v] (== new_compr_lbl) to 1
                     feature_counts_dict[graph_num].append(1)
                 else:
-                    # features_dict[graph_num][index]
+                    # features_dict[graph_num][idx]
                     # == feature upd_lbls_dict[graph_num][v] (== new_compr_lbl)
-                    index = index_of_lbl_dict[graph_num][new_compr_lbl]
+                    idx = idx_of_lbl_dict[graph_num][new_compr_lbl]
         
                     # increase number of occurrences of the feature
                     # upd_lbls_dict[graph_num][v] (== new_compr_lbl)
-                    feature_counts_dict[graph_num][index] += 1
+                    feature_counts_dict[graph_num][idx] += 1
                 
                 if h < h_max:
                     # next_upd_lbls_dict[graph_num][v] == compr_func[lbl]

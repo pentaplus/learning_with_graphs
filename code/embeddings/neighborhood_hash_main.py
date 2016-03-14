@@ -61,7 +61,7 @@ def extract_features(graph_meta_data_of_num, h_range, count_sensitive = True,
     # the keys are graph numbers and the values are dictionaries which map
     # features to their position in features_dict[graph_number] and
     # feature_counts_dict[graph_number], respectively
-    index_of_lbl_dict = defaultdict(dict)
+    idx_of_lbl_dict = defaultdict(dict)
     
     # the keys are graph numbers and the values are dictionaries which map
     # nodes to their updated label
@@ -153,14 +153,14 @@ def extract_features(graph_meta_data_of_num, h_range, count_sensitive = True,
                     # == new_bit_lbl
                     next_upd_lbls_dict[graph_num][v] = new_bit_lbl
                 
-                if new_bit_lbl not in index_of_lbl_dict[graph_num]:
+                if new_bit_lbl not in idx_of_lbl_dict[graph_num]:
                     # len(feature_counts_dict[graph_num])
                     # == len(features_dict[graph_num])
-                    index = len(feature_counts_dict[graph_num])
+                    idx = len(feature_counts_dict[graph_num])
         
-                    index_of_lbl_dict[graph_num][new_bit_lbl] = index
+                    idx_of_lbl_dict[graph_num][new_bit_lbl] = idx
         
-                    # features_dict[graph_num][index]
+                    # features_dict[graph_num][idx]
                     # == feature upd_lbls_dict[graph_num][v] (== new_bit_lbl)
                     features_dict[graph_num].append(new_bit_lbl)
         
@@ -168,13 +168,13 @@ def extract_features(graph_meta_data_of_num, h_range, count_sensitive = True,
                     # upd_lbls_dict[graph_num][v] (== new_bit_lbl) to 1
                     feature_counts_dict[graph_num].append(1)
                 else:
-                    # features_dict[graph_num][index]
+                    # features_dict[graph_num][idx]
                     # == feature upd_lbls_dict[graph_num][v] (== new_bit_lbl)
-                    index = index_of_lbl_dict[graph_num][new_bit_lbl]
+                    idx = idx_of_lbl_dict[graph_num][new_bit_lbl]
         
                     # increase number of occurrences of the feature
                     # upd_lbls_dict[graph_num][v] (== new_bit_lbl)
-                    feature_counts_dict[graph_num][index] += 1
+                    feature_counts_dict[graph_num][idx] += 1
                     
         
         #=========================================================================
@@ -252,7 +252,7 @@ def extract_features(graph_meta_data_of_num, h_range, count_sensitive = True,
             if not all_iter:
                 features_dict = defaultdict(list)
                 feature_counts_dict = defaultdict(list)
-                index_of_lbl_dict = defaultdict(dict)
+                idx_of_lbl_dict = defaultdict(dict)
 
     return feature_mat_of_param, extr_time_of_param
     

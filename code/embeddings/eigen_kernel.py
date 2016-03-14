@@ -6,7 +6,7 @@ corresponding feature extraction.
 """
 
 __author__ = "Benjamin Plock <benjamin.plock@stud.uni-goettingen.de>"
-__date__ = "2016-03-04"
+__date__ = "2016-03-14"
 
 
 import inspect
@@ -30,7 +30,7 @@ sys.path.append(join(SCRIPT_FOLDER_PATH, '..'))
 from misc import utils, pz
 
 
-def get_average_num_of_nodes(graph_meta_data_of_num):
+def get_max_num_of_nodes(graph_meta_data_of_num):
     node_counts = []
     for graph_path, class_lbl in graph_meta_data_of_num.itervalues():
         G = pz.load(graph_path)
@@ -40,25 +40,29 @@ def get_average_num_of_nodes(graph_meta_data_of_num):
     return max(node_counts)
     
     
-def get_node_num_degree_pairs_sorted_by_degree(G):
+def get_node_num_degree_pairs(G):
+    """
+    Return pairs (node_num, degree) sorted by degree in ascending order.
+    """
     node_degrees = G.degree().values()
     return sorted(enumerate(node_degrees), key = itemgetter(1))
 
 
-def update_upd_index_of_orig_index(upd_index_of_orig_index,
-                                   removed_node_num):
+def update_upd_row_idx_of_orig_row_idx(upd_row_idx_of_orig_row_idx,
+                                       removed_node_num):
     
-    upd_index_of_orig_index[removed_node_num] = None
+    upd_row_idx_of_orig_row_idx[removed_node_num] = None
     
-    for node_num in xrange(removed_node_num + 1, len(upd_index_of_orig_index)):
-        if upd_index_of_orig_index[node_num]:
-            upd_index_of_orig_index[node_num] -= 1
+    for node_num in xrange(removed_node_num + 1,
+                           len(upd_row_idx_of_orig_row_idx)):
+                               
+        if upd_row_idx_of_orig_row_idx[node_num]:
+            upd_row_idx_of_orig_row_idx[node_num] -= 1
                                  
-    return upd_index_of_orig_index
-        
+    return upd_row_idx_of_orig_row_idx
     
 
-def extract_features(graph_meta_data_of_num, param_range = [None]):
+def extract_features(graph_meta_data_of_num, param_range):
     extr_start_time = time.time()
     
     feature_mat_of_param = {}
@@ -66,9 +70,9 @@ def extract_features(graph_meta_data_of_num, param_range = [None]):
     
     num_graphs = len(graph_meta_data_of_num)
     
-    average_num_of_nodes = get_average_num_of_nodes(graph_meta_data_of_num)
+    max_num_of_nodes = get_max_num_of_nodes(graph_meta_data_of_num)
 
-    feature_mat = np.zeros((num_graphs, int(average_num_of_nodes)),
+    feature_mat = np.zeros((num_graphs, int(max_num_of_nodes)),
                            dtype = np.float64)
     
     #=============================================================================
@@ -88,10 +92,13 @@ def extract_features(graph_meta_data_of_num, param_range = [None]):
 #        A = nx.adj_matrix(G, weight = None)
         
         num_nodes = len(G.node)
-        upd_index_of_orig_index = dict(izip(xrange(num_nodes), xrange(num_nodes)))
-        node_num_degree_pairs = get_node_num_degree_pairs_sorted_by_degree(G)
+        upd_row_idx_of_orig_row_idx = dict(izip(xrange(num_nodes),
+                                                xrange(num_nodes)))
         
-        for j in xrange(min(int(average_num_of_nodes), num_nodes)):
+        # get pairs (node_num, degree) sorted by degree in ascending order                                        
+        node_num_degree_pairs = get_node_num_degree_pairs(G)
+        
+        for j in xrange(min(int(max_num_of_nodes), num_nodes)):
             # store largest eigenvalue of A in feature matrix
             feature_mat[i,j] = eigvalsh(A)[-1]
 #            feature_mat[i,j] = np.linalg.det(A)
@@ -99,15 +106,16 @@ def extract_features(graph_meta_data_of_num, param_range = [None]):
             # determine the node number, which corresponds to the node with
             # smallest degree, and remove the corresponding row and column of
             # the (original) adjacency matrix of G
+            # !! better mathematical term
             node_num_smallest_deg = node_num_degree_pairs[j][0]
             
-            delete_index = upd_index_of_orig_index[node_num_smallest_deg]        
+            del_idx = upd_row_idx_of_orig_row_idx[node_num_smallest_deg]        
             
-            A = np.delete(A, (delete_index), axis = 0)
-            A = np.delete(A, (delete_index), axis = 1)
+            A = np.delete(A, (del_idx), axis = 0)
+            A = np.delete(A, (del_idx), axis = 1)
             
-            upd_index_of_orig_index = update_upd_index_of_orig_index(
-                upd_index_of_orig_index,
+            upd_row_idx_of_orig_row_idx = update_upd_row_idx_of_orig_row_idx(
+                upd_row_idx_of_orig_row_idx,
                 node_num_smallest_deg)
         
         # !!
