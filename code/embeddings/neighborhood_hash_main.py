@@ -264,9 +264,9 @@ if __name__ == '__main__':
     DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
     dataset = 'MUTAG'
     
-    graph_meta_data_of_num, class_lbls =\
-      dataset_loader.get_graph_meta_data_of_num_dict_and_class_lbls(dataset,
-                                                                    DATASETS_PATH)    
+    graph_meta_data_of_num, class_lbls \
+        = dataset_loader.get_graph_meta_data_and_class_lbls(dataset,
+                                                            DATASETS_PATH)    
     
     # h = 0: 56900    586
     # h = 1: 55892    828

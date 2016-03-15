@@ -185,7 +185,8 @@ def extract_features(graph_meta_data_of_num, h_range):
         feature_mat = csr_matrix((np.array(feature_counts), np.array(features),
                                   np.array(feature_ptr)),
                                   shape = (len(graph_meta_data_of_num),
-                                  len(compr_func)), dtype = np.float64)
+                                           len(compr_func)),
+                                  dtype = np.float64)
         feature_mat_of_param[h] = feature_mat
         
         extr_end_time = time.time()
@@ -221,14 +222,14 @@ if __name__ == '__main__':
     dataset = 'MUTAG'
 #    dataset = 'PTC(MR)'
     
-    graph_meta_data_of_num, class_lbls =\
-      dataset_loader.get_graph_meta_data_of_num_dict_and_class_lbls(dataset,
-                                                                    DATASETS_PATH)    
+    graph_meta_data_of_num, class_lbls \
+        = dataset_loader.get_graph_meta_data_and_class_lbls(dataset,
+                                                            DATASETS_PATH)    
     
     h_range = range(6)
     
-    feature_mat_of_param, extr_time_of_param =\
-                                 extract_features(graph_meta_data_of_num, h_range)
+    feature_mat_of_param, extr_time_of_param \
+        = extract_features(graph_meta_data_of_num, h_range)
                                  
     feature_mat = feature_mat_of_param[1]                                                                
                                                                    

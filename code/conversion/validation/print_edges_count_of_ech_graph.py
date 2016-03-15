@@ -28,9 +28,8 @@ dataset = 'ENZYMES'
 # dataset = 'NCI1'
 # dataset = 'NCI109'
 
-graph_meta_data_of_num, class_lbls =\
-      dataset_loader.get_graph_meta_data_of_num_dict_and_class_lbls(dataset,
-                                                                    DATASETS_PATH)
+graph_meta_data_of_num, class_lbls \
+    = dataset_loader.get_graph_meta_data_and_class_lbls(dataset, DATASETS_PATH)
 
 f = open('python_edges_count_of_each_graph.csv', 'w')    
 for graph_num, (graph_path, class_lbl) in graph_meta_data_of_num.iteritems():

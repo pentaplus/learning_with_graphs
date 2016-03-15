@@ -38,9 +38,8 @@ DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
 DATASET = 'ANDROID FCG PARTIAL'
 
 
-graph_meta_data_of_num, class_lbls =\
-      dataset_loader.get_graph_meta_data_of_num_dict_and_class_lbls(DATASET,
-                                                                    DATASETS_PATH)
+graph_meta_data_of_num, class_lbls \
+    = dataset_loader.get_graph_meta_data_and_class_lbls(DATASET, DATASETS_PATH)
     
 graphs_of_class = dataset_loader.get_graphs_of_class_dict(graph_meta_data_of_num)
 

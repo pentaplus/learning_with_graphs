@@ -65,7 +65,7 @@ def get_class_lbls(graph_meta_data_of_num):
     return np.array(class_lbls)
     
     
-def get_graph_meta_data_of_num_dict_and_class_lbls(dataset, datasets_path):
+def get_graph_meta_data_and_class_lbls(dataset, datasets_path):
     folder_of_dataset = get_folder_of_dataset_dict(datasets_path)
     
     datasets = folder_of_dataset.keys()
@@ -115,7 +115,7 @@ if __name__ == '__main__':
 #    dataset = 'MUTAG'
     dataset = 'PTC(MR)'
     
-    graph_meta_data_of_num, class_lbls =\
-            get_graph_meta_data_of_num_dict_and_class_lbls(dataset, DATASET_PATH)
+    graph_meta_data_of_num, class_lbls \
+        = get_graph_meta_data_and_class_lbls(dataset, DATASET_PATH)
                                                              
     G = pz.load(graph_meta_data_of_num[0][0])

@@ -210,7 +210,7 @@ def extract_features(graph_meta_data_of_num, graphlet_size = 4):
 
 if __name__ == '__main__':
     
-    from misc import dataset_loader as d_loader
+    from misc import dataset_loader as loader
     
     DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
     dataset = 'MUTAG'
@@ -218,9 +218,8 @@ if __name__ == '__main__':
 #    dataset = 'ENZYMES'
 #    dataset = 'NCI1'
 #    dataset = 'NCI109'
-    graph_meta_data_of_num, class_lbls = \
-            d_loader.get_graph_meta_data_of_num_dict_and_class_lbls(dataset,
-                                                                    DATASETS_PATH)
+    graph_meta_data_of_num, class_lbls \
+        = loader.get_graph_meta_data_and_class_lbls(dataset, DATASETS_PATH)
     
     
     start = time.time()

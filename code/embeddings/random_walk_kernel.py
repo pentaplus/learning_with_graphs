@@ -189,9 +189,9 @@ if __name__ == '__main__':
 #    dataset = 'PTC(MR)'
 #    dataset = 'FLASH CFG'
     
-    graph_meta_data_of_num, class_lbls =\
-      dataset_loader.get_graph_meta_data_of_num_dict_and_class_lbls(dataset,
-                                                                    DATASETS_PATH)    
+    graph_meta_data_of_num, class_lbls \
+        = dataset_loader.get_graph_meta_data_and_class_lbls(dataset,
+                                                            DATASETS_PATH)    
     
     h_range = range(6)
     

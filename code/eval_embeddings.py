@@ -9,6 +9,8 @@ kernel and the !!. The classification accuracies and runtimes are
 evaluated on the following 8 datasets: MUTAG, PTC(MR), ENZYMES, DD,
 NCI1, NCI109, FLASH CFG, and ANDROID FCG.
 """
+from __future__ import division
+
 
 __author__ = "Benjamin Plock <benjamin.plock@stud.uni-goettingen.de>"
 __date__ = "2016-02-28"
@@ -106,8 +108,8 @@ FLASH_CFG = 'FLASH CFG'
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL_3]
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL_4]
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL_3, GRAPHLET_KERNEL_4]
-EMBEDDING_NAMES = [RANDOM_WALK_KERNEL]
-#EMBEDDING_NAMES = [EIGEN_KERNEL]
+#EMBEDDING_NAMES = [RANDOM_WALK_KERNEL]
+EMBEDDING_NAMES = [EIGEN_KERNEL]
 
 
 # keys are indices of the list EMBEDDING_NAMES, values are the respective
@@ -120,19 +122,20 @@ EMBEDDING_PARAM_RANGES = {
     GRAPHLET_KERNEL_3: [None],
     GRAPHLET_KERNEL_4: [None],
     RANDOM_WALK_KERNEL: [None],
-    EIGEN_KERNEL: [0.2, 0.4, 0.6, 0.8, 1.0]}
+    EIGEN_KERNEL: np.linspace(1/6, 1, 6)}
 
 #DATASET = ANDROID_FCG_PARTIAL # !! increase number of samples
 
 # sorted by number of graphs in ascending order
-DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109, FLASH_CFG]
+#DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109, FLASH_CFG]
+#DATASETS = [MUTAG, PTC_MR, ENZYMES, NCI1, NCI109]
 #DATASETS = [DD, NCI1, NCI109, FLASH_CFG]
 #DATASETS = [MUTAG, PTC_MR, ENZYMES]
 #DATASETS = [DD, NCI1, NCI109]
 #DATASETS = [MUTAG]
 #DATASETS = [PTC_MR]
 #DATASETS = [ENZYMES]
-#DATASETS = [DD]
+DATASETS = [DD]
 #DATASETS = [NCI1]
 #DATASETS = [NCI109]
 #DATASETS = [ANDROID_FCG_PARTIAL]
@@ -144,8 +147,8 @@ OPT_PARAM = True
 COMPARE_PARAMS = True
 #COMPARE_PARAMS = False
 
-SEARCH_OPT_SVM_PARAM_IN_PAR = True
-#SEARCH_OPT_SVM_PARAM_IN_PAR = False
+#SEARCH_OPT_SVM_PARAM_IN_PAR = True
+SEARCH_OPT_SVM_PARAM_IN_PAR = False
 
 #EXPER_NUM_ITER = 10
 #EXPER_NUM_ITER = 5
@@ -378,9 +381,8 @@ for dataset in DATASETS:
     # 1) retrieve graph meta data and class lables
     #=============================================================================
     graph_meta_data_of_num, class_lbls \
-        = dataset_loader.get_graph_meta_data_of_num_dict_and_class_lbls(
-            dataset,
-            DATASETS_PATH)
+        = dataset_loader.get_graph_meta_data_and_class_lbls(dataset,
+                                                            DATASETS_PATH)
     
     for embedding_name in EMBEDDING_NAMES:
         # set parameters depending on whether or not the number of samples within 
