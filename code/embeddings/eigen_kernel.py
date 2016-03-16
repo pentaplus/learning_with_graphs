@@ -142,7 +142,7 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
         
         for j in xrange(min(nodes_count, int(max_num_of_nodes))):
             sys.stdout.write('i = ' + str(i) + ' (|V| = ' + str(nodes_count)\
-                             + '), j = ' + str(j))        
+                             + '), j = ' + str(j) + ': ')        
             
             inner_loop_start_time = time.time()
             
@@ -153,11 +153,14 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
             try:
                 feature_mat[i,j] = max(eigsh(A, k = 1,
                                        return_eigenvectors = False))
+                sys.stdout.write(str(feature_mat[i,j]))
             except ArpackNoConvergence:
-                sys.stdout.write( '[NO CONVERGENCE]\n')
                 if j > 0:
                     feature_mat[i,j] = feature_mat[i,j - 1]
-                
+                sys.stdout.write(str(feature_mat[i,j - 1]) \
+                                 + ' [NO CONVERGENCE]\n')
+            
+            sys.stdout.write('\n')
             
             if A.shape[0] <= 10:
                 break
