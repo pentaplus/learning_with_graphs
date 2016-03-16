@@ -158,7 +158,7 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
                 if j > 0:
                     feature_mat[i,j] = feature_mat[i,j - 1]
                 sys.stdout.write(str(feature_mat[i,j - 1]) \
-                                 + ' [NO CONVERGENCE]\n')
+                                 + ' [NO CONVERGENCE]')
             
             sys.stdout.write('\n')
             
