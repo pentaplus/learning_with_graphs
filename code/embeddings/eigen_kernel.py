@@ -111,6 +111,8 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
             = int(node_del_frac * max_num_of_nodes)
             
     node_del_fracs_desc_order = sorted(node_del_fracs, reverse = True)
+    
+    first_eig_val_no_conv = False
         
     #=============================================================================
     # 1) extract features iterating over all graphs in the dataset
@@ -151,11 +153,24 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
             
 #            feature_mat[i,j] = max(eigsh(A, k = 1, return_eigenvectors = False))
             try:
-                feature_mat[i,j] = max(eigsh(A, k = 1,
-                                       return_eigenvectors = False))
+                feature_mat[i,j] = eigsh(A, k = 1, return_eigenvectors = False))
+                
+                # algorithm converged
                 sys.stdout.write(str(feature_mat[i,j]))
+                
+                if first_eig_val_no_conv:
+                    feature_mat[i, :j] = feature_mat[i,j]
+                    first_eig_val_no_conv = False
+                    
             except ArpackNoConvergence:
-                if j > 0:
+                if j == 0:
+#                    A_full = A.todense()
+#                    try:
+#                        feature_mat[i,j] = eigvalsh(A)[-1]
+#                    except LinAlgError:
+#                        pass
+                    first_eig_val_no_conv = True
+                else:
                     feature_mat[i,j] = feature_mat[i,j - 1]
                 sys.stdout.write(str(feature_mat[i,j - 1]) \
                                  + ' [NO CONVERGENCE]')
@@ -267,3 +282,9 @@ if __name__ == '__main__':
     
 #A = np.delete(A, (2), axis = 0)
 #A = np.delete(A, (2), axis = 1)
+
+try:
+    5/0
+    print('jo')
+except ZeroDivisionError:
+    print('aha')
