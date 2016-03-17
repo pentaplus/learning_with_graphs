@@ -50,7 +50,7 @@ def optimize_embedding_param(clf, feature_mat_of_param, class_lbls,
             opt_clf = None
 
 #            for param, feature_mat in feature_mat_of_param.iteritems():
-            for param in feature_mat_of_param.iterkeys():
+            for param in sorted(feature_mat_of_param.iterkeys()):
                 feature_mat = feature_mat_of_param[param]
 
                 if isinstance(clf, GridSearchCV):
