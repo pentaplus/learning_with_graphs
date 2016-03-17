@@ -55,9 +55,12 @@ def optimize_embedding_param(clf, feature_mat_of_param, class_lbls,
                     
                     sub_clf = clf.best_estimator_
                     
-                    print('param = %d, i = %d, j = %d: params = %s'
-                          % (param, i, j, clf.best_params_))
-                                                 
+                    if isinstance(param, int):
+                        print('param = %d, i = %d, j = %d: params = %s'
+                              % (param, i, j, clf.best_params_))
+                    elif isinstance(param, float):
+                        print('param = %.2f, i = %d, j = %d: params = %s'
+                              % (param, i, j, clf.best_params_))                        
                     score_on_train_data = sub_clf.score(feature_mat[test_indices],
                                                         class_lbls[test_indices])
                     if score_on_train_data > best_score_on_train_data:
@@ -68,9 +71,13 @@ def optimize_embedding_param(clf, feature_mat_of_param, class_lbls,
                         clf, feature_mat[train_indices],
                         class_lbls[train_indices],
                         cv = num_inner_folds).mean()
-            
-                print('param = %d, i = %d, j = %d: score = %.2f'
-                      % (param, i, j, score_on_train_data))
+                
+                if isinstance(param, int):
+                    print('param = %d, i = %d, j = %d: score = %.2f'
+                          % (param, i, j, score_on_train_data))
+                elif isinstance(param, float):
+                    print('param = %.2f, i = %d, j = %d: score = %.2f'
+                          % (param, i, j, score_on_train_data))
                                                              
                 if score_on_train_data > best_score_on_train_data:
                     best_score_on_train_data = score_on_train_data
@@ -85,8 +92,12 @@ def optimize_embedding_param(clf, feature_mat_of_param, class_lbls,
             score_on_test_data = clf.score(best_data_mat[test_indices],
                                            class_lbls[test_indices])
             scores_on_test_data.append(score_on_test_data)
-            print('-> score on test data = %.2f (best param = %d)\n'
-                  % (score_on_test_data, best_param_on_train_data))
+            if isinstance(best_param_on_train_data, int):
+                print('-> score on test data = %.2f (best param = %d)\n'
+                      % (score_on_test_data, best_param_on_train_data))
+            elif isinstance(best_param_on_train_data, float):
+                print('-> score on test data = %.2f (best param = %.2f)\n'
+                      % (score_on_test_data, best_param_on_train_data))
        
         mean_score_on_test_data = np.mean(scores_on_test_data) 
         mean_scores_on_test_data.append(mean_score_on_test_data)

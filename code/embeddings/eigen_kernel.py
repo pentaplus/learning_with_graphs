@@ -113,6 +113,9 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
     node_del_fracs_desc_order = sorted(node_del_fracs, reverse = True)
     
     first_eig_val_no_conv = False
+    
+    conv_count = 0
+    no_conv_count = 0
         
     #=============================================================================
     # 1) extract features iterating over all graphs in the dataset
@@ -153,7 +156,8 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
             
 #            feature_mat[i,j] = max(eigsh(A, k = 1, return_eigenvectors = False))
             try:
-                feature_mat[i,j] = eigsh(A, k = 1, return_eigenvectors = False))
+                feature_mat[i,j] = eigsh(A, k = 1, maxiter = 20*A.shape[0],
+                                         return_eigenvectors = False)
                 
                 # algorithm converged
                 sys.stdout.write(str(feature_mat[i,j]))
@@ -161,6 +165,8 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
                 if first_eig_val_no_conv:
                     feature_mat[i, :j] = feature_mat[i,j]
                     first_eig_val_no_conv = False
+                    
+                conv_count += 1
                     
             except ArpackNoConvergence:
                 if j == 0:
@@ -174,10 +180,12 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
                     feature_mat[i,j] = feature_mat[i,j - 1]
                 sys.stdout.write(str(feature_mat[i,j - 1]) \
                                  + ' [NO CONVERGENCE]')
+                                 
+                no_conv_count += 1
             
             sys.stdout.write('\n')
             
-            if A.shape[0] <= 10:
+            if A.shape[0] <= 2:
                 break
             
             # determine the node number, which corresponds to the node with
@@ -252,6 +260,8 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
         mat_constr_times.append(mat_constr_time)
             
     x = 0
+    
+    print 'Convergence ratio: %.2f' % (conv_count / (conv_count + no_conv_count))
    
     return feature_mat_of_param, extr_time_of_param
 
@@ -262,10 +272,10 @@ if __name__ == '__main__':
     from misc import dataset_loader as loader
     
     DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
-#    dataset = 'MUTAG'
+    dataset = 'MUTAG'
 #    dataset = 'ENZYMES'
 #    dataset = 'DD'
-    dataset = 'FLASH CFG'
+#    dataset = 'FLASH CFG'
     
     graph_meta_data_of_num, class_lbls \
         = loader.get_graph_meta_data_and_class_lbls(dataset, DATASETS_PATH)    
@@ -283,8 +293,8 @@ if __name__ == '__main__':
 #A = np.delete(A, (2), axis = 0)
 #A = np.delete(A, (2), axis = 1)
 
-try:
-    5/0
-    print('jo')
-except ZeroDivisionError:
-    print('aha')
+#try:
+#    5/0
+#    print('jo')
+#except ZeroDivisionError:
+#    print('aha')

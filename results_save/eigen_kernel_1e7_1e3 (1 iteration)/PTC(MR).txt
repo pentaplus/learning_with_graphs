@@ -9,56 +9,56 @@ CLF_MAX_ITER: 1e+07
 SEARCH_OPT_SVM_PARAM_IN_PAR: FALSE
 ------------------------------------------
 
-Graph loading and feature exraction took 22.5 seconds.
+Graph loading and feature exraction took 49.9 seconds.
 
 LINEAR/RBF (OPT_PARAM)
-0.867 (+/-0.000) in 12.7 seconds
+0.567 (+/-0.000) in 23.7 seconds
 
 ------------------------------------------
 Parameter: 0.16666666666666666
 
-Feature extraction took 22.5 seconds.
-Feature matrix dimension: (188L, 2L)
+Feature extraction took 49.9 seconds.
+Feature matrix dimension: (344L, 4L)
 
 LINEAR/RBF
-0.830 (+/-0.000) in 0.5 seconds
+0.538 (+/-0.000) in 0.9 seconds
 ------------------------------------------
 Parameter: 0.33333333333333337
 
-Feature extraction took 22.5 seconds.
-Feature matrix dimension: (188L, 5L)
+Feature extraction took 49.9 seconds.
+Feature matrix dimension: (344L, 8L)
 
 LINEAR/RBF
-0.740 (+/-0.000) in 0.8 seconds
+0.553 (+/-0.000) in 2.5 seconds
 ------------------------------------------
 Parameter: 0.5
 
-Feature extraction took 22.5 seconds.
-Feature matrix dimension: (188L, 8L)
+Feature extraction took 49.9 seconds.
+Feature matrix dimension: (344L, 12L)
 
 LINEAR/RBF
-0.713 (+/-0.000) in 1.2 seconds
+0.558 (+/-0.000) in 2.8 seconds
 ------------------------------------------
 Parameter: 0.66666666666666663
 
-Feature extraction took 22.5 seconds.
-Feature matrix dimension: (188L, 11L)
+Feature extraction took 49.9 seconds.
+Feature matrix dimension: (344L, 17L)
 
 LINEAR/RBF
-0.702 (+/-0.000) in 1.8 seconds
+0.558 (+/-0.000) in 4.1 seconds
 ------------------------------------------
 Parameter: 0.83333333333333337
 
-Feature extraction took 22.5 seconds.
-Feature matrix dimension: (188L, 14L)
+Feature extraction took 49.9 seconds.
+Feature matrix dimension: (344L, 21L)
 
 LINEAR/RBF
-0.718 (+/-0.000) in 3.2 seconds
+0.558 (+/-0.000) in 4.6 seconds
 ------------------------------------------
 Parameter: 1.0
 
-Feature extraction took 22.5 seconds.
-Feature matrix dimension: (188L, 17L)
+Feature extraction took 49.9 seconds.
+Feature matrix dimension: (344L, 25L)
 
 LINEAR/RBF
-0.718 (+/-0.000) in 2.8 seconds
+0.558 (+/-0.000) in 6.4 seconds
