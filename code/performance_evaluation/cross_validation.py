@@ -49,7 +49,10 @@ def optimize_embedding_param(clf, feature_mat_of_param, class_lbls,
             best_score_on_train_data = 0.0
             opt_clf = None
 
-            for param, feature_mat in feature_mat_of_param.iteritems():
+#            for param, feature_mat in feature_mat_of_param.iteritems():
+            for param in feature_mat_of_param.iterkeys():
+                feature_mat = feature_mat_of_param[param]
+
                 if isinstance(clf, GridSearchCV):
                     clf.fit(feature_mat[train_indices], class_lbls[train_indices])
                     
