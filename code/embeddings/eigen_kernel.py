@@ -133,8 +133,8 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
 #        A = utils.get_adjacency_matrix(G)
         A = nx.adj_matrix(G, weight = None).astype('d')
         
-        import sys
-        sys.modules['__main__'].A = A
+#        import sys
+#        sys.modules['__main__'].A = A
         
         nodes_count = len(G.node)
         upd_row_idx_of_orig_row_idx = dict(izip(xrange(nodes_count),

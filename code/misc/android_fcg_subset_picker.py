@@ -29,9 +29,13 @@ sys.path.append(join(SCRIPT_FOLDER_PATH, '..'))
 
 from misc import dataset_loader, utils
 
-RATIO = 135791./(135791 + 12158) # 0.91782
-SUBSET_SIZE = 2000
+# ratio of benign samples within the subset
+#RATIO = 135791./(135791 + 12158) # 0.91782
+RATIO = 0.75
+SUBSET_SIZE = 5000
+# number of benign samples
 CLASS_0_SUBSET_SIZE = int(RATIO * SUBSET_SIZE)
+# number of malicious samples
 CLASS_1_SUBSET_SIZE = SUBSET_SIZE - CLASS_0_SUBSET_SIZE
 
 SOURCE_CLASSES_PATH = 'Z:\ANDROID FCG\pz'
@@ -57,10 +61,18 @@ for class_lbl, class_folder in folder_of_class.iteritems():
     if class_lbl == 1:
         graph_file_names_subset = graph_file_names[:CLASS_1_SUBSET_SIZE]
     
+    copied_graph_files_count = 0
     # copy graph files of the chosen subset to destination folder
     for graph_file_name in graph_file_names_subset:
         graph_file_base_name = re.match('.*?(?=\.)', graph_file_name).group(0)
         
         shutil.copyfile(join(source_class_path, graph_file_name),
                         join(target_class_path, graph_file_base_name + '.pz'))
+                        
+        copied_graph_files_count += 1
+        
+        if copied_graph_files_count % 10 == 0:
+            print "Graph files copied: %d" % copied_graph_files_count
+            
+
         

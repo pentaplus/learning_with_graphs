@@ -1,20 +1,17 @@
-# 1. Schauen, wie die logarithmische Zeit-Skala aussieht
-# 2. Höhen eintragen
-
-# 1. Die Höhen der Säulen müssen korrekt angegeben werden.
-# 2. Die "error bars" müssen richtig spezifiziert werden.
-# 3. Die y-Achse muss richtig beschriftet werden.
-# 4. Ein weiterer Plot muss mit den Laufzeiten erstellt werden.
-# 5. Alle Schritte müssen wiederholt werden für die anderen 5 Datensätze.
+# 1. RW
+# 2. EGK
 
 """
-Plot bar charts for the classification accuracy of the embedding methods.
+Plot bar charts representing the results of the embedding methods.
+
+The plots show the classification accuracy and the runtime of the
+respective methods.
 """
 
 from __future__ import division
 
 __author__ = "Benjamin Plock <benjamin.plock@stud.uni-goettingen.de>"
-__date__ = "2016-03-10"
+__date__ = "2016-03-17"
 
 
 import inspect
@@ -127,9 +124,9 @@ DATA_SD = np.array(
      [GRAPHLET_KERNEL_4, MUTAG, 86.4, 1.0, 1370.8/10 + 0.7],
      [GRAPHLET_KERNEL_4, PTC_MR, 54.4, 1.7, 4668.8/10 + 1.5],
      [GRAPHLET_KERNEL_4, ENZYMES, 17.6, 1.4, 41190.1/10 + 8.6],
-     [RANDOM_WALK_KERNEL, MUTAG,  90.0, 0.0, 3600.0],
-     [RANDOM_WALK_KERNEL, PTC_MR, 90.0, 0.0, 3600.0],
-     [RANDOM_WALK_KERNEL, ENZYMES, 90.0, 0.0, 3600.0],
+     [RANDOM_WALK_KERNEL, MUTAG,  83.4, 2.7, 15.4/10 + 11.2],
+     [RANDOM_WALK_KERNEL, PTC_MR, 53.5, 1.4, 55.7/10 + 57.9],
+     [RANDOM_WALK_KERNEL, ENZYMES, 14.8, 0.8, 33.1/10 + 231.4],
      [EIGEN_KERNEL, MUTAG, 90.0, 0.0, 3600.0],
      [EIGEN_KERNEL, PTC_MR, 90.0, 0.0, 3600.0],
      [EIGEN_KERNEL, ENZYMES, 90.0, 0.0, 3600.0]])
@@ -170,10 +167,10 @@ DATA_LD = np.array(
      [GRAPHLET_KERNEL_4, NCI109, 54.3, 1.1, 132.2/10 + 22.9],
      [GRAPHLET_KERNEL_4, FLASH_CFG, 66.1, 4.1, 72.3/10 + 125.1],
      [GRAPHLET_KERNEL_4, ANDROID_FCG, 90.0, 0.0, 3600.0],
-     [RANDOM_WALK_KERNEL, DD, 90.0, 0.0, 3600.0],
-     [RANDOM_WALK_KERNEL, NCI1, 90.0, 0.0, 3600.0],
-     [RANDOM_WALK_KERNEL, NCI109, 90.0, 0.0, 3600.0],
-     [RANDOM_WALK_KERNEL, FLASH_CFG, 90.0, 0.0, 3600.0],
+     [RANDOM_WALK_KERNEL, DD, 73.8, 0.2, 28.5/10 + 37552.2],
+     [RANDOM_WALK_KERNEL, NCI1, 55.8, 0.9, 110.1/10 + 9604.3],
+     [RANDOM_WALK_KERNEL, NCI109, 55.2, 1.1, 115.7/10 + 9578.5],
+     [RANDOM_WALK_KERNEL, FLASH_CFG, 0.0, 0.0, 2*24*60*60],
      [RANDOM_WALK_KERNEL, ANDROID_FCG, 90.0, 0.0, 3600.0],
      [EIGEN_KERNEL, DD, 90.0, 0.0, 3600.0],
      [EIGEN_KERNEL, NCI1, 90.0, 0.0, 3600.0],
@@ -185,6 +182,8 @@ DATA_LD = np.array(
 # order according to the sequence of the embeddings in the data matrices
 COLORS = ['#00008F', '#0020FF', '#00AFFF', '#40FFBF', '#CFFF30', '#FF9F00',
           '#FF1000', '#800000']
+          
+# #87FF77 can be used between #40FFBF and #CFFF30
          
 
 for dataset_type, mode in itertools.product(DATASET_TYPES, MODES):         
@@ -210,7 +209,6 @@ for dataset_type, mode in itertools.product(DATASET_TYPES, MODES):
     space = 2/(len(embeddings) + 2)
     width = (1 - space) / len(embeddings)
     
-#    for i, embedding in enumerate(embeddings):
     for i in xrange(len(embeddings)):
         positions = []
 
@@ -294,39 +292,29 @@ for dataset_type, mode in itertools.product(DATASET_TYPES, MODES):
         if dataset_type == SMALL:
 #            loc = None
             loc = 9
-#            bbox_to_anchor = (0.824, 1.0)
-#            bbox_to_anchor = (0.6, 1.0)
-#            ncol = 2
             ncol = 5
-            # 12 Pixel auf 300%
+#            bbox_to_anchor = (0.6, 1.0)
         else:
             # dataset_type == LARGE
-#            loc = 4
-#            ncol = 1
             loc = 9
             ncol = 5
     else:
 #        mode == RUNTIMES
         if dataset_type == SMALL:
-#            loc = 2
-#            ncol = 1
             loc = 9
-#            ncol = 2
             ncol = 5
         else:
             # dataset_type == LARGE
-#            loc = 1
-#            ncol = 1
             loc = 9
             ncol = 5
     
     if loc:
         ax.legend(handles, labels, loc = loc, ncol = ncol,
                   prop = {'size': LEGEND_FONT_SIZE})
-    else:
-        # location specified by bbox_to_anchor
-        ax.legend(handles, labels, bbox_to_anchor = bbox_to_anchor, ncol = ncol,
-                  prop = {'size': LEGEND_FONT_SIZE})
+#    else:
+#        # location specified by bbox_to_anchor
+#        ax.legend(handles, labels, bbox_to_anchor = bbox_to_anchor, ncol = ncol,
+#                  prop = {'size': LEGEND_FONT_SIZE})
     
     plt.tight_layout(0.5)
     
