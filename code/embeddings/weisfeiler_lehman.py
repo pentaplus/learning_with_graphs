@@ -75,8 +75,8 @@ def extract_features(graph_meta_data_of_num, h_range):
         for graph_num, (graph_path, class_lbl) in\
                                                graph_meta_data_of_num.iteritems():
             # !!        
-#            if graph_num % 100 == 0:
-#                print 'r = ' + str(r) + ', graph_num = ' + str(graph_num)
+            if graph_num % 100 == 0:
+                print 'h = ' + str(h) + ', graph_num = ' + str(graph_num)
                                                
             # load graph
             G = pz.load(graph_path)

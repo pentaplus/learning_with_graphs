@@ -26,16 +26,19 @@ from misc import utils
 
 DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
 
-ANDROID_FCG_PARTIAL_PATH = join(DATASETS_PATH, ('ANDROID FCG PARTIAL (2 '
-                                'classes, x directed graphs, unlabeled edges)'),
-                                'pz')
+ANDROID_FCG_5000_PATH = join(DATASETS_PATH,
+                             'ANDROID FCG 5000 (2 classes, 5000 directed graphs, '
+                             'unlabeled edges)',
+                             'pz')
                                 
-FLASH_CFG_PATH = join(DATASETS_PATH, ('FLASH CFG (2 classes, 1715 directed '
-                                      'graphs, unlabeled edges)'), 'pz')
+FLASH_CFG_PATH = join(DATASETS_PATH,
+                      'FLASH CFG (2 classes, 1715 directed graphs, unlabeled '
+                      'edges)',
+                      'pz')
                                 
 
-#DATASET_PATH = ANDROID_FCG_PARTIAL_PATH
-DATASET_PATH = FLASH_CFG_PATH
+DATASET_PATH = ANDROID_FCG_5000_PATH
+#DATASET_PATH = FLASH_CFG_PATH
 
 class_folders = utils.list_sub_dirs(DATASET_PATH)
 
@@ -53,6 +56,9 @@ with open(join(DATASET_PATH, 'hash_num_map.txt'), 'w') as f:
             f.write(hash_part + ': ' + str(graph_num) + '\n')          
             
             graph_num += 1
+            
+            if graph_num % 10 == 0:
+                print('graph_num: %d' % graph_num)
 
 
     
