@@ -161,7 +161,7 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
                                          return_eigenvectors = False)
                 
                 # algorithm converged
-                sys.stdout.write(str(feature_mat[i,j]))
+                print(str(feature_mat[i,j]))
                 
                 if first_eig_val_no_conv:
                     feature_mat[i, :j] = feature_mat[i,j]
@@ -179,12 +179,9 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
                     first_eig_val_no_conv = True
                 else:
                     feature_mat[i,j] = feature_mat[i,j - 1]
-                sys.stdout.write(str(feature_mat[i,j - 1]) \
-                                 + ' [NO CONVERGENCE]')
+                print(str(feature_mat[i,j - 1]) + ' [NO CONVERGENCE]')
                                  
                 no_conv_count += 1
-            
-            sys.stdout.write('\n')
             
             if A.shape[0] <= 2:
                 break
@@ -216,10 +213,10 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
                     break
         
         # !!
-        import sys
-        sys.modules['__main__'].G = G
-        sys.modules['__main__'].A = A
-        sys.modules['__main__'].F = feature_mat
+#        import sys
+#        sys.modules['__main__'].G = G
+#        sys.modules['__main__'].A = A
+#        sys.modules['__main__'].F = feature_mat
         
 #        x = 0
 #        eigvalsh(A)
@@ -260,9 +257,10 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
   
         mat_constr_times.append(mat_constr_time)
             
-    x = 0
+#    x = 0
     
-    print 'Convergence ratio: %.2f' % (conv_count / (conv_count + no_conv_count))
+    print('\nConvergence ratio: %.3f\n'
+          % (conv_count / (conv_count + no_conv_count)))
    
     return feature_mat_of_param, extr_time_of_param
 
