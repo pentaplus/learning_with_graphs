@@ -156,7 +156,8 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
             
 #            feature_mat[i,j] = max(eigsh(A, k = 1, return_eigenvectors = False))
             try:
-                feature_mat[i,j] = eigsh(A, k = 1, maxiter = 20*A.shape[0],
+                feature_mat[i,j] = eigsh(A, which = 'LA', k = 1,
+#                                         maxiter = 20*A.shape[0],
                                          return_eigenvectors = False)
                 
                 # algorithm converged
