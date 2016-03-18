@@ -24,19 +24,14 @@ __date__ = "2016-02-28"
 # 03. optimize coding style
 # 10. document RWkernel, PCG, graphlet_kernel and get_lamda
 # 20. compress FCGs
-# 21. evaluate performance on ANDROID FCG PARTIAL
-# 22. gradually increment the number of samples of ANDROID FCG PARTIAL
 # 
-# 
-# 100. make feature vectors for NHGK unary 
 #
 # at Benny-Notebook:
 
-# 01. test RW kernel
-# 02. test Eigen kernel
-# 05. test on large datasets with twice param grid size
-# 09. test methods on ENZYMES with ovo
-# 14. test WL on ANDROID FCG PARTIAL (10 iterations)
+# 01. test Eigen kernel on NCI1
+# 02. test all methods on ANDROID FCG
+# 10. test methods on ENZYMES with ovo
+# 20. test on large datasets with twice param grid size
 # 
 
 
@@ -95,8 +90,7 @@ FLASH_CFG = 'FLASH CFG'
 #=================================================================================
 # parameter definitions
 #=================================================================================
-#EMBEDDING_NAMES = [LABEL_COUNTER]
-EMBEDDING_NAMES = [WEISFEILER_LEHMAN, LABEL_COUNTER]
+#EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, GRAPHLET_KERNEL_3, GRAPHLET_KERNEL_4]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH,
@@ -110,7 +104,7 @@ EMBEDDING_NAMES = [WEISFEILER_LEHMAN, LABEL_COUNTER]
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL_4]
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL_3, GRAPHLET_KERNEL_4]
 #EMBEDDING_NAMES = [RANDOM_WALK_KERNEL]
-#EMBEDDING_NAMES = [EIGEN_KERNEL]
+EMBEDDING_NAMES = [EIGEN_KERNEL]
 
 
 # keys are indices of the list EMBEDDING_NAMES, values are the respective
@@ -138,10 +132,10 @@ EMBEDDING_PARAM_RANGES = {
 #DATASETS = [PTC_MR]
 #DATASETS = [ENZYMES]
 #DATASETS = [DD]
-#DATASETS = [NCI1]
+DATASETS = [NCI1]
 #DATASETS = [NCI109]
 #DATASETS = [ANDROID_FCG_2000]
-DATASETS = [ANDROID_FCG_5000]
+#DATASETS = [ANDROID_FCG_5000]
 #DATASETS = [FLASH_CFG]
 
 OPT_PARAM = True
@@ -153,10 +147,10 @@ COMPARE_PARAMS = True
 SEARCH_OPT_SVM_PARAM_IN_PAR = True
 #SEARCH_OPT_SVM_PARAM_IN_PAR = False
 
-EXPER_NUM_ITER = 10
+#EXPER_NUM_ITER = 10
 #EXPER_NUM_ITER = 5
 #EXPER_NUM_ITER = 3
-#EXPER_NUM_ITER = 1
+EXPER_NUM_ITER = 1
 
 # maximum number of iterations for small datasets (having less than 1000 samples)
 CLF_MAX_ITER_SD = 1e7 # final value (take care of perfectionism!!!)
