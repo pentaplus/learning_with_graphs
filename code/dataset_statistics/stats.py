@@ -3,7 +3,7 @@ Statistics of datasets.
 """
 
 __author__ = "Benjamin Plock <benjamin.plock@stud.uni-goettingen.de>"
-__date__ = "2016-02-28"
+__date__ = "2016-03-18"
 
 
 import inspect
@@ -27,15 +27,25 @@ t0 = time.time()
 
 DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
 
-#DATASET = 'ANDROID FCG' # !! change file names from hashes to numbers
-#DATASET = 'DD'
-#DATASET = 'ENZYMES'
-#DATASET = 'MUTAG'
-#DATASET = 'NCI1'
-#DATASET = 'NCI109'
-#DATASET = 'PTC(MR)'
-#DATASET = 'FLASH CFG'
-DATASET = 'ANDROID FCG 14795'
+# datasets
+MUTAG = 'MUTAG'
+PTC_MR = 'PTC(MR)'
+ENZYMES = 'ENZYMES'
+DD = 'DD'
+NCI1 = 'NCI1'
+NCI109 = 'NCI109'
+ANDROID_FCG_14795 = 'ANDROID FCG 14795'
+FLASH_CFG = 'FLASH CFG'
+
+
+#DATASET = MUTAG
+#DATASET = PTC(MR)
+#DATASET = ENZYMES
+#DATASET = DD
+DATASET = NCI1
+#DATASET = NCI109
+#DATASET = FLASH CFG
+#DATASET = ANDROID FCG 14795
 
 
 graph_meta_data_of_num, class_lbls \
@@ -49,7 +59,7 @@ classes = graphs_of_class.keys()
 node_counts = []
 edge_counts = []
 degrees = []
-min_deg = float("inf")
+min_deg = float('inf')
 max_deg = 0
 number_of_isolated_nodes = 0
 
@@ -83,18 +93,22 @@ print '# classes:', len(classes)
 for class_lbl in graphs_of_class.iterkeys():
     print 'class %d: %d' % (class_lbl, len(graphs_of_class[class_lbl]))
 
-print 'avg_v: %.2f' % avg_v
-print 'avg_e: %.2f' % avg_e
+print 'avg_v: %.1f' % avg_v
 print 'max_v:', max_v
-print 'max_e:', max_e
 print 'min_v:', min_v
-print 'avg_deg: %.3f' % avg_deg
+if DATASET not in [FLASH_CFG, ANDROID_FCG_14795]:
+    print 'avg_e: %.1f, 2*avg_e: %.1f' % (avg_e, 2*avg_e)
+    print 'max_e: %d, 2*max_e: %d' % (max_e, 2*max_e)
+else:
+    print 'avg_e: %.1f' % avg_e
+    print 'max_e: %d' % max_e
+print 'avg_deg: %.2f' % avg_deg
 print 'max_deg:', max_deg
-print 'min_deg:', min_deg
+#print 'min_deg:', min_deg
 print 'isolated:', number_of_isolated_nodes, '\n'
 
 t1 = time.time()
 total = t1 - t0
 
-print "The execution took %.2f seconds." % total
+print 'The execution took %.2f seconds.' % total
 
