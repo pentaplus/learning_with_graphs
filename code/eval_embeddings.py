@@ -89,8 +89,8 @@ FLASH_CFG = 'FLASH CFG'
 #=================================================================================
 # parameter definitions
 #=================================================================================
-EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER,
-                   EIGEN_KERNEL, RANDOM_WALK_KERNEL, GRAPHLET_KERNEL_3]
+#EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER,
+#                   EIGEN_KERNEL, RANDOM_WALK_KERNEL, GRAPHLET_KERNEL_3]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, GRAPHLET_KERNEL_3, GRAPHLET_KERNEL_4]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER]
@@ -105,7 +105,7 @@ EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL_4]
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL_3, GRAPHLET_KERNEL_4]
 #EMBEDDING_NAMES = [RANDOM_WALK_KERNEL]
-#EMBEDDING_NAMES = [EIGEN_KERNEL]
+EMBEDDING_NAMES = [EIGEN_KERNEL]
 
 
 # keys are indices of the list EMBEDDING_NAMES, values are the respective
@@ -123,7 +123,7 @@ EMBEDDING_PARAM_RANGES = {
 #DATASET = ANDROID_FCG_PARTIAL # !! increase number of samples
 
 # sorted by number of graphs in ascending order
-#DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109, FLASH_CFG]
+DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109, FLASH_CFG]
 #DATASETS = [NCI109, FLASH_CFG]
 #DATASETS = [MUTAG, PTC_MR, ENZYMES, NCI1, NCI109]
 #DATASETS = [DD, NCI1, NCI109, FLASH_CFG]
@@ -131,7 +131,7 @@ EMBEDDING_PARAM_RANGES = {
 #DATASETS = [DD, NCI1, NCI109]
 #DATASETS = [MUTAG]
 #DATASETS = [PTC_MR]
-DATASETS = [ENZYMES]
+#DATASETS = [ENZYMES]
 #DATASETS = [DD]
 #DATASETS = [NCI1]
 #DATASETS = [NCI109]
@@ -324,12 +324,12 @@ def init_grid_clf(embedding_is_implicit, dataset_is_large, svm_param_grid,
         # library LIBSVM is used
         if embedding_is_implicit:
             clf = svm.SVC(kernel = 'precomputed', max_iter = clf_max_iter,
-#                          decision_function_shape = 'ovr')
-                          decision_function_shape = 'ovo')
+                          decision_function_shape = 'ovr')
+#                          decision_function_shape = 'ovo')
         else:
             clf = svm.SVC(max_iter = clf_max_iter,
-#                          decision_function_shape = 'ovr')
-                          decision_function_shape = 'ovo')
+                          decision_function_shape = 'ovr')
+#                          decision_function_shape = 'ovo')
     
     if SEARCH_OPT_SVM_PARAM_IN_PAR:
         grid_clf = GridSearchCV(clf, svm_param_grid, cv = num_inner_folds,
