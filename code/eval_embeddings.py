@@ -13,7 +13,7 @@ from __future__ import division
 
 
 __author__ = "Benjamin Plock <benjamin.plock@stud.uni-goettingen.de>"
-__date__ = "2016-02-28"
+__date__ = "2016-03-18"
 
 
 # planed procedure:
@@ -28,10 +28,8 @@ __date__ = "2016-02-28"
 #
 # at Benny-Notebook:
 
-# 01. test Eigen kernel on NCI1
-# 02. get convergence ratios of Eigen kernel
+# 01. test methods on ENZYMES with ovo
 # 02. test all methods on ANDROID FCG
-# 10. test methods on ENZYMES with ovo
 # 20. test on large datasets with twice param grid size
 # 
 
@@ -91,6 +89,8 @@ FLASH_CFG = 'FLASH CFG'
 #=================================================================================
 # parameter definitions
 #=================================================================================
+EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER,
+                   EIGEN_KERNEL, RANDOM_WALK_KERNEL, GRAPHLET_KERNEL_3]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, GRAPHLET_KERNEL_3, GRAPHLET_KERNEL_4]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER]
@@ -105,7 +105,7 @@ FLASH_CFG = 'FLASH CFG'
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL_4]
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL_3, GRAPHLET_KERNEL_4]
 #EMBEDDING_NAMES = [RANDOM_WALK_KERNEL]
-EMBEDDING_NAMES = [EIGEN_KERNEL]
+#EMBEDDING_NAMES = [EIGEN_KERNEL]
 
 
 # keys are indices of the list EMBEDDING_NAMES, values are the respective
@@ -131,9 +131,9 @@ EMBEDDING_PARAM_RANGES = {
 #DATASETS = [DD, NCI1, NCI109]
 #DATASETS = [MUTAG]
 #DATASETS = [PTC_MR]
-#DATASETS = [ENZYMES]
+DATASETS = [ENZYMES]
 #DATASETS = [DD]
-DATASETS = [NCI1]
+#DATASETS = [NCI1]
 #DATASETS = [NCI109]
 #DATASETS = [ANDROID_FCG_2000]
 #DATASETS = [ANDROID_FCG_5000]
@@ -148,10 +148,10 @@ COMPARE_PARAMS = True
 SEARCH_OPT_SVM_PARAM_IN_PAR = True
 #SEARCH_OPT_SVM_PARAM_IN_PAR = False
 
-#EXPER_NUM_ITER = 10
+EXPER_NUM_ITER = 10
 #EXPER_NUM_ITER = 5
 #EXPER_NUM_ITER = 3
-EXPER_NUM_ITER = 1
+#EXPER_NUM_ITER = 1
 
 # maximum number of iterations for small datasets (having less than 1000 samples)
 CLF_MAX_ITER_SD = 1e7 # final value (take care of perfectionism!!!)
@@ -324,10 +324,12 @@ def init_grid_clf(embedding_is_implicit, dataset_is_large, svm_param_grid,
         # library LIBSVM is used
         if embedding_is_implicit:
             clf = svm.SVC(kernel = 'precomputed', max_iter = clf_max_iter,
-                          decision_function_shape = 'ovr')
+#                          decision_function_shape = 'ovr')
+                          decision_function_shape = 'ovo')
         else:
             clf = svm.SVC(max_iter = clf_max_iter,
-                          decision_function_shape = 'ovr')
+#                          decision_function_shape = 'ovr')
+                          decision_function_shape = 'ovo')
     
     if SEARCH_OPT_SVM_PARAM_IN_PAR:
         grid_clf = GridSearchCV(clf, svm_param_grid, cv = num_inner_folds,
