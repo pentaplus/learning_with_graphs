@@ -6,8 +6,10 @@ from the whole Android FCG dataset, which consists of 135,791 benign
 and 12,158 malicious samples.
 """
 
+from __future__ import division
+
 __author__ = "Benjamin Plock <benjamin.plock@stud.uni-goettingen.de>"
-__date__ = "2016-02-28"
+__date__ = "2016-03-18"
 
 
 import inspect
@@ -29,14 +31,14 @@ sys.path.append(join(SCRIPT_FOLDER_PATH, '..'))
 
 from misc import dataset_loader, utils
 
-# ratio of benign samples within the subset
-#RATIO = 135791./(135791 + 12158) # 0.91782
-RATIO = 0.75
-SUBSET_SIZE = 5000
+CLASS_0_SIZE = 135791
+CLASS_1_SIZE = 12158
+
+SUBSET_RATIO = 0.1
 # number of benign samples
-CLASS_0_SUBSET_SIZE = int(RATIO * SUBSET_SIZE)
+CLASS_0_SUBSET_SIZE = int(round(SUBSET_RATIO * CLASS_0_SIZE))
 # number of malicious samples
-CLASS_1_SUBSET_SIZE = SUBSET_SIZE - CLASS_0_SUBSET_SIZE
+CLASS_1_SUBSET_SIZE = int(round(SUBSET_RATIO * CLASS_1_SIZE))
 
 SOURCE_CLASSES_PATH = 'Z:\ANDROID FCG\pz'
                            
@@ -46,6 +48,7 @@ os.makedirs('pz')
 
 folder_of_class = dataset_loader.get_folder_of_class_dict(SOURCE_CLASSES_PATH)
                 
+copied_graph_files_count = 0
 
 for class_lbl, class_folder in folder_of_class.iteritems():
     source_class_path = join(SOURCE_CLASSES_PATH, class_folder)
@@ -61,7 +64,6 @@ for class_lbl, class_folder in folder_of_class.iteritems():
     if class_lbl == 1:
         graph_file_names_subset = graph_file_names[:CLASS_1_SUBSET_SIZE]
     
-    copied_graph_files_count = 0
     # copy graph files of the chosen subset to destination folder
     for graph_file_name in graph_file_names_subset:
         graph_file_base_name = re.match('.*?(?=\.)', graph_file_name).group(0)
@@ -75,4 +77,3 @@ for class_lbl, class_folder in folder_of_class.iteritems():
             print "Graph files copied: %d" % copied_graph_files_count
             
 
-        

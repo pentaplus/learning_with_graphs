@@ -39,8 +39,8 @@ def bin_array_to_num(array):
 
 DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
 
-SOURCE_CLASSES_PATH = join(DATASETS_PATH, 'ANDROID FCG 5000 (2 classes, '
-                           '5000 directed graphs, unlabeled edges)', 'pz')
+SOURCE_CLASSES_PATH = join(DATASETS_PATH, 'ANDROID FCG 14795 (2 classes, '
+                           '14795 directed graphs, unlabeled edges)', 'pz')
 
 utils.check_for_pz_folder()
                            
@@ -49,6 +49,7 @@ os.makedirs('pz')
 class_folders = utils.list_sub_dirs(SOURCE_CLASSES_PATH)
 
 compressed_graphs_count = 0
+
 with open(join(SOURCE_CLASSES_PATH, 'hash_num_map.txt'), 'w') as f:
     for class_folder in class_folders:
         source_class_path = join(SOURCE_CLASSES_PATH, class_folder)

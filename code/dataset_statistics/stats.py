@@ -35,7 +35,7 @@ DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
 #DATASET = 'NCI109'
 #DATASET = 'PTC(MR)'
 #DATASET = 'FLASH CFG'
-DATASET = 'ANDROID FCG PARTIAL'
+DATASET = 'ANDROID FCG 14795'
 
 
 graph_meta_data_of_num, class_lbls \

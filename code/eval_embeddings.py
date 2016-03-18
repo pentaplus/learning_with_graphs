@@ -29,6 +29,7 @@ __date__ = "2016-02-28"
 # at Benny-Notebook:
 
 # 01. test Eigen kernel on NCI1
+# 02. get convergence ratios of Eigen kernel
 # 02. test all methods on ANDROID FCG
 # 10. test methods on ENZYMES with ovo
 # 20. test on large datasets with twice param grid size
