@@ -23,15 +23,21 @@ __date__ = "2016-03-18"
 # 01. finish the implementation of the Eigen kernel
 # 03. optimize coding style
 # 10. document RWkernel, PCG, graphlet_kernel and get_lamda
-# 20. compress FCGs
 # 
-#
-# at Benny-Notebook:
 
+# at Benny-Notebook:
+#
 # 01. test methods on ENZYMES with ovo
-# 02. test all methods on ANDROID FCG
-# 20. test on large datasets with twice param grid size
+# 02. test all methods on ANDROID FCG 14795
+# 90. test on large datasets with twice param grid size
 # 
+
+# at Sylvia-Notebook:
+#
+# 01. WL on ANDROID FCG 14795 (feature extraction took ca. 5 h, 0.94)
+# 02. EGK on ANDROID FCG 14795 (feature extraction took ca. x h, x)
+# 03. RW on ANDROID FCG 14795 (feature extraction took ca. x h, x)
+# 04. GK-3 on ANDROID FCG 14795 (feature extraction took ca. x h, x)
 
 
 import numpy as np
@@ -43,9 +49,6 @@ import time
 from os.path import abspath, dirname, join
 from sklearn import svm
 from sklearn.grid_search import GridSearchCV
-#from sklearn.metrics.pairwise import pairwise_kernels
-#from sklearn.pipeline import make_pipeline
-#from sklearn.preprocessing import StandardScaler
 
 
 # determine script path
@@ -81,9 +84,8 @@ ENZYMES = 'ENZYMES'
 DD = 'DD'
 NCI1 = 'NCI1'
 NCI109 = 'NCI109'
-ANDROID_FCG_2000 = 'ANDROID FCG 2000'
-ANDROID_FCG_5000 = 'ANDROID FCG 5000'
 FLASH_CFG = 'FLASH CFG'
+ANDROID_FCG_14795 = 'ANDROID FCG 14795'
 
 
 #=================================================================================
@@ -91,6 +93,7 @@ FLASH_CFG = 'FLASH CFG'
 #=================================================================================
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER,
 #                   EIGEN_KERNEL, RANDOM_WALK_KERNEL, GRAPHLET_KERNEL_3]
+EMBEDDING_NAMES = [EIGEN_KERNEL, RANDOM_WALK_KERNEL, GRAPHLET_KERNEL_3]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, GRAPHLET_KERNEL_3, GRAPHLET_KERNEL_4]
 #EMBEDDING_NAMES = [WEISFEILER_LEHMAN, COUNT_SENSITIVE_NEIGHBORHOOD_HASH_ALL_ITER]
@@ -105,7 +108,7 @@ FLASH_CFG = 'FLASH CFG'
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL_4]
 #EMBEDDING_NAMES = [GRAPHLET_KERNEL_3, GRAPHLET_KERNEL_4]
 #EMBEDDING_NAMES = [RANDOM_WALK_KERNEL]
-EMBEDDING_NAMES = [EIGEN_KERNEL]
+#EMBEDDING_NAMES = [EIGEN_KERNEL]
 
 
 # keys are indices of the list EMBEDDING_NAMES, values are the respective
@@ -120,10 +123,9 @@ EMBEDDING_PARAM_RANGES = {
     RANDOM_WALK_KERNEL: [None],
     EIGEN_KERNEL: np.linspace(1/6, 1, 6)}
 
-#DATASET = ANDROID_FCG_PARTIAL # !! increase number of samples
 
 # sorted by number of graphs in ascending order
-DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109, FLASH_CFG]
+#DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109, FLASH_CFG]
 #DATASETS = [NCI109, FLASH_CFG]
 #DATASETS = [MUTAG, PTC_MR, ENZYMES, NCI1, NCI109]
 #DATASETS = [DD, NCI1, NCI109, FLASH_CFG]
@@ -135,23 +137,22 @@ DATASETS = [MUTAG, PTC_MR, ENZYMES, DD, NCI1, NCI109, FLASH_CFG]
 #DATASETS = [DD]
 #DATASETS = [NCI1]
 #DATASETS = [NCI109]
-#DATASETS = [ANDROID_FCG_2000]
-#DATASETS = [ANDROID_FCG_5000]
 #DATASETS = [FLASH_CFG]
+DATASETS = [ANDROID_FCG_14795]
 
 OPT_PARAM = True
 #OPT_PARAM = False
 
-COMPARE_PARAMS = True
-#COMPARE_PARAMS = False
+#COMPARE_PARAMS = True
+COMPARE_PARAMS = False
 
-SEARCH_OPT_SVM_PARAM_IN_PAR = True
-#SEARCH_OPT_SVM_PARAM_IN_PAR = False
+#SEARCH_OPT_SVM_PARAM_IN_PAR = True
+SEARCH_OPT_SVM_PARAM_IN_PAR = False
 
-EXPER_NUM_ITER = 10
+#EXPER_NUM_ITER = 10
 #EXPER_NUM_ITER = 5
 #EXPER_NUM_ITER = 3
-#EXPER_NUM_ITER = 1
+EXPER_NUM_ITER = 1
 
 # maximum number of iterations for small datasets (having less than 1000 samples)
 CLF_MAX_ITER_SD = 1e7 # final value (take care of perfectionism!!!)

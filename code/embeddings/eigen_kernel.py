@@ -36,14 +36,13 @@ sys.path.append(join(SCRIPT_FOLDER_PATH, '..'))
 from misc import utils, pz
 
 
-def get_max_num_of_nodes(graph_meta_data_of_num):
+def get_avg_nodes_count(graph_meta_data_of_num):
     node_counts = []
     for graph_path, class_lbl in graph_meta_data_of_num.itervalues():
         G = pz.load(graph_path)
         node_counts.append(G.number_of_nodes())
         
     return np.mean(node_counts)
-#    return max(node_counts)
     
     
 def get_node_num_degree_pairs(G):
@@ -100,15 +99,15 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
     
     num_graphs = len(graph_meta_data_of_num)
     
-    max_num_of_nodes = get_max_num_of_nodes(graph_meta_data_of_num)
+    avg_nodes_count = get_avg_nodes_count(graph_meta_data_of_num)
 
-    feature_mat = np.zeros((num_graphs, int(max_num_of_nodes)),
+    feature_mat = np.zeros((num_graphs, int(avg_nodes_count)),
                            dtype = np.float64)
     
     submat_col_count_of_node_del_frac = {}
     for node_del_frac in node_del_fracs:
         submat_col_count_of_node_del_frac[node_del_frac] \
-            = int(node_del_frac * max_num_of_nodes)
+            = int(node_del_frac * avg_nodes_count)
             
     node_del_fracs_desc_order = sorted(node_del_fracs, reverse = True)
     
@@ -129,12 +128,12 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
         
         # load graph
         G = pz.load(graph_path)
+        import sys
+        sys.modules['__main__'].G = G
+        
         # determine its adjacency matrix
 #        A = utils.get_adjacency_matrix(G)
         A = nx.adj_matrix(G, weight = None).astype('d')
-        
-#        import sys
-#        sys.modules['__main__'].A = A
         
         nodes_count = len(G.node)
         upd_row_idx_of_orig_row_idx = dict(izip(xrange(nodes_count),
@@ -145,7 +144,7 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
         
         
         
-        for j in xrange(min(nodes_count, int(max_num_of_nodes))):
+        for j in xrange(min(nodes_count, int(avg_nodes_count))):
             sys.stdout.write('i = ' + str(i) + ' (|V| = ' + str(nodes_count)\
                              + '), j = ' + str(j) + ': ')        
             

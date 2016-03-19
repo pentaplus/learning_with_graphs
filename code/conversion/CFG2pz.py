@@ -63,7 +63,7 @@ def parse_block(line, G, id_to_num_mapper, line_num):
         succ_node_num = id_to_num_mapper.map_id_to_num(succ_node_id)
         G.add_edge(block_num, succ_node_num)
         
-    G.node[block_num]['label'] = 'b'
+    G.add_node(block_num, label = 'b')
 
     
 def parse_cond(line, G, id_to_num_mapper, line_num):
@@ -86,8 +86,8 @@ def parse_cond(line, G, id_to_num_mapper, line_num):
         succ_node_num = id_to_num_mapper.map_id_to_num(succ_node_id)
         G.add_edge(cond_num, succ_node_num)
         
-    G.node[cond_num]['label'] = 'c'
-    
+    G.add_node(cond_num, label = 'c')
+
 
 def parse_func(line, G, id_to_num_mapper, line_num):
     m = re.match('fct\s+@-?\d{5,}\s+(\S+)\s+(\S+)', line)
@@ -102,7 +102,7 @@ def parse_func(line, G, id_to_num_mapper, line_num):
     succ_node_num = id_to_num_mapper.map_id_to_num(succ_node_id)
     G.add_edge(func_num, succ_node_num)
     
-    G.node[func_num]['label'] = 'f'
+    G.add_node(func_num, label = 'f')
 
 
 def parse_ref(line, G, id_to_num_mapper, line_num):
@@ -119,7 +119,7 @@ def parse_ref(line, G, id_to_num_mapper, line_num):
         succ_node_num = id_to_num_mapper.map_id_to_num(succ_node_id)
         G.add_edge(ref_num, succ_node_num)
         
-    G.node[ref_num]['label'] = 'r'
+    G.add_node(ref_num, label = 'r')
     
                            
 SOURCE_CLASSES_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets',
