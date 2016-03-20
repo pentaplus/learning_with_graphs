@@ -175,7 +175,7 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
                     first_eig_val_no_conv = False
                     
                 conv_count += 1
-            except ArpackNoConvergence:
+            except (ArpackError, ArpackNoConvergence):
                 if j == 0:
                     first_eig_val_no_conv = True
                 else:
