@@ -129,16 +129,18 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
         
         # load graph
         G = pz.load(graph_path)
-        
-        if nx.is_directed(G):
-            G = G.to_undirected()
-        
+
 #        import sys
 #        sys.modules['__main__'].G = G
+          
         
         # determine its adjacency matrix
 #        A = utils.get_adjacency_matrix(G)
         A = nx.adj_matrix(G, weight = None).astype('d')
+        
+        # calculate adjacency matrix of the undirected version of G
+        if nx.is_directed(G):
+            A = A + A.T
         
         nodes_count = len(G.node)
         upd_row_idx_of_orig_row_idx = dict(izip(xrange(nodes_count),
