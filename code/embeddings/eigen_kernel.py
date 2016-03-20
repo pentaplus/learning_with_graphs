@@ -22,7 +22,7 @@ from numpy.linalg import eigvalsh
 from operator import itemgetter
 from os.path import abspath, dirname, join
 from scipy.sparse import csr_matrix, lil_matrix
-from scipy.sparse.linalg import eigsh
+from scipy.sparse.linalg import eigs, eigsh
 from scipy.sparse.linalg.eigen.arpack.arpack import ArpackError, \
     ArpackNoConvergence
 
@@ -162,6 +162,10 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
                 feature_mat[i,j] = eigsh(A, which = 'LA', k = 1,
                                          maxiter = 20*A.shape[0],
                                          return_eigenvectors = False)
+                                         
+#                feature_mat[i,j] = eigs(A, which = 'LR', k = 1,
+#                                        maxiter = 20*A.shape[0],
+#                                        return_eigenvectors = False)
                 
                 # algorithm converged
                 print(str(feature_mat[i,j]))
@@ -173,11 +177,6 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
                 conv_count += 1
             except ArpackNoConvergence:
                 if j == 0:
-#                    A_full = A.todense()
-#                    try:
-#                        feature_mat[i,j] = eigvalsh(A)[-1]
-#                    except LinAlgError:
-#                        pass
                     first_eig_val_no_conv = True
                 else:
                     feature_mat[i,j] = feature_mat[i,j - 1]
