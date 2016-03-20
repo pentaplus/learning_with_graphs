@@ -23,7 +23,8 @@ from operator import itemgetter
 from os.path import abspath, dirname, join
 from scipy.sparse import csr_matrix, lil_matrix
 from scipy.sparse.linalg import eigsh
-from scipy.sparse.linalg.eigen.arpack.arpack import ArpackNoConvergence
+from scipy.sparse.linalg.eigen.arpack.arpack import ArpackError, \
+    ArpackNoConvergence
 
 
 # determine script path
@@ -128,8 +129,12 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
         
         # load graph
         G = pz.load(graph_path)
-        import sys
-        sys.modules['__main__'].G = G
+        
+        if nx.is_directed(G):
+            G = G.to_undirected()
+        
+#        import sys
+#        sys.modules['__main__'].G = G
         
         # determine its adjacency matrix
 #        A = utils.get_adjacency_matrix(G)
@@ -153,7 +158,6 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
             # store largest eigenvalue of A in feature matrix
 #            feature_mat[i,j] = eigvalsh(A)[-1]
             
-#            feature_mat[i,j] = max(eigsh(A, k = 1, return_eigenvectors = False))
             try:
                 feature_mat[i,j] = eigsh(A, which = 'LA', k = 1,
                                          maxiter = 20*A.shape[0],
@@ -167,7 +171,6 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
                     first_eig_val_no_conv = False
                     
                 conv_count += 1
-                    
             except ArpackNoConvergence:
                 if j == 0:
 #                    A_full = A.todense()
@@ -296,3 +299,12 @@ if __name__ == '__main__':
 #    print('jo')
 #except ZeroDivisionError:
 #    print('aha')
+
+#try:
+#    5/0
+#    x = [1]
+#    print 'bla'
+#    y = x[1]
+##except (IndexError):
+#except (IndexError, ZeroDivisionError):
+#    print('okay')

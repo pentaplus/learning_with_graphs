@@ -21,19 +21,22 @@ __date__ = "2016-03-18"
 # at Ben-PC:
 # !!!
 # 01. finish the implementation of the Eigen kernel
-# 03. optimize coding style
+# 02. optimize coding style
 # 10. document RWkernel, PCG, graphlet_kernel and get_lamda
 # 
 
 # at Benny-Notebook:
 #
-# 01. test methods on ENZYMES with ovo
-# 02. test all methods on ANDROID FCG 14795
+# 00. test Eigen kernel on FLASH CFG
+# 01. test all methods on ANDROID FCG 14795
+# 02. test Eigen kernel on FLASH CFG and ANDROID FCG 14795 using "to_undirected"
+# 02. test methods on ENZYMES with ovo
 # 90. test on large datasets with twice param grid size
 # 
 
 # at Sylvia-Notebook:
 #
+# 00. compress ANDROID FCG 14795 using add_egde
 # 01. WL on ANDROID FCG 14795 (feature extraction took ca. 5 h, 0.94)
 # 02. EGK on ANDROID FCG 14795 (feature extraction took ca. x h, x)
 # 03. RW on ANDROID FCG 14795 (feature extraction took ca. x h, x)

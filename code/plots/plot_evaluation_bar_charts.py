@@ -11,7 +11,7 @@ respective methods.
 from __future__ import division
 
 __author__ = "Benjamin Plock <benjamin.plock@stud.uni-goettingen.de>"
-__date__ = "2016-03-17"
+__date__ = "2016-03-19"
 
 
 import inspect
@@ -174,7 +174,7 @@ DATA_LD = np.array(
      [RANDOM_WALK_KERNEL, ANDROID_FCG, 90.0, 0.0, 3600.0],
      [EIGEN_KERNEL, DD, 76.4, 0.2, 1607.8/10 + 7027.4],
      [EIGEN_KERNEL, NCI1, 65.1, 0.1, 1054.4/10 + 1092.8],
-     [EIGEN_KERNEL, NCI109, 90.0, 0.0, 3600.0],
+     [EIGEN_KERNEL, NCI109, 65.5, 0.2, 1078.5/10 + 1009.6],
      [EIGEN_KERNEL, FLASH_CFG, 90.0, 0.0, 3600.0],
      [EIGEN_KERNEL, ANDROID_FCG, 90.0, 0.0, 3600.0]])
      
