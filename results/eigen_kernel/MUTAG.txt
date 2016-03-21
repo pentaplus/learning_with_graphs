@@ -9,7 +9,7 @@ CLF_MAX_ITER: 1e+07
 SEARCH_OPT_SVM_PARAM_IN_PAR: FALSE
 ------------------------------------------
 
-Graph loading and feature exraction took 14.7 seconds.
+Graph loading and feature exraction took 14.8 seconds.
 
 LINEAR/RBF (OPT_PARAM)
-0.890 (+/-0.007) in 35.3 seconds
+0.891 (+/-0.008) in 34.7 seconds

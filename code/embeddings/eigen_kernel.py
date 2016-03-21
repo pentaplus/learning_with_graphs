@@ -213,11 +213,12 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
                 no_conv_count += 1
             
             if last_j < 0:
+                # no iteration with convergence so far
                 if j > 0:
                     speed *= 2
             else:
+                feature_mat[i, last_j + 1: j] = feature_mat[i, j]
                 if abs(feature_mat[i, j] - feature_mat[i, last_j]) > 1e-5:
-                    feature_mat[i, last_j + 1: j] = feature_mat[i, j]
                     last_j = j
                     speed = 1
                 else:
