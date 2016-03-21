@@ -46,6 +46,16 @@ def get_avg_nodes_count(graph_meta_data_of_num):
     return np.mean(node_counts)
     
     
+def get_max_nodes_count(graph_meta_data_of_num):
+    node_counts = []
+    for graph_path, class_lbl in graph_meta_data_of_num.itervalues():
+        G = pz.load(graph_path)
+        node_counts.append(G.number_of_nodes())
+    
+    return max(node_counts)    
+#    return np.mean(node_counts)
+    
+    
 def get_node_num_degree_pairs(G):
     """
     Return pairs (node_num, degree) sorted by degree in ascending order.
@@ -101,6 +111,7 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
     num_graphs = len(graph_meta_data_of_num)
     
     avg_nodes_count = get_avg_nodes_count(graph_meta_data_of_num)
+#    max_nodes_count = get_max_nodes_count(graph_meta_data_of_num)
 
     feature_mat = np.zeros((num_graphs, int(avg_nodes_count)),
                            dtype = np.float64)
@@ -159,6 +170,7 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
         speed = 1
         
         while j < min(nodes_count, int(avg_nodes_count)):
+#        while j < nodes_count:
             sys.stdout.write('i = ' + str(i) + ' (|V| = ' + str(nodes_count)\
                              + '), j = ' + str(j) + ': ')        
             
@@ -171,6 +183,7 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
                 feature_mat[i, j] = eigsh(A, which = 'LA', k = 1,
                                           maxiter = 20*A.shape[0],
                                           return_eigenvectors = False)
+
                                          
                                          
 #                feature_mat[i,j] = eigs(A, which = 'LR', k = 1,
@@ -183,6 +196,9 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
 #                if first_eig_val_no_conv:
 #                    feature_mat[i, :j] = feature_mat[i, j]
 #                    first_eig_val_no_conv = False
+                
+                if j == 0:
+                    last_j = 0
                     
                 conv_count += 1
             except (ArpackError, ArpackNoConvergence):
@@ -202,8 +218,10 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
                 if abs(feature_mat[i, j] - feature_mat[i, last_j]) > 1e-5:
                     feature_mat[i, last_j + 1: j] = feature_mat[i, j]
                     last_j = j
+                    speed = 1
                 else:
-                    speed *= 2
+                    if j > 0:
+                        speed *= 2
         
             if A.shape[0] <= 2:
                 break
