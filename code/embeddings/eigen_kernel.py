@@ -233,6 +233,8 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
                     time_to_subtract_of_param[node_del_frac] += inner_loop_time
                 else:
                     break
+                
+            j += speed
         
         # !!
 #        import sys
