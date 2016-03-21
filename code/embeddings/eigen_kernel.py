@@ -228,7 +228,7 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
             # smallest degree, and remove the corresponding row and column of
             # the (original) adjacency matrix of G
             # !! better mathematical term
-            for k in xrange(j, j + speed):
+            for k in xrange(j, min(j + speed, nodes_count, int(avg_nodes_count))):
                 if A.shape[0] <= 2:
                     break                
                 
@@ -256,6 +256,12 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
             
             if A.shape[0] <= 2:
                 break
+            
+            if (j < min(nodes_count, int(avg_nodes_count)) - 1) \
+                    and (j + speed) >= min(nodes_count, int(avg_nodes_count)):
+                
+                feature_mat[i, j + 1:] = feature_mat[i, j]
+                
                 
             j += speed
         
