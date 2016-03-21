@@ -9,8 +9,56 @@ CLF_MAX_ITER: 1e+07
 SEARCH_OPT_SVM_PARAM_IN_PAR: FALSE
 ------------------------------------------
 
-Graph loading and feature exraction took 7.0 seconds.
+Graph loading and feature exraction took 15.1 seconds.
 
 LINEAR/RBF (OPT_PARAM)
+0.887 (+/-0.007) in 36.8 seconds
 
-0.886 (+/-0.009) in 35.3 seconds
+------------------------------------------
+Parameter: 0.16666666666666666
+
+Feature extraction took 15.0 seconds.
+Feature matrix dimension: (188L, 2L)
+
+LINEAR/RBF
+0.855 (+/-0.008) in 4.9 seconds
+------------------------------------------
+Parameter: 0.33333333333333337
+
+Feature extraction took 15.0 seconds.
+Feature matrix dimension: (188L, 5L)
+
+LINEAR/RBF
+0.873 (+/-0.002) in 4.9 seconds
+------------------------------------------
+Parameter: 0.5
+
+Feature extraction took 15.0 seconds.
+Feature matrix dimension: (188L, 8L)
+
+LINEAR/RBF
+0.873 (+/-0.002) in 5.1 seconds
+------------------------------------------
+Parameter: 0.66666666666666663
+
+Feature extraction took 15.0 seconds.
+Feature matrix dimension: (188L, 11L)
+
+LINEAR/RBF
+0.853 (+/-0.013) in 5.3 seconds
+------------------------------------------
+Parameter: 0.83333333333333337
+
+Feature extraction took 15.0 seconds.
+Feature matrix dimension: (188L, 14L)
+
+LINEAR/RBF
+0.843 (+/-0.008) in 5.5 seconds
+------------------------------------------
+Parameter: 1.0
+
+Feature extraction took 15.0 seconds.
+Feature matrix dimension: (188L, 17L)
+
+LINEAR/RBF
+0.835 (+/-0.010) in 5.5 seconds

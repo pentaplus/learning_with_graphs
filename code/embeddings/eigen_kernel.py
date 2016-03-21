@@ -112,6 +112,7 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
     
     avg_nodes_count = get_avg_nodes_count(graph_meta_data_of_num)
 #    max_nodes_count = get_max_nodes_count(graph_meta_data_of_num)
+#    avg_nodes_count = get_max_nodes_count(graph_meta_data_of_num)
 
     feature_mat = np.zeros((num_graphs, int(avg_nodes_count)),
                            dtype = np.float64)
@@ -222,35 +223,39 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
                 else:
                     if j > 0:
                         speed *= 2
-        
-            if A.shape[0] <= 2:
-                break
             
             # determine the node number, which corresponds to the node with
             # smallest degree, and remove the corresponding row and column of
             # the (original) adjacency matrix of G
             # !! better mathematical term
-            node_num_smallest_deg = node_num_degree_pairs[j][0]
-            
-            del_idx = upd_row_idx_of_orig_row_idx[node_num_smallest_deg]        
-            
-#            A = np.delete(A, (del_idx), axis = 0)
-#            A = np.delete(A, (del_idx), axis = 1)
-            
-            A = del_row_and_col_at_idx(A, del_idx)
-            
-            upd_row_idx_of_orig_row_idx = update_row_idxs(
-                upd_row_idx_of_orig_row_idx,
-                node_num_smallest_deg)
+            for k in xrange(j, j + speed):
+                if A.shape[0] <= 2:
+                    break                
                 
-            inner_loop_end_time = time.time()
-            inner_loop_time = inner_loop_end_time - inner_loop_start_time
+                node_num_smallest_deg = node_num_degree_pairs[k][0]
                 
-            for node_del_frac in node_del_fracs_desc_order:
-                if j >= submat_col_count_of_node_del_frac[node_del_frac]:
-                    time_to_subtract_of_param[node_del_frac] += inner_loop_time
-                else:
-                    break
+                del_idx = upd_row_idx_of_orig_row_idx[node_num_smallest_deg]        
+                
+                A = del_row_and_col_at_idx(A, del_idx)
+                
+
+                
+                upd_row_idx_of_orig_row_idx = update_row_idxs(
+                    upd_row_idx_of_orig_row_idx,
+                    node_num_smallest_deg)
+                    
+                inner_loop_end_time = time.time()
+                inner_loop_time = inner_loop_end_time - inner_loop_start_time
+                    
+                for node_del_frac in node_del_fracs_desc_order:
+                    if k >= submat_col_count_of_node_del_frac[node_del_frac]:
+                        time_to_subtract_of_param[node_del_frac] \
+                            += inner_loop_time
+                    else:
+                        break
+            
+            if A.shape[0] <= 2:
+                break
                 
             j += speed
         
