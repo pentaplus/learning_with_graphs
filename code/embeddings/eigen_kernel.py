@@ -112,7 +112,7 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
             
     node_del_fracs_desc_order = sorted(node_del_fracs, reverse = True)
     
-    first_eig_val_no_conv = False
+#    first_eig_val_no_conv = False
     
     conv_count = 0
     no_conv_count = 0
@@ -141,6 +141,9 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
         # calculate adjacency matrix of the undirected version of G
         if nx.is_directed(G):
             A = A + A.T
+            
+#        import sys
+#        sys.modules['__main__'].A = A      
         
         nodes_count = len(G.node)
         upd_row_idx_of_orig_row_idx = dict(izip(xrange(nodes_count),
@@ -150,8 +153,12 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
         node_num_degree_pairs = get_node_num_degree_pairs(G)
         
         
+
+        j = 0
+        last_j = -1
+        speed = 1
         
-        for j in xrange(min(nodes_count, int(avg_nodes_count))):
+        while j < min(nodes_count, int(avg_nodes_count)):
             sys.stdout.write('i = ' + str(i) + ' (|V| = ' + str(nodes_count)\
                              + '), j = ' + str(j) + ': ')        
             
@@ -161,9 +168,10 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
 #            feature_mat[i,j] = eigvalsh(A)[-1]
             
             try:
-                feature_mat[i,j] = eigsh(A, which = 'LA', k = 1,
-                                         maxiter = 20*A.shape[0],
-                                         return_eigenvectors = False)
+                feature_mat[i, j] = eigsh(A, which = 'LA', k = 1,
+                                          maxiter = 20*A.shape[0],
+                                          return_eigenvectors = False)
+                                         
                                          
 #                feature_mat[i,j] = eigs(A, which = 'LR', k = 1,
 #                                        maxiter = 20*A.shape[0],
@@ -172,20 +180,31 @@ def extract_features(graph_meta_data_of_num, node_del_fracs):
                 # algorithm converged
                 print(str(feature_mat[i,j]))
                 
-                if first_eig_val_no_conv:
-                    feature_mat[i, :j] = feature_mat[i,j]
-                    first_eig_val_no_conv = False
+#                if first_eig_val_no_conv:
+#                    feature_mat[i, :j] = feature_mat[i, j]
+#                    first_eig_val_no_conv = False
                     
                 conv_count += 1
             except (ArpackError, ArpackNoConvergence):
-                if j == 0:
-                    first_eig_val_no_conv = True
-                else:
-                    feature_mat[i,j] = feature_mat[i,j - 1]
-                print(str(feature_mat[i,j - 1]) + ' [NO CONVERGENCE]')
+#                if j == 0:
+#                    first_eig_val_no_conv = True
+#                else:
+                if j > 0:
+                    feature_mat[i, j] = feature_mat[i, j - 1]
+                print(str(feature_mat[i, j - 1]) + ' [NO CONVERGENCE]')
                                  
                 no_conv_count += 1
             
+            if last_j < 0:
+                if j > 0:
+                    speed *= 2
+            else:
+                if abs(feature_mat[i, j] - feature_mat[i, last_j]) > 1e-5:
+                    feature_mat[i, last_j + 1: j] = feature_mat[i, j]
+                    last_j = j
+                else:
+                    speed *= 2
+        
             if A.shape[0] <= 2:
                 break
             
