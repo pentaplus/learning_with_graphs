@@ -39,7 +39,7 @@ def bin_array_to_num(array):
 
 DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
 
-SOURCE_CLASSES_PATH = join(DATASETS_PATH, 'ANDROID FCG 14795 NEW (2 classes, '
+SOURCE_CLASSES_PATH = join(DATASETS_PATH, 'ANDROID FCG 14795 (2 classes, '
                            '14795 directed graphs, unlabeled edges)', 'pz')
 
 utils.check_for_pz_folder()
