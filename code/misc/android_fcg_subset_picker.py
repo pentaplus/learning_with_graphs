@@ -33,14 +33,21 @@ from misc import dataset_loader, utils
 
 CLASS_0_SIZE = 135791
 CLASS_1_SIZE = 12158
+DATASET_SIZE = CLASS_0_SIZE + CLASS_1_SIZE
 
 SUBSET_RATIO = 0.1
-# number of benign samples
-CLASS_0_SUBSET_SIZE = int(round(SUBSET_RATIO * CLASS_0_SIZE))
-# number of malicious samples
-CLASS_1_SUBSET_SIZE = int(round(SUBSET_RATIO * CLASS_1_SIZE))
 
-SOURCE_CLASSES_PATH = 'Z:\ANDROID FCG\pz'
+SUBSET_SIZE = int(round(SUBSET_RATIO * DATASET_SIZE))
+
+CLASS_0_SUBSET_RATI0 = 0.75
+
+# number of benign samples
+CLASS_0_SUBSET_SIZE = int(round(CLASS_0_SUBSET_RATI0 * SUBSET_SIZE))
+# number of malicious samples
+CLASS_1_SUBSET_SIZE = SUBSET_SIZE - CLASS_0_SUBSET_SIZE
+
+#SOURCE_CLASSES_PATH = 'Z:\ANDROID FCG\pz'
+SOURCE_CLASSES_PATH = '/media/benjamin/Backups/ANDROID FCG/pz'
                            
 utils.check_for_pz_folder()
                            
