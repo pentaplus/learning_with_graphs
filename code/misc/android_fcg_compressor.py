@@ -39,7 +39,7 @@ def bin_array_to_num(array):
 
 DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
 
-SOURCE_CLASSES_PATH = join(DATASETS_PATH, 'ANDROID FCG 14795 (2 classes, '
+SOURCE_CLASSES_PATH = join(DATASETS_PATH, 'ANDROID FCG 14795 NEW (2 classes, '
                            '14795 directed graphs, unlabeled edges)', 'pz')
 
 utils.check_for_pz_folder()
@@ -61,6 +61,12 @@ with open(join(SOURCE_CLASSES_PATH, 'hash_num_map.txt'), 'w') as f:
         for graph_file_name in graph_file_names:
             id_to_num_mapper = utils.Id_to_num_mapper()
             G_uncompr = pz.load(join(source_class_path, graph_file_name))
+            
+            if G_uncompr.number_of_nodes() == 0:
+                print 'Warning! Graph ' + graph_file_name + ' has no nodes!'
+            if G_uncompr.number_of_edges() == 0:
+                print 'Warning! Graph ' + graph_file_name + ' has no edges!'
+            
             G_compr = nx.DiGraph()
             
             id_to_num_mapper = utils.Id_to_num_mapper()
