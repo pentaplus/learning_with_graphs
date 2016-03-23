@@ -26,10 +26,10 @@ from misc import utils
 
 DATASETS_PATH = join(SCRIPT_FOLDER_PATH, '..', '..', 'datasets')
 
-ANDROID_FCG_5000_PATH = join(DATASETS_PATH,
-                             'ANDROID FCG 5000 (2 classes, 5000 directed graphs, '
-                             'unlabeled edges)',
-                             'pz')
+ANDROID_FCG_14795_PATH = join(DATASETS_PATH,
+                              'ANDROID FCG 14795 (2 classes, 14795 directed graphs, '
+                              'unlabeled edges)',
+                              'pz')
                                 
 FLASH_CFG_PATH = join(DATASETS_PATH,
                       'FLASH CFG (2 classes, 1715 directed graphs, unlabeled '
@@ -37,7 +37,7 @@ FLASH_CFG_PATH = join(DATASETS_PATH,
                       'pz')
                                 
 
-DATASET_PATH = ANDROID_FCG_5000_PATH
+DATASET_PATH = ANDROID_FCG_14795_PATH
 #DATASET_PATH = FLASH_CFG_PATH
 
 class_folders = utils.list_sub_dirs(DATASET_PATH)
