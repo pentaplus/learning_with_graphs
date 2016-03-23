@@ -106,7 +106,7 @@ def optimize_embedding_param(clf, feature_mat_of_param, class_lbls,
         mean_scores_on_test_data.append(mean_score_on_test_data)
 
         print('-------------------------------------------------------------')
-        print('RESULT for i = %d: %.2f' % (i, mean_score_on_test_data))
+        print('RESULT for i = %d: %.7f' % (i, mean_score_on_test_data))
         print('-------------------------------------------------------------\n')                                           
                                                         
     cross_val_end_time = time.time()
@@ -175,7 +175,7 @@ def cross_val(grid_clf, data_mat, class_lbls, embedding_is_implicit,
                                                   
         mean_score_on_test_data = np.mean(scores_on_test_data) 
         mean_scores_on_test_data.append(mean_score_on_test_data)
-        print('%d) score: %.2f' % (i, mean_score_on_test_data))
+        print('%d) score: %.7f' % (i, mean_score_on_test_data))
     print('')
       
     cross_val_end_time = time.time()
